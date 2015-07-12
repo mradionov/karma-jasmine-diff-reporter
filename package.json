@@ -1,17 +1,13 @@
 {
   "name": "karma-jasmine-diff-reporter",
   "version": "0.1.0",
-  "description": "Highlight diffs of failed equality expectations",
+  "description": "Karma reporter to highlight diffs of failed equality expectations for Jasmine",
   "main": "index.js",
   "keywords": [
-    "karma-jasmine-diff-reporter",
-    "karma-jasmine-diff-print",
-    "karma",
+    "karma-reporter",
+    "karma-plugin",
     "jasmine",
-    "diff",
-    "pretty",
-    "print",
-    "reporter"
+    "diff"
   ],
   "author": "Michael Radionov",
   "license": "MIT",
@@ -22,5 +18,8 @@
   "dependencies": {
     "diff": "^1.4.0",
     "chalk": "^1.1.0"
+  },
+  "peerDependencies": {
+    "karma": ">=0.9"
   }
 }
