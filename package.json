@@ -1,0 +1,26 @@
+{
+  "name": "karma-jasmine-diff-reporter",
+  "version": "0.1.0",
+  "description": "Highlight diffs of failed equality expectations",
+  "main": "index.js",
+  "keywords": [
+    "karma-jasmine-diff-reporter",
+    "karma-jasmine-diff-print",
+    "karma",
+    "jasmine",
+    "diff",
+    "pretty",
+    "print",
+    "reporter"
+  ],
+  "author": "Michael Radionov",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mradionov/karma-jasmine-diff-reporter"
+  },
+  "dependencies": {
+    "diff": "^1.4.0",
+    "chalk": "^1.1.0"
+  }
+}
