@@ -22,7 +22,10 @@ var matchers = {
   },
   toThrowError: {
     pattern: /Expected function to throw (.*), but it threw (.*)\./
-  }
+  },
+  toDomCompare: {
+    pattern: /expected value (.*) instead of (.*)/
+  }  
 };
 
 
