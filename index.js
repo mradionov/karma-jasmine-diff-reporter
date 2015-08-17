@@ -12,8 +12,10 @@ function JasmineDiffReporter(baseReporterDecorator, config) {
   config.jasmineDiffReporter = config.jasmineDiffReporter || {};
 
   var options = {
+    matchers: config.jasmineDiffReporter.matchers || {},
     color: config.jasmineDiffReporter.color || {}
   };
+
   options.color.enabled = !!config.colors;
 
   // Check if reporter is last in the list of config reporters

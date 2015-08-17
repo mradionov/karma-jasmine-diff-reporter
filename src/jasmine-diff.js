@@ -1,11 +1,11 @@
 'use strict';
 
 var jsDiff = require('diff'),
-    chalk = require('chalk');
-
+    chalk = require('chalk'),
+    extend = require('extend');
 
 // "reverse" means that "actual" object comes first in the string
-var matchers = {
+var defaultMatchers = {
   toBe: {
     pattern: /Expected (.*) to be (.*)\./,
     reverse: true
@@ -78,6 +78,7 @@ function createDiffMessage(message, options) {
   options = options || {};
 
   var matcher, match;
+  var matchers = extend({}, defaultMatchers, options.matchers);
 
   Object.keys(matchers).some(function (name) {
 
