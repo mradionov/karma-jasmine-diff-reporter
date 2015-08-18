@@ -78,7 +78,7 @@ function createDiffMessage(message, options) {
   options = options || {};
 
   var matcher, match;
-  var matchers = extend({}, defaultMatchers, options.matchers);
+  var matchers = extend(true, {}, defaultMatchers, options.matchers);
 
   Object.keys(matchers).some(function (name) {
 
