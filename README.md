@@ -75,13 +75,15 @@ Because of this specific order-dependent behavior some of the reporters that are
   reporters: ['jasmine-diff', 'junit']
 ```
 
-The workaround is actually to put `jasmine-diff` before any after reporter:
+The workaround is actually to put `jasmine-diff` after broken reporter:
 
 ```js
   reporters: ['junit', 'jasmine-diff']
 ```
 
 ### Options
+
+##### Colors
 
 Karma config has an option `colors` which accepts a boolean value telling whether or not colors should be used in output. If this option is set to `false`, then `karma-jasmine-diff-reporter` will print diffs using inverse colors.
 
@@ -92,7 +94,6 @@ module.exports = function(config) {
 
     frameworks: ['jasmine'],
 
-    // use Progress reporter and still highlight diffs
     reporters: ['jasmine-diff']
 
     colors: false
@@ -112,7 +113,6 @@ module.exports = function(config) {
 
     frameworks: ['jasmine'],
 
-    // use Progress reporter and still highlight diffs
     reporters: ['jasmine-diff']
 
     jasmineDiffReporter: {
@@ -138,10 +138,45 @@ Defaults for "expected" message is red background with white text and for "actua
 
 If you have `colors:false` in Karma config, none of the custom or default colors will be used, diffs will be inversed instead.
 
+##### Custom matchers
+
+If you have custom Jasmine matchers, which compare your data for equality, but the message of your matchers does not fit to `karma-jasmine-diff-reporter`, you can specify the rules to extract the objects for comparison of the custom matcher in the configuration:
+
+```js
+// karma.conf.js
+module.exports = function(config) {
+  config.set({
+
+    frameworks: ['jasmine'],
+
+    reporters: ['jasmine-diff']
+
+    jasmineDiffReporter: {
+
+      matchers: {
+
+        toLookTheSameAs: {
+          pattern: /Expected (.*) to look the same as (.*)./,
+          reverse: true
+        }
+
+      }
+    }
+
+  });
+};
+```
+
+Matcher must have a property called `pattern`, which is a pattern to parse a failure message. It should have **two** capturing groups, which will capture your data to compare. If you have less or more - it will be ignored. Also there is an optional property `reverse`, if it is set to `true`, then the colors, which are used to highlight *actual* and *expected* data objects, should be switched. By default, first capturing group stands for *expected* data and second - for *actual* data. You can take a look at the definitions of default matchers [here in the source code](src/jasmine-diff.js#8). You can even override default matchers by using their property name in config file.
+
+*Note: this feature is experimental and may cover just a few cases and may not cover a lot more, because custom matchers can be way to custom. But if there are some stable libraries, which provide popular custom matchers (like [Jasmine-Matchers](https://github.com/JamieMason/Jasmine-Matchers)) and you think you want it to be supported, let me know the use-cases in the issues.*
+
+
 ### Dependencies
 
-- [jsdiff](https://github.com/kpdecker/jsdiff) - Text differencing
-- [chalk](https://github.com/chalk/chalk) - Terminal string styling
+- [diff](https://www.npmjs.com/package/diff) - Text differencing
+- [chalk](https://www.npmjs.com/package/chalk) - Terminal string styling
+- [extend](https://www.npmjs.com/package/extend) - Deep extend JS objects
 
 ### Pitfalls
 
