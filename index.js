@@ -27,7 +27,7 @@ function JasmineDiffReporter(baseReporterDecorator, config) {
 
   var originalSpecFailure = self.specFailure;
 
-  this.specFailure = function (browser, result) {
+  self.specFailure = function (browser, result) {
 
     result.log = result.log.map(function (message) {
       return jasmineDiff.createDiffMessage(message, options);
@@ -41,6 +41,17 @@ function JasmineDiffReporter(baseReporterDecorator, config) {
       originalSpecFailure.call(self, browser, result);
     }
   };
+
+  // When using console.log from specs, Karma displays them through a method
+  // "onBrowserLog". In case, when multiple reporters are used in conjunction
+  // with karma-jasmine-diff-reporter, they both will show a console.log,
+  // because they both have implementation of this method if inheriting.
+  // So just suppress any logs from karma-jasmine-diff-reporter, because
+  // it is an utility reporter by doing nothing on browser log,
+  // unless it's alone in the "reporters" option and base reporter is used.
+  if (hasTrailingReporters) {
+    self.onBrowserLog = function () {};
+  }
 
 }
 
