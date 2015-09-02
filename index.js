@@ -42,15 +42,14 @@ function JasmineDiffReporter(baseReporterDecorator, config) {
     }
   };
 
-  // When using console.log from specs, Karma displays them through a method
-  // "onBrowserLog". In case, when multiple reporters are used in conjunction
-  // with karma-jasmine-diff-reporter, they both will show a console.log,
-  // because they both have implementation of this method if inheriting.
+  // In case, when multiple reporters are used in conjunction
+  // with karma-jasmine-diff-reporter, they both will show repetitive log
+  // messages when displaying everything that supposed to write to terminal.
   // So just suppress any logs from karma-jasmine-diff-reporter, because
   // it is an utility reporter by doing nothing on browser log,
   // unless it's alone in the "reporters" option and base reporter is used.
   if (hasTrailingReporters) {
-    self.onBrowserLog = function () {};
+    self.writeCommonMsg = function () {};
   }
 
 }
