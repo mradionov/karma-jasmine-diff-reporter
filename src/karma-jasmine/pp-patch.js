@@ -1,3 +1,19 @@
+// Most of the code is originaly written by Jasmine developers.
+// https://github.com/jasmine/jasmine
+//
+// It's license:
+//
+// Copyright (c) 2008-2015 Pivotal Labs. This software is licensed under the MIT License.
+// https://github.com/jasmine/jasmine/blob/master/MIT.LICENSE
+//
+//
+// File was modified and reused by karma-jasmine-diff-reporter project
+// https://github.com/mradionov/karma-jasmine-diff-reporter
+//
+// It's license:
+// https://github.com/mradionov/karma-jasmine-diff-reporter/blob/master/LICENSE
+
+
 (function (window) {
 
 // Because Jasmine hides all objects and does not allow to extend it easily
