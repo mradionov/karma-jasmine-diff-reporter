@@ -51,7 +51,8 @@ module.exports = function(config) {
           pattern: /Expected (.*) to look the same as (.*)./,
           reverse: true
         }
-      }
+      },
+      pretty: true
     }
 
   });

@@ -8,14 +8,17 @@ var jsDiff = require('diff'),
 var defaultMatchers = {
   toBe: {
     pattern: /Expected (.*) to be (.*)\./,
-    reverse: true
+    reverse: true,
+    pretty: true
   },
   toEqual: {
     pattern: /Expected (.*) to equal (.*)\./,
-    reverse: true
+    reverse: true,
+    pretty: true
   },
   toHaveBeenCalledWith: {
-    pattern: /Expected spy .* to have been called with (.*) but actual calls were (.*)\./
+    pattern: /Expected spy .* to have been called with (.*) but actual calls were (.*)\./,
+    pretty: true
   },
   toThrow: {
     pattern: /Expected function to throw (.*), but it threw (.*)\./
@@ -30,30 +33,62 @@ var defaultMatchers = {
 // because there might be some colored whitespace if terminal scrolls the view
 var CLEAR_COLOR = '\x1B[K';
 
-function wrapInColor(str, bg, fg, enabled) {
-  return enabled ? chalk[bg][fg](str) + CLEAR_COLOR : chalk.inverse(str);
+// Any string coming from Jasmine will be wrapped in this character
+// So it would be possible to detect the beginning and the end of a string.
+// https://en.wikipedia.org/wiki/Zero-width_non-joiner
+var MARKER = '\u200C';
+
+
+function wrapInColor(str, enabled, styles) {
+  if (!enabled) {
+    return chalk.inverse(str);
+  }
+
+  var out = str;
+  (styles || []).forEach(function (style) {
+    if (style) {
+      out = chalk[style](out);
+    }
+  });
+
+  return out;
 }
 
 function wrapActual(str, color) {
   color = color || {};
 
-  var bg = color.actualBg || 'bgGreen',
-      fg = color.actualFg || 'white';
+  var styles = [
+    color.actualBg || 'bgGreen',
+    color.actualFg || 'white'
+  ];
 
-  return wrapInColor(str, bg, fg, color.enabled);
+  return wrapInColor(str, color.enabled, styles);
 }
 
 function wrapExpected(str, color) {
   color = color || {};
 
-  var bg = color.expectedBg || 'bgRed',
-      fg = color.expectedFg || 'white';
+  var styles = [
+    color.expectedBg || 'bgRed',
+    color.expectedFg || 'white'
+  ];
 
-  return wrapInColor(str, bg, fg, color.enabled);
+  return wrapInColor(str, color.enabled, styles);
+}
+
+function wrapDefault(str, color) {
+  color = color || {};
+
+  var styles = [
+    color.defaultFg,
+    color.defaultBg
+  ];
+
+  return wrapInColor(str, color.enabled, styles);
 }
 
 
-// replace while increasing indexFrom
+// Replace while increasing indexFrom
 function strictReplace(str, pairs) {
   var index, fromIndex = 0;
 
@@ -72,6 +107,63 @@ function strictReplace(str, pairs) {
   });
 
   return str;
+}
+
+// Repeat string "count" times
+function times(str, count) {
+  var result = '';
+  for (var i = 0; i < count; i++) {
+    result += str;
+  }
+  return result;
+}
+
+// Check if string ends with "end"
+function endsWith(str, end) {
+  var pos = str.length - end.length;
+  return str.lastIndexOf(end) === pos;
+}
+
+function pretty(str, indent) {
+  var out = '';
+
+  var inString = false;
+  var nestLevel = 0;
+
+  for (var i = 0, l = str.length; i < l; i++) {
+    var ch = str[i];
+
+    // Detect if current character represents the beginning/end of the string
+    // So we could know later if we are inside a string
+    if (ch === MARKER && endsWith(out, MARKER + '\'')) {
+
+      inString = !inString;
+
+    } else if (!inString) {
+
+      if (ch === '{' || ch === '[') {
+        nestLevel++;
+        out += ch + '\n' + times(indent, nestLevel);
+        continue;
+      }
+
+      if (ch === '}' || ch === ']') {
+        nestLevel--;
+        out += '\n' + times(indent, nestLevel) + ' ' + ch;
+        continue;
+      }
+
+      if (ch === ',') {
+        out += ',\n' + times(indent, nestLevel);
+        continue;
+      }
+
+    }
+
+    out += ch;
+  }
+
+  return out;
 }
 
 function createDiffMessage(message, options) {
@@ -123,8 +215,26 @@ function createDiffMessage(message, options) {
     actual = actual.slice(0, notIndex);
   }
 
+  // Don't change original values because they will be used later to replace
+  var expectedTmp = expected;
+  var actualTmp = actual;
 
-  var diff = jsDiff.diffWords(expected, actual);
+  // Prettify only if global option is on and matcher allows prettifying
+  if (options.pretty && matcher.pretty) {
+
+    // Matcher option can override global option if it is not just boolean
+    // It can be string or number. If both are booleans - tab is default
+    var indent = matcher.pretty !== true ? matcher.pretty :
+      (options.pretty !== true ? options.pretty : 2); // 2 spaces by default
+    if (typeof indent === 'number') {
+      indent = times(' ', indent);
+    }
+
+    expectedTmp = pretty(expectedTmp, indent);
+    actualTmp = pretty(actualTmp, indent);
+  }
+
+  var diff = jsDiff.diffWordsWithSpace(expectedTmp, actualTmp);
 
   var expectedDiff = '', actualDiff = '';
 
@@ -141,8 +251,8 @@ function createDiffMessage(message, options) {
     } else {
 
       // add unmodified part to both outputs
-      expectedDiff += part.value;
-      actualDiff += part.value;
+      expectedDiff += wrapDefault(part.value, options.color);
+      actualDiff += wrapDefault(part.value, options.color);
 
     }
   });

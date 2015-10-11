@@ -14,6 +14,12 @@ describe('Matcher', function () {
       expect('yo banana apple').toBe('yo gavana apple');
     });
 
+    it('should diff arrays', function () {
+      var a = [1, 2, 3];
+      var b = [1, 2, 4];
+      expect(a).toBe(b);
+    });
+
     it('should NOT diff', function () {
       expect(true).not.toBe(true);
     });
