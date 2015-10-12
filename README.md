@@ -35,7 +35,7 @@ The easiest way is to keep *karma-jasmine-diff-reporter* as a devDependency in y
   "devDependencies": {
     "karma": "^0.12.0",
     "karma-jasmine": "^0.3.0",
-    "karma-jasmine-diff-reporter": "^0.1.0"
+    "karma-jasmine-diff-reporter": "^0.3.0"
   }
 }
 ```
@@ -124,7 +124,9 @@ module.exports = function(config) {
         expectedBg: 'bgYellow', // default 'bgRed'
         expectedFg: 'black',    // default 'white'
         actualBg: 'bgCyan',     // default 'bgGreen'
-        actualFg: 'red'         // default 'white'
+        actualFg: 'red',        // default 'white',
+        defaultBg: 'white',     // default - none
+        defaultFg: 'grey'       // default - none
       }
     }
 
@@ -136,7 +138,7 @@ Example: ![Example custom colors](http://i.imgur.com/eOTgERa.jpg "Example custom
 
 You can use any [colors](https://github.com/chalk/chalk#styles) that a supported by [`chalk`](https://github.com/chalk/chalk).
 
-Defaults for "expected" message is red background with white text and for "actual" - green background with white text.
+Defaults for "expected" message is red background with white text and for "actual" - green background with white text. Default background and foreground is for a part of Jasmine object that was not changed, it allows to highlight the rest of the object and distinguish it from matcher text.
 
 If you have `colors:false` in Karma config, none of the custom or default colors will be used, diffs will be inversed instead.
 
@@ -173,6 +175,40 @@ Matcher must have a property called `pattern`, which is a pattern to parse a fai
 
 *Note: this feature is experimental and may cover just a few cases and may not cover a lot more, because custom matchers can be way to custom. But if there are some stable libraries, which provide popular custom matchers (like [Jasmine-Matchers](https://github.com/JamieMason/Jasmine-Matchers)) and you think you want it to be supported, let me know the use-cases in the issues.*
 
+##### Pretty print
+
+Pretty print option enables output of each key/value pair for an object and/or array on a new line, each line indentation depends on nesting level. Option is disabled by default. Set `pretty` option to `true` to enable default indentation - 2 spaces. You can also pass a string or a number instead of `true`. String will represent one level on indentation, number - number of spaces for one level of indentation. It is also possible to override `pretty` option for particular matchers, it will be used in favor of global option, so you could customize or even disable pretty output for any matchers (built-in or custom).
+
+```js
+// karma.conf.js
+module.exports = function(config) {
+  config.set({
+
+    frameworks: ['jasmine'],
+
+    reporters: ['jasmine-diff']
+
+    jasmineDiffReporter: {
+      pretty: true,       // 2 spaces by default for one indent level
+      // pretty: '   '    // string - string to be used for one indent level
+      // pretty: 4        // number - number of spaces for one indent level
+
+      matchers: {
+        toEqual: {
+          pretty: false   // disable pretty print for toEqual
+        },
+
+        toHaveBeenCalledWith: {
+          pretty: '___'   // use 3 underscores for one indent level
+        }
+      }
+    }
+
+  });
+};
+```
+
+Example: ![Example pretty print](http://i.imgur.com/6TTlSmB.jpg "Example pretty print")
 
 ### Dependencies
 
@@ -183,3 +219,10 @@ Matcher must have a property called `pattern`, which is a pattern to parse a fai
 ### Pitfalls
 
 Diffs won't be displayed for a deep nested objects or large arrays, a threshold for these situations is configured in Jasmine. By default it has object nest level `MAX_PRETTY_PRINT_DEPTH = 40` and array length `MAX_PRETTY_PRINT_ARRAY_LENGTH = 100`. It means that if the diff is out of these bounds, then Jasmine will return the same strings for both compared objects and *karma-jasmine-diff-reporter* won't be able to highlight those diffs.
+
+### Changelog
+
+- 0.1.0 - Initial
+- 0.2.0 - Diff for custom matchers
+- 0.2.2 - Fix duplicate console.logs
+- 0.3.0 - Pretty print, default color.

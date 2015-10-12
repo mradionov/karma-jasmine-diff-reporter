@@ -223,7 +223,7 @@ function createDiffMessage(message, options) {
   if (options.pretty && matcher.pretty) {
 
     // Matcher option can override global option if it is not just boolean
-    // It can be string or number. If both are booleans - tab is default
+    // It can be string or number. If both are booleans - use default
     var indent = matcher.pretty !== true ? matcher.pretty :
       (options.pretty !== true ? options.pretty : 2); // 2 spaces by default
     if (typeof indent === 'number') {

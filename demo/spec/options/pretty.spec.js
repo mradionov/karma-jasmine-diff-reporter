@@ -3,8 +3,8 @@ describe('Option', function () {
   describe('Pretty print', function () {
 
     it('should pretty diff arrays', function () {
-      var a = [5, 'foo', true];
-      var b = [10, 'bar', false];
+      var a = [5, 'foo', { moo: true }];
+      var b = [10, 'bar', { moo: false }];
       expect(a).toEqual(b);
     });
 
