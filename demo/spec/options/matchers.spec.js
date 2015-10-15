@@ -31,6 +31,10 @@ describe('Option', function () {
       expect('bar').toLookTheSameAs('foo');
     });
 
+    it('should NOT diff strings', function () {
+      expect('bar').not.toLookTheSameAs('bar');
+    });
+
     it('should diff objects', function () {
       var a = { foo: 'bar' },
           b = { baz: 'qux' };

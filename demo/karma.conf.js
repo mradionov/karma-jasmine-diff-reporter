@@ -48,7 +48,7 @@ module.exports = function(config) {
     jasmineDiffReporter: {
       matchers: {
         toLookTheSameAs: {
-          pattern: /Expected (.*) to look the same as (.*)./,
+          pattern: /Expected ([\S\s]*?) to look the same as ([\S\s]*?)\./,
           reverse: true
         }
       },

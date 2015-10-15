@@ -7,24 +7,24 @@ var jsDiff = require('diff'),
 // "reverse" means that "actual" object comes first in the string
 var defaultMatchers = {
   toBe: {
-    pattern: /Expected (.*) to be (.*)\./,
+    pattern: /Expected ([\S\s]*?) to be ([\S\s]*?)\./,
     reverse: true,
     pretty: true
   },
   toEqual: {
-    pattern: /Expected (.*) to equal (.*)\./,
+    pattern: /Expected ([\S\s]*?) to equal ([\S\s]*?)\./,
     reverse: true,
     pretty: true
   },
   toHaveBeenCalledWith: {
-    pattern: /Expected spy .* to have been called with (.*) but actual calls were (.*)\./,
+    pattern: /Expected spy .* to have been called with ([\S\s]*?) but actual calls were ([\S\s]*?)\./,
     pretty: true
   },
   toThrow: {
-    pattern: /Expected function to throw (.*), but it threw (.*)\./
+    pattern: /Expected function to throw ([\S\s]*?), but it threw ([\S\s]*?)\./
   },
   toThrowError: {
-    pattern: /Expected function to throw (.*), but it threw (.*)\./
+    pattern: /Expected function to throw ([\S\s]*?), but it threw ([\S\s]*?)\./
   }
 };
 
@@ -50,6 +50,8 @@ function wrapInColor(str, enabled, styles) {
       out = chalk[style](out);
     }
   });
+
+  out += CLEAR_COLOR;
 
   return out;
 }
@@ -211,7 +213,7 @@ function createDiffMessage(message, options) {
   // Exclude "not" from the message, which may appear using ".not.toSometing()"
   // Message won't be highlighted then because "actual" becomes equal "expected"
   var not = ' not', notIndex = actual.length - not.length;
-  if (actual.indexOf(not) === notIndex) {
+  if (notIndex > 0 && actual.indexOf(not) === notIndex) {
     actual = actual.slice(0, notIndex);
   }
 

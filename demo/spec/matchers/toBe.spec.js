@@ -14,10 +14,26 @@ describe('Matcher', function () {
       expect('yo banana apple').toBe('yo gavana apple');
     });
 
+    it('should diff string with dots and whitespaces', function () {
+      expect('yo. banana. apple').toBe('yo. gavana. \n apple');
+    });
+
+    it('should diff strings with newlines', function () {
+      expect('yo banana apple').toBe('yo banana \napple');
+    });
+
+    it('should diff strings with tabs', function () {
+      expect('yo ba\tnana apple').toBe('yo gavana ap\tple');
+    });
+
     it('should diff arrays', function () {
       var a = [1, 2, 3];
       var b = [1, 2, 4];
       expect(a).toBe(b);
+    });
+
+    it('should diff undefined with string with newlines', function () {
+      expect(undefined).toBe('yo ban\nana apple');
     });
 
     it('should NOT diff', function () {
