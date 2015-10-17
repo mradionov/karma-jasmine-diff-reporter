@@ -7,29 +7,31 @@ var jsDiff = require('diff'),
 // "reverse" means that "actual" object comes first in the string
 var defaultMatchers = {
   toBe: {
-    pattern: /Expected ([\S\s]*?) to be ([\S\s]*?)\./,
+    pattern: /Expected ([\S\s]*) to be ([\S\s]*)\./,
     reverse: true,
     pretty: true
   },
   toEqual: {
-    pattern: /Expected ([\S\s]*?) to equal ([\S\s]*?)\./,
+    pattern: /Expected ([\S\s]*) to equal ([\S\s]*)\./,
     reverse: true,
     pretty: true
   },
   toHaveBeenCalledWith: {
-    pattern: /Expected spy .* to have been called with ([\S\s]*?) but actual calls were ([\S\s]*?)\./,
+    pattern: /Expected spy .* to have been called with ([\S\s]*) but actual calls were ([\S\s]*)\./,
     pretty: true
   },
   toThrow: {
-    pattern: /Expected function to throw ([\S\s]*?), but it threw ([\S\s]*?)\./
+    pattern: /Expected function to throw ([\S\s]*), but it threw ([\S\s]*)\./
   },
   toThrowError: {
-    pattern: /Expected function to throw ([\S\s]*?), but it threw ([\S\s]*?)\./
+    pattern: /Expected function to throw ([\S\s]*), but it threw ([\S\s]*)\./
   }
 };
 
+// Pattern to detect stack trace messages in a full message
+var STACK_PATTERN = /at .* \(.*:\d+:\d+\)/;
 
-// use "\x1B[K" to clear the line backgorund color
+// Use "\x1B[K" to clear the line backgorund color
 // because there might be some colored whitespace if terminal scrolls the view
 var CLEAR_COLOR = '\x1B[K';
 
@@ -171,12 +173,34 @@ function pretty(str, indent) {
 function createDiffMessage(message, options) {
   options = options || {};
 
+  // Separate stack trace info from an actual Jasmine message
+  // So it would be easier to detect newlines in Jasmine message
+  var messageParts = message.split('\n');
+
+  var matcherParts = [];
+  var stackParts = [];
+
+  messageParts.forEach(function (messagePart) {
+    if (STACK_PATTERN.test(messagePart)) {
+      stackParts.push(messagePart);
+    } else {
+      matcherParts.push(messagePart);
+    }
+  });
+
+  // Use matcherMessage for futher manipulations like diff
+  // Then append it with stackMessage to get an original-like result
+  var matcherMessage = matcherParts.join('\n');
+  var stackMessage = stackParts.join('\n');
+
+
+  // Detect matcher
   var matcher, match;
   var matchers = extend(true, {}, defaultMatchers, options.matchers);
 
   Object.keys(matchers).some(function (name) {
 
-    match = matchers[name].pattern.exec(message);
+    match = matchers[name].pattern.exec(matcherMessage);
 
     if (match && match.length === 3) {
       matcher = matchers[name];
@@ -265,10 +289,12 @@ function createDiffMessage(message, options) {
     replacePairs = [[actual, actualDiff], [expected, expectedDiff]];
   }
 
-  var diffMessage = strictReplace(message, replacePairs);
+  var diffedMatcherMessage = strictReplace(matcherMessage, replacePairs);
 
+  // Compose final message
+  var resultMessage = [diffedMatcherMessage, stackMessage].join('\n');
 
-  return diffMessage;
+  return resultMessage;
 }
 
 module.exports = {

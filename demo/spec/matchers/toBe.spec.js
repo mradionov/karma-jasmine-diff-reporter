@@ -15,7 +15,10 @@ describe('Matcher', function () {
     });
 
     it('should diff string with dots and whitespaces', function () {
-      expect('yo. banana. apple').toBe('yo. gavana. \n apple');
+      function fn() {
+        expect('yo. banana. apple').toBe('yo. gavana. \n apple');
+      }
+      fn();
     });
 
     it('should diff strings with newlines', function () {
