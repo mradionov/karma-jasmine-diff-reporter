@@ -96,7 +96,7 @@ module.exports = function(config) {
 
     frameworks: ['jasmine'],
 
-    reporters: ['jasmine-diff']
+    reporters: ['jasmine-diff'],
 
     colors: false
 
@@ -115,7 +115,7 @@ module.exports = function(config) {
 
     frameworks: ['jasmine'],
 
-    reporters: ['jasmine-diff']
+    reporters: ['jasmine-diff'],
 
     jasmineDiffReporter: {
       // Bg - background
@@ -139,6 +139,23 @@ Example: ![Example custom colors](http://i.imgur.com/eOTgERa.jpg "Example custom
 You can use any [colors](https://github.com/chalk/chalk#styles) that a supported by [`chalk`](https://github.com/chalk/chalk).
 
 Defaults for "expected" message is red background with white text and for "actual" - green background with white text. Default background and foreground is for a part of Jasmine object that was not changed, it allows to highlight the rest of the object and distinguish it from matcher text.
+
+To use default color use empty value:
+```js
+// karma.conf.js
+module.exports = function(config) {
+  config.set({
+    jasmineDiffReporter: {
+      color: {
+        expectedBg: '',        // default 'bgRed'
+        expectedFg: 'green',   // default 'white'
+        actualBg: '',          // default 'bgGreen'
+        actualFg: 'red',       // default 'white',
+      }
+    }
+  });
+};
+```
 
 If you have `colors:false` in Karma config, none of the custom or default colors will be used, diffs will be inversed instead.
 
