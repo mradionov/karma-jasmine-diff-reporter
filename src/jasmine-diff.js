@@ -62,8 +62,8 @@ function wrapActual(str, color) {
   color = color || {};
 
   var styles = [
-    color.actualBg || 'bgGreen',
-    color.actualFg || 'white'
+    color.hasOwnProperty('actualBg') ? color.actualBg : 'bgGreen',
+    color.hasOwnProperty('actualFg') ? color.actualFg : 'white'
   ];
 
   return wrapInColor(str, color.enabled, styles);
@@ -73,8 +73,8 @@ function wrapExpected(str, color) {
   color = color || {};
 
   var styles = [
-    color.expectedBg || 'bgRed',
-    color.expectedFg || 'white'
+    color.hasOwnProperty('expectedBg') ? color.expectedBg : 'bgRed',
+    color.hasOwnProperty('expectedFg') ? color.expectedFg : 'white'
   ];
 
   return wrapInColor(str, color.enabled, styles);
