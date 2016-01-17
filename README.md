@@ -239,6 +239,7 @@ Diffs won't be displayed for a deep nested objects or large arrays, a threshold 
 
 ### Changelog
 
+- 0.3.2 - Override default colors
 - 0.3.1 - Detect newlines in strings.
 - 0.3.0 - Pretty print, default color.
 - 0.2.2 - Fix duplicate console.logs
