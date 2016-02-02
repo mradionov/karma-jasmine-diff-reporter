@@ -128,6 +128,24 @@ function endsWith(str, end) {
   return str.lastIndexOf(end) === pos;
 }
 
+// Check if character on position "index" is inside a string
+function isInsideString(string, index) {
+  // Validate index if it is out of valid range
+  if (index > string.length - 1 || index < 0) {
+    return false;
+  }
+
+  // Count number of string markers starting from character position
+  // If it is odd - that means that character is inside the string
+  var markersCount = 0;
+  var markerIndex = index;
+  while ((markerIndex = string.indexOf(MARKER, markerIndex + 1)) > -1) {
+    markersCount += 1;
+  }
+
+  return markersCount % 2 !== 0;
+}
+
 function pretty(str, indent) {
   var out = '';
 
@@ -175,23 +193,27 @@ function createDiffMessage(message, options) {
 
   // Separate stack trace info from an actual Jasmine message
   // So it would be easier to detect newlines in Jasmine message
-  var messageParts = message.split('\n');
+  var matcherMessage = message;
+  var stackMessage = '';
 
-  var matcherParts = [];
-  var stackParts = [];
-
-  messageParts.forEach(function (messagePart) {
-    if (STACK_PATTERN.test(messagePart)) {
-      stackParts.push(messagePart);
-    } else {
-      matcherParts.push(messagePart);
+  // Find last dot+newline in the entire message, it should be a place
+  // where stacktrace starts. Verify it by testing whether or not this dot
+  // is inside a string, it can be done by checking string markers.
+  // If there is no any strings inside the message, then it is a position
+  // of a stack trace for sure.
+  var dotIndex = message.length;
+  do {
+    dotIndex = message.lastIndexOf('.\n', dotIndex - 1);
+    if (!isInsideString(message, dotIndex)) {
+      break;
     }
-  });
+  } while (dotIndex != -1);
 
-  // Use matcherMessage for futher manipulations like diff
-  // Then append it with stackMessage to get an original-like result
-  var matcherMessage = matcherParts.join('\n');
-  var stackMessage = stackParts.join('\n');
+  // If stacktrace start position found - separate it from Jasmine message
+  if (dotIndex !== -1) {
+    matcherMessage = message.substr(0, dotIndex + 1);
+    stackMessage = message.substr(dotIndex + 1, message.length);
+  }
 
 
   // Detect matcher
@@ -292,7 +314,7 @@ function createDiffMessage(message, options) {
   var diffedMatcherMessage = strictReplace(matcherMessage, replacePairs);
 
   // Compose final message
-  var resultMessage = [diffedMatcherMessage, stackMessage].join('\n');
+  var resultMessage = diffedMatcherMessage + stackMessage;
 
   return resultMessage;
 }
