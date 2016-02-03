@@ -28,9 +28,6 @@ var defaultMatchers = {
   }
 };
 
-// Pattern to detect stack trace messages in a full message
-var STACK_PATTERN = /at .* \(.*:\d+:\d+\)/;
-
 // Use "\x1B[K" to clear the line backgorund color
 // because there might be some colored whitespace if terminal scrolls the view
 var CLEAR_COLOR = '\x1B[K';
@@ -111,6 +108,13 @@ function strictReplace(str, pairs) {
   });
 
   return str;
+}
+
+// Any string coming from Jasmine is wrapped in this character
+// Remove it before output because it isn't displayed correctly in some terminals
+function clearMarkers(string) {
+  var pattern = new RegExp(MARKER, 'g');
+  return string.replace(pattern, '');
 }
 
 // Repeat string "count" times
@@ -231,7 +235,7 @@ function createDiffMessage(message, options) {
   });
 
   if (!match) {
-    return message;
+    return clearMarkers(message);
   }
 
 
@@ -253,7 +257,7 @@ function createDiffMessage(message, options) {
   });
 
   if (hasToBeExclusions) {
-    return message;
+    return clearMarkers(message);
   }
 
   // Exclude "not" from the message, which may appear using ".not.toSometing()"
@@ -314,7 +318,7 @@ function createDiffMessage(message, options) {
   var diffedMatcherMessage = strictReplace(matcherMessage, replacePairs);
 
   // Compose final message
-  var resultMessage = diffedMatcherMessage + stackMessage;
+  var resultMessage = clearMarkers(diffedMatcherMessage + stackMessage);
 
   return resultMessage;
 }
