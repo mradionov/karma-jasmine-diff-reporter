@@ -239,6 +239,7 @@ Diffs won't be displayed for a deep nested objects or large arrays, a threshold 
 
 ### Changelog
 
+- 0.3.4 - Remove weird characters around strings in Windows terminals
 - 0.3.3 - Detect stack trace for PhantomJS
 - 0.3.2 - Override default colors
 - 0.3.1 - Detect newlines in strings.
