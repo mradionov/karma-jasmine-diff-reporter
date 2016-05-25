@@ -308,7 +308,11 @@ function createDiffMessage(message, options) {
 
     }
   });
-
+  
+  if (options.newLinesAroundMatchers) {
+    actualDiff += '\n';
+    expectedDiff = '\n' + expectedDiff;
+  }
 
   var replacePairs = [[expected, expectedDiff], [actual, actualDiff]];
   if (matcher.reverse) {

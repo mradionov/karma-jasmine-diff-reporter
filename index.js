@@ -14,7 +14,8 @@ function JasmineDiffReporter(baseReporterDecorator, config) {
   var options = {
     matchers: reporterOptions.matchers || {},
     color: reporterOptions.color || {},
-    pretty: reporterOptions.pretty || false
+    pretty: reporterOptions.pretty || false,
+    newLinesAroundMatchers: reporterOptions.newLinesAroundMatchers || false
   };
 
   options.color.enabled = !!config.colors;

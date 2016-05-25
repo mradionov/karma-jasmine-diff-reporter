@@ -227,6 +227,27 @@ module.exports = function(config) {
 
 Example: ![Example pretty print](http://i.imgur.com/6TTlSmB.jpg "Example pretty print")
 
+##### New lines around matchers
+
+Option to wrap the matchers with new lines so it's easier to differentiate actual and expected blocks.
+
+```js
+// karma.conf.js
+module.exports = function(config) {
+  config.set({
+
+    frameworks: ['jasmine'],
+
+    reporters: ['jasmine-diff'],
+
+    jasmineDiffReporter: {
+      newLinesAroundMatchers: true // default to false
+    }
+
+  });
+};
+```
+
 ### Dependencies
 
 - [diff](https://www.npmjs.com/package/diff) - Text differencing
