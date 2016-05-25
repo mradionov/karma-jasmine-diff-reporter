@@ -2,6 +2,7 @@
 
 var path = require('path');
 var jasmineDiff = require('./src/jasmine-diff');
+var createColorFormatter = require('./src/color-formatter');
 
 function JasmineDiffReporter(baseReporterDecorator, config) {
   var self = this;
@@ -19,6 +20,10 @@ function JasmineDiffReporter(baseReporterDecorator, config) {
 
   options.color.enabled = !!config.colors;
 
+  // Create formatter responsible for highlighting message fragments
+  // and pass it to diff function as a dep to be able to replace it in tests
+  var colorFormatter = createColorFormatter(options.color);
+
   // Check if reporter is last in the list of config reporters
   var reporterName = 'jasmine-diff';
   var hasTrailingReporters = config.reporters.slice(-1).pop() !== reporterName;
@@ -31,7 +36,7 @@ function JasmineDiffReporter(baseReporterDecorator, config) {
   self.specFailure = function (browser, result) {
 
     result.log = result.log.map(function (message) {
-      return jasmineDiff.createDiffMessage(message, options);
+      return jasmineDiff.createDiffMessage(message, colorFormatter, options);
     });
 
     // If reporter is last in the list of reporters from config
