@@ -1,7 +1,6 @@
 'use strict';
 
 var jsDiff = require('diff'),
-    chalk = require('chalk'),
     extend = require('extend');
 
 // "reverse" means that "actual" object comes first in the string
@@ -28,65 +27,10 @@ var defaultMatchers = {
   }
 };
 
-// Use "\x1B[K" to clear the line backgorund color
-// because there might be some colored whitespace if terminal scrolls the view
-var CLEAR_COLOR = '\x1B[K';
-
 // Any string coming from Jasmine will be wrapped in this character
 // So it would be possible to detect the beginning and the end of a string.
 // https://en.wikipedia.org/wiki/Zero-width_non-joiner
 var MARKER = '\u200C';
-
-
-function wrapInColor(str, enabled, styles) {
-  if (!enabled) {
-    return chalk.inverse(str);
-  }
-
-  var out = str;
-  (styles || []).forEach(function (style) {
-    if (style) {
-      out = chalk[style](out);
-    }
-  });
-
-  out += CLEAR_COLOR;
-
-  return out;
-}
-
-function wrapActual(str, color) {
-  color = color || {};
-
-  var styles = [
-    color.hasOwnProperty('actualBg') ? color.actualBg : 'bgGreen',
-    color.hasOwnProperty('actualFg') ? color.actualFg : 'white'
-  ];
-
-  return wrapInColor(str, color.enabled, styles);
-}
-
-function wrapExpected(str, color) {
-  color = color || {};
-
-  var styles = [
-    color.hasOwnProperty('expectedBg') ? color.expectedBg : 'bgRed',
-    color.hasOwnProperty('expectedFg') ? color.expectedFg : 'white'
-  ];
-
-  return wrapInColor(str, color.enabled, styles);
-}
-
-function wrapDefault(str, color) {
-  color = color || {};
-
-  var styles = [
-    color.defaultFg,
-    color.defaultBg
-  ];
-
-  return wrapInColor(str, color.enabled, styles);
-}
 
 
 // Replace while increasing indexFrom
@@ -192,7 +136,7 @@ function pretty(str, indent) {
   return out;
 }
 
-function createDiffMessage(message, options) {
+function createDiffMessage(message, formatter, options) {
   options = options || {};
 
   // Separate stack trace info from an actual Jasmine message
@@ -294,17 +238,17 @@ function createDiffMessage(message, options) {
 
     if (part.added) {
 
-      actualDiff += wrapActual(part.value, options.color);
+      actualDiff += formatter.actual(part.value);
 
     } else if (part.removed) {
 
-      expectedDiff += wrapExpected(part.value, options.color);
+      expectedDiff += formatter.expected(part.value);
 
     } else {
 
       // add unmodified part to both outputs
-      expectedDiff += wrapDefault(part.value, options.color);
-      actualDiff += wrapDefault(part.value, options.color);
+      expectedDiff += formatter.defaults(part.value);
+      actualDiff += formatter.defaults(part.value);
 
     }
   });

@@ -10,7 +10,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'spec/**/*.spec.js'
+      '../**/*.spec.js'
     ],
 
     // test results reporter to use
@@ -21,7 +21,7 @@ module.exports = function(config) {
     plugins: [
       'karma-jasmine',
       'karma-chrome-launcher',
-      require('..')
+      require('../..')
     ],
 
     // web server port
