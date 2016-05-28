@@ -31,8 +31,7 @@
     "tape": "^4.5.1"
   },
   "scripts": {
-    "prestart": "npm install",
-    "start": "node node_modules/karma/bin/karma start demo/karma.conf.js",
+    "start": "karma start demo/setup/karma.conf.js",
     "test": "tape 'test/**/*.test.js'"
   }
 }
