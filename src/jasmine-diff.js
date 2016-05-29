@@ -111,6 +111,15 @@ function pretty(str, indent) {
 
     } else if (!inString) {
 
+      if (ch === ' ') {
+        continue;
+      }
+
+      if (ch === ':') {
+        out += ch + ' ';
+        continue;
+      }
+
       if (ch === '{' || ch === '[') {
         nestLevel++;
         out += ch + '\n' + times(indent, nestLevel);
@@ -119,7 +128,7 @@ function pretty(str, indent) {
 
       if (ch === '}' || ch === ']') {
         nestLevel--;
-        out += '\n' + times(indent, nestLevel) + ' ' + ch;
+        out += '\n' + times(indent, nestLevel) + ch;
         continue;
       }
 

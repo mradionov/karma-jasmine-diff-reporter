@@ -13,18 +13,18 @@ test('pretty: arrays two spaces default', function (assert) {
     stack;
   var expected =
     "Expected <d>[\n" +
-    "   </d><a>5</a><d>,\n" +
-    "   '</d><a>foo</a><d>',\n" +
-    "   Object({\n" +
-    "     baz: </d><a>true</a><d> \n" +
-    "   }) \n" +
-    " ]</d> to equal <d>[\n" +
-    "   </d><e>10</e><d>,\n" +
-    "   '</d><e>bar</e><d>',\n" +
-    "   Object({\n" +
-    "     baz: </d><e>false</e><d> \n" +
-    "   }) \n" +
-    " ]</d>." +
+    "  </d><a>5</a><d>,\n" +
+    "  '</d><a>foo</a><d>',\n" +
+    "  Object({\n" +
+    "    baz: </d><a>true</a><d>\n" +
+    "  })\n" +
+    "]</d> to equal <d>[\n" +
+    "  </d><e>10</e><d>,\n" +
+    "  '</d><e>bar</e><d>',\n" +
+    "  Object({\n" +
+    "    baz: </d><e>false</e><d>\n" +
+    "  })\n" +
+    "]</d>." +
     stack;
 
   var out = diff(input, formatter, { pretty: true });
@@ -40,18 +40,18 @@ test('pretty: arrays tab', function (assert) {
     stack;
   var expected =
     "Expected <d>[\n" +
-    "\t </d><a>5</a><d>,\n" +
-    "\t '</d><a>foo</a><d>',\n" +
-    "\t Object({\n" +
-    "\t\t baz: </d><a>true</a><d> \n" +
-    "\t }) \n" +
-    " ]</d> to equal <d>[\n" +
-    "\t </d><e>10</e><d>,\n" +
-    "\t '</d><e>bar</e><d>',\n" +
-    "\t Object({\n" +
-    "\t\t baz: </d><e>false</e><d> \n" +
-    "\t }) \n" +
-    " ]</d>." +
+    "\t</d><a>5</a><d>,\n" +
+    "\t'</d><a>foo</a><d>',\n" +
+    "\tObject({\n" +
+    "\t\tbaz: </d><a>true</a><d>\n" +
+    "\t})\n" +
+    "]</d> to equal <d>[\n" +
+    "\t</d><e>10</e><d>,\n" +
+    "\t'</d><e>bar</e><d>',\n" +
+    "\tObject({\n" +
+    "\t\tbaz: </d><e>false</e><d>\n" +
+    "\t})\n" +
+    "]</d>." +
     stack;
 
     var out = diff(input, formatter, { pretty: '\t' });
@@ -67,18 +67,18 @@ test('pretty: arrays string', function (assert) {
     stack;
   var expected =
     "Expected <d>[\n" +
-    "--- </d><a>5</a><d>,\n" +
-    "--- '</d><a>foo</a><d>',\n" +
-    "--- Object({\n" +
-    "------ baz: </d><a>true</a><d> \n" +
-    "--- }) \n" +
-    " ]</d> to equal <d>[\n" +
-    "--- </d><e>10</e><d>,\n" +
-    "--- '</d><e>bar</e><d>',\n" +
-    "--- Object({\n" +
-    "------ baz: </d><e>false</e><d> \n" +
-    "--- }) \n" +
-    " ]</d>." +
+    "---</d><a>5</a><d>,\n" +
+    "---'</d><a>foo</a><d>',\n" +
+    "---Object({\n" +
+    "------baz: </d><a>true</a><d>\n" +
+    "---})\n" +
+    "]</d> to equal <d>[\n" +
+    "---</d><e>10</e><d>,\n" +
+    "---'</d><e>bar</e><d>',\n" +
+    "---Object({\n" +
+    "------baz: </d><e>false</e><d>\n" +
+    "---})\n" +
+    "]</d>." +
     stack;
 
   var out = diff(input, formatter, { pretty: '---' });
@@ -96,32 +96,32 @@ test('pretty: deep object', function (assert) {
     stack;
   var expected =
     "Expected <d>Object({\n" +
-    "   foo: '</d><a>bar</a><d>',\n" +
-    "   </d><a>baz</a><d>: </d><a>5</a><d>,\n" +
-    "   tux: Object({\n" +
-    "     a: Object({\n" +
-    "       b: 4,\n" +
-    "       c: [\n" +
-    "         'foo',\n" +
-    "         </d><a>true</a><d> \n" +
-    "       ] \n" +
-    "     }) \n" +
-    "   }),\n" +
-    "   </d><a>qux</a><d>: true \n" +
-    " })</d> to equal <d>Object({\n" +
-    "   foo: '</d><e>baz</e><d>',\n" +
-    "   </d><e>bar</e><d>: </d><e>10</e><d>,\n" +
-    "   tux: Object({\n" +
-    "     a: Object({\n" +
-    "       b: 4,\n" +
-    "       c: [\n" +
-    "         'foo',\n" +
-    "         </d><e>false</e><d> \n" +
-    "       ] \n" +
-    "     }) \n" +
-    "   }),\n" +
-    "   </d><e>qqx</e><d>: true \n" +
-    " })</d>." +
+    "  foo: '</d><a>bar</a><d>',\n" +
+    "  </d><a>baz</a><d>: </d><a>5</a><d>,\n" +
+    "  tux: Object({\n" +
+    "    a: Object({\n" +
+    "      b: 4,\n" +
+    "      c: [\n" +
+    "        'foo',\n" +
+    "        </d><a>true</a><d>\n" +
+    "      ]\n" +
+    "    })\n" +
+    "  }),\n" +
+    "  </d><a>qux</a><d>: true\n" +
+    "})</d> to equal <d>Object({\n" +
+    "  foo: '</d><e>baz</e><d>',\n" +
+    "  </d><e>bar</e><d>: </d><e>10</e><d>,\n" +
+    "  tux: Object({\n" +
+    "    a: Object({\n" +
+    "      b: 4,\n" +
+    "      c: [\n" +
+    "        'foo',\n" +
+    "        </d><e>false</e><d>\n" +
+    "      ]\n" +
+    "    })\n" +
+    "  }),\n" +
+    "  </d><e>qqx</e><d>: true\n" +
+    "})</d>." +
     stack;
 
   var out = diff(input, formatter, { pretty: true });
@@ -141,14 +141,14 @@ test('pretty: dirty object', function (assert) {
     stack;
   var expected =
     "Expected <d>Object({\n" +
-    "   foo: 'ba', r </d><d>Object({ ,, []\\',\n" +
-    "   </d><a>baz</a><d>: 5,\n" +
-    "   qux: </d><a>true</a><d> \n" +
-    " })</d> to equal <d>Object({\n" +
-    "   foo: 'ba', r </d><e>'</e><d>Object({ ,, []\\',\n" +
-    "   </d><e>batz</e><d>: 5,\n" +
-    "   qux: </d><e>false</e><d> \n" +
-    " })</d>." +
+    "  foo: 'ba', r </d><d>Object({ ,, []\\',\n" +
+    "  </d><a>baz</a><d>: 5,\n" +
+    "  qux: </d><a>true</a><d>\n" +
+    "})</d> to equal <d>Object({\n" +
+    "  foo: 'ba', r </d><e>'</e><d>Object({ ,, []\\',\n" +
+    "  </d><e>batz</e><d>: 5,\n" +
+    "  qux: </d><e>false</e><d>\n" +
+    "})</d>." +
     stack;
 
   var out = diff(input, formatter, { pretty: true });
