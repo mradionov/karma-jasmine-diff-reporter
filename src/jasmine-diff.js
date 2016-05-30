@@ -33,8 +33,15 @@ var defaultMatchers = {
 var MARKER = '\u200C';
 
 
+// Remove space, dots and commas from both sides of the string
+function trimSpaceAndPunctuation(str) {
+  return str.replace(/^[\s,]*/, '').replace(/[\s,]*$/, '');
+}
+
 // Replace while increasing indexFrom
-function strictReplace(str, pairs) {
+// If multiline is true - eat all spaces and punctuation around diffed objects -
+// it will keep things look nice.
+function strictReplace(str, pairs, multiline) {
   var index, fromIndex = 0;
 
   pairs.some(function (pair) {
@@ -45,8 +52,15 @@ function strictReplace(str, pairs) {
       return true;
     }
 
-    str = str.substr(0, index) + replaceWith +
-          str.substr(index + toReplace.length);
+    var lhs = str.substr(0, index);
+    var rhs = str.substr(index + toReplace.length);
+
+    if (multiline) {
+      lhs = trimSpaceAndPunctuation(lhs);
+      rhs = trimSpaceAndPunctuation(rhs);
+    }
+
+    str = lhs + replaceWith + rhs;
 
     fromIndex = index + replaceWith.length;
   });
@@ -94,7 +108,7 @@ function isInsideString(string, index) {
   return markersCount % 2 !== 0;
 }
 
-function pretty(str, indent) {
+function pretty(str, indent, commonIndent) {
   var out = '';
 
   var inString = false;
@@ -122,18 +136,18 @@ function pretty(str, indent) {
 
       if (ch === '{' || ch === '[') {
         nestLevel++;
-        out += ch + '\n' + times(indent, nestLevel);
+        out += ch + '\n' + commonIndent + times(indent, nestLevel);
         continue;
       }
 
       if (ch === '}' || ch === ']') {
         nestLevel--;
-        out += '\n' + times(indent, nestLevel) + ch;
+        out += '\n' + commonIndent + times(indent, nestLevel) + ch;
         continue;
       }
 
       if (ch === ',') {
-        out += ',\n' + times(indent, nestLevel);
+        out += ',\n' + commonIndent + times(indent, nestLevel);
         continue;
       }
 
@@ -143,6 +157,14 @@ function pretty(str, indent) {
   }
 
   return out;
+}
+
+function defaultValue(value, defalutValue) {
+  return typeof value === 'undefined' ? defalutValue : value;
+}
+
+function isObject(value) {
+  return typeof value === 'object' && value !== null;
 }
 
 function createDiffMessage(message, formatter, options) {
@@ -224,6 +246,27 @@ function createDiffMessage(message, formatter, options) {
   var expectedTmp = expected;
   var actualTmp = actual;
 
+  // Calculate multiline options before pretty to be able to use
+  // multiline option with pretty - add extra indent for pretty objects
+  var multilineBefore = 2, multilineAfter = 2, multilineIndent = 2;
+  var multilineOptions = defaultValue(matcher.multiline, options.multiline);
+  if (multilineOptions) {
+    if (isObject(multilineOptions)) {
+      multilineBefore = defaultValue(multilineOptions.before, 2);
+      multilineAfter = defaultValue(multilineOptions.after, 2);
+      multilineIndent = defaultValue(multilineOptions.indent, 2);
+    }
+    if (typeof multilineIndent === 'number') {
+      multilineIndent = times(' ', multilineIndent);
+    }
+    if (typeof multilineBefore === 'number') {
+      multilineBefore = times('\n', multilineBefore);
+    }
+    if (typeof multilineAfter === 'number') {
+      multilineAfter = times('\n', multilineAfter);
+    }
+  }
+
   // Prettify only if global option is on and matcher allows prettifying
   if (options.pretty && matcher.pretty) {
 
@@ -235,8 +278,11 @@ function createDiffMessage(message, formatter, options) {
       indent = times(' ', indent);
     }
 
-    expectedTmp = pretty(expectedTmp, indent);
-    actualTmp = pretty(actualTmp, indent);
+    // Indent entire object
+    var commonIndent = multilineOptions ? multilineIndent : '';
+
+    expectedTmp = pretty(expectedTmp, indent, commonIndent);
+    actualTmp = pretty(actualTmp, indent, commonIndent);
   }
 
   var diff = jsDiff.diffWordsWithSpace(expectedTmp, actualTmp);
@@ -262,13 +308,24 @@ function createDiffMessage(message, formatter, options) {
     }
   });
 
+  // Use multiline options declared earlier and append newlines/indent to result
+  if (multilineOptions) {
+    expectedDiff = multilineBefore + multilineIndent +
+                   expectedDiff +
+                   multilineAfter;
+    actualDiff = multilineBefore + multilineIndent +
+                 actualDiff +
+                 multilineAfter;
+  }
 
   var replacePairs = [[expected, expectedDiff], [actual, actualDiff]];
   if (matcher.reverse) {
     replacePairs = [[actual, actualDiff], [expected, expectedDiff]];
   }
 
-  var diffedMatcherMessage = strictReplace(matcherMessage, replacePairs);
+  var diffedMatcherMessage = strictReplace(
+    matcherMessage, replacePairs, !!multilineOptions
+  );
 
   // Compose final message
   var resultMessage = clearMarkers(diffedMatcherMessage + stackMessage);
