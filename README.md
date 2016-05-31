@@ -227,6 +227,73 @@ module.exports = function(config) {
 
 Example: ![Example pretty print](http://i.imgur.com/6TTlSmB.jpg "Example pretty print")
 
+##### Multiline
+
+Multiline option provides extra formatting by adding newlines before and after diffed objects so they can spotted even easier. Setting `multiline` to `true` will add 2 newlines before and 2 after for both actual and expected object, and will also indent them by 2 spaces. It can also be configured individually - for each sub-option `before`, `after` and `indent` you can pass a string or a number. String will be used once per options as is, number - number of newlines (for `before` and `after`) or number of spaces (for `indent`). It is also possible to override `multiline` option for particular matchers, it will be used in favor of global option, so you could customize or even disable multiline output for any matchers (built-in or custom). It works really good along with `pretty` option turned on (see pretty).
+
+```js
+// karma.conf.js
+module.exports = function(config) {
+  config.set({
+
+    frameworks: ['jasmine'],
+
+    reporters: ['jasmine-diff']
+
+    jasmineDiffReporter: {
+
+      multiline: true, // before: 2 newlines, after: 2 newlines, indent: 2 spaces
+
+      matchers: {
+        toEqual: {
+          multiline: false   // disable multiline for toEqual
+        }
+      }
+    }
+
+  });
+};
+```
+
+Example: ![Example multiline](http://storage6.static.itmages.com/i/16/0531/h_1464718207_5857499_e7d1091267.jpeg "Example multiline")
+
+Configure individually:
+
+```js
+// karma.conf.js
+module.exports = function(config) {
+  config.set({
+
+    frameworks: ['jasmine'],
+
+    reporters: ['jasmine-diff']
+
+    jasmineDiffReporter: {
+
+      multiline: {
+        before: 1,          // 1 newline
+        after: 3,           // 3 newlines
+
+        indent: 4           // 4 spaces
+
+        // indent: '\t'     // 1 tab
+        // indent: '    '   // 4 spaces
+      }
+
+      matchers: {
+        toHaveBeenCalledWith: {
+          multiline: {
+            before: 1        // use 1 newline before objects
+          }
+        }
+      }
+
+    }
+
+  });
+};
+```
+
 ### Dependencies
 
 - [diff](https://www.npmjs.com/package/diff) - Text differencing
