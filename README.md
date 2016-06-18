@@ -1,4 +1,4 @@
-karma-jasmine-diff-reporter ![Build status](https://travis-ci.org/mradionov/karma-jasmine-diff-reporter.svg?branch=master "Build status")
+karma-jasmine-diff-reporter [![Build status](https://travis-ci.org/mradionov/karma-jasmine-diff-reporter.svg?branch=master)](https://travis-ci.org/mradionov/karma-jasmine-diff-reporter)
 ===
 
 > [Karma](http://karma-runner.github.io/) reporter to highlight diffs of failed equality expectations for [Jasmine](http://jasmine.github.io/).
