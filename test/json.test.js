@@ -39,13 +39,15 @@ test('json: do not cut square brackets for arrays', function (assert) {
   assert.end();
 });
 
-test('json: remove single quotes with markers', function(assert) {
+test('json: process marked strings with quotes inside', function(assert) {
   var input =
-    "Expected \"" + markJSON('foo') + "\" to be \"" + markJSON('bar') + "\"." +
+    'Expected "' + markJSON('\\"f\\"o\\"') + '"' +
+    ' to be "' + markJSON('\\"b\\"a\\"') + '".' +
     stack;
 
   var expected =
-    "Expected <d>\"</d><a>foo</a><d>\"</d> to be <d>\"</d><e>bar</e><d>\"</d>." +
+    'Expected <d>"\\"</d><a>f</a><d>\\"</d><a>o</a><d>\\""</d>' +
+    ' to be <d>"\\"</d><e>b</e><d>\\"</d><e>a</e><d>\\""</d>.' +
     stack;
 
   var out = diff(input, formatter, { json: true });
