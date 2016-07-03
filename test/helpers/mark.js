@@ -4,10 +4,12 @@
 
 var MARKER = '\u200C';
 
-function mark(string) {
+exports.mark = function(string) {
   return MARKER + "'" + MARKER + string + MARKER + "'" + MARKER;
-};
+}
 
-mark.MARKER = MARKER;
+exports.markJSON = function(string) {
+  return MARKER + string + MARKER;
+}
 
-module.exports = mark;
+exports.MARKER = MARKER;

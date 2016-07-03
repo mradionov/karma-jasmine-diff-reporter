@@ -24,6 +24,21 @@
 
 window.jasmine.pp = ppPatched(window.jasmine);
 
+
+// Wrap a string into a "zero-width non-joiner" char, so it would be
+// possible to detect where string ends and starts.
+// It is still possible that original string will have it inside,
+// so the parser will fail in that case.
+// The reason zwnj is picked because it won't be visible in other reporters,
+// and it seems that is used rarily.
+// https://en.wikipedia.org/wiki/Zero-width_non-joiner
+var MARKER = '\u200C';
+
+function markString(string) {
+  return MARKER + '\'' + MARKER + string + MARKER + '\'' + MARKER;
+}
+
+
 function ppPatched(j$) {
 
   function PrettyPrinter() {
@@ -100,16 +115,7 @@ function ppPatched(j$) {
   };
 
   StringPrettyPrinter.prototype.emitString = function(value) {
-    // Wrap a string into a "zero-width non-joiner" char, so it would be
-    // possible to detect where string ends and starts.
-    // It is still possible that original string will have it inside,
-    // so the parser will fail in that case.
-    // The reason zwnj is picked because it won't be visible in other reporters,
-    // and it seems that is used rarily.
-    // https://en.wikipedia.org/wiki/Zero-width_non-joiner
-    var MARKER = '\u200C';
-
-    this.append(MARKER + '\'' + MARKER + value + MARKER + '\'' + MARKER);
+    this.append(markString(value));
     // this.append('\'' + value + '\'');
   };
 

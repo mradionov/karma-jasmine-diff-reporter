@@ -4,7 +4,7 @@ var test = require('tape');
 var diff = require('../src/jasmine-diff').createDiffMessage;
 var formatter = require('./helpers/test-formatter')();
 var stack = require('./helpers/stack');
-var mark = require('./helpers/mark');
+var mark = require('./helpers/mark').mark;
 
 test('pretty: arrays two spaces default', function (assert) {
   var input =

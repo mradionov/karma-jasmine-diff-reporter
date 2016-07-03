@@ -1,7 +1,7 @@
 'use strict';
 
-var jsDiff = require('diff'),
-    extend = require('extend');
+var jsDiff = require('diff');
+var extend = require('extend');
 
 // "reverse" means that "actual" object comes first in the string
 var defaultMatchers = {
@@ -32,10 +32,13 @@ var defaultMatchers = {
 // https://en.wikipedia.org/wiki/Zero-width_non-joiner
 var MARKER = '\u200C';
 
-
 // Remove space, dots and commas from both sides of the string
 function trimSpaceAndPunctuation(str) {
   return str.replace(/^[\s,]*/, '').replace(/[\s,]*$/, '');
+}
+
+function trimSpaceAndOneSquareBracket(str) {
+  return str.replace(/^\s*\[\s*/, '').replace(/\s*\]\s*$/, '');
 }
 
 // Replace while increasing indexFrom
@@ -108,7 +111,7 @@ function isInsideString(string, index) {
   return markersCount % 2 !== 0;
 }
 
-function pretty(str, indent, commonIndent) {
+function pretty(str, indent, commonIndent, options) {
   var out = '';
 
   var inString = false;
@@ -116,10 +119,25 @@ function pretty(str, indent, commonIndent) {
 
   for (var i = 0, l = str.length; i < l; i++) {
     var ch = str[i];
+    var nextCh = str[i + 1];
+    var prevCh = str[i - 1];
 
     // Detect if current character represents the beginning/end of the string
     // So we could know later if we are inside a string
-    if (ch === MARKER && endsWith(out, MARKER + '\'')) {
+
+    // For JSON output strings are wrapped in double quotes and markers:
+    //  <double quote><marker><string></marker></double quote>
+    if (options.json && ch === MARKER) {
+
+      if (prevCh === '"') {
+        inString = true;
+      } else if (nextCh === '"') {
+        inString = false;
+      }
+
+    // For Jasmine output strings are wrapped in single quotes and markers:
+    // <marker><single quote><marker><string></marker></single quote></marker>
+    } else if (ch === MARKER && endsWith(out, MARKER + '\'')) {
 
       inString = !inString;
 
@@ -196,7 +214,7 @@ function createDiffMessage(message, formatter, options) {
 
 
   // Detect matcher
-  var matcher, match;
+  var matcher, matcherName, match;
   var matchers = extend(true, {}, defaultMatchers, options.matchers);
 
   Object.keys(matchers).some(function (name) {
@@ -205,6 +223,7 @@ function createDiffMessage(message, formatter, options) {
 
     if (match && match.length === 3) {
       matcher = matchers[name];
+      matcherName = name;
       return true;
     }
   });
@@ -246,6 +265,16 @@ function createDiffMessage(message, formatter, options) {
   var expectedTmp = expected;
   var actualTmp = actual;
 
+  // If "json" option is on, then it means that JSON.stringify is used instead of
+  // Jasmine default pretty-printer. Weirdly enough Jasmine wraps arguments
+  // for actual result for toHaveBeenCalledWith in extra array, so it needs
+  // to be unwrapped in order to make arguments comparable.
+  if (options.json) {
+    if (matcherName === 'toHaveBeenCalledWith') {
+      actualTmp = trimSpaceAndOneSquareBracket(actualTmp);
+    }
+  }
+
   // Calculate multiline options before pretty to be able to use
   // multiline option with pretty - add extra indent for pretty objects
   var multilineBefore = 2, multilineAfter = 2, multilineIndent = 2;
@@ -281,8 +310,8 @@ function createDiffMessage(message, formatter, options) {
     // Indent entire object
     var commonIndent = multilineOptions ? multilineIndent : '';
 
-    expectedTmp = pretty(expectedTmp, indent, commonIndent);
-    actualTmp = pretty(actualTmp, indent, commonIndent);
+    expectedTmp = pretty(expectedTmp, indent, commonIndent, options);
+    actualTmp = pretty(actualTmp, indent, commonIndent, options);
   }
 
   var diff = jsDiff.diffWordsWithSpace(expectedTmp, actualTmp);
