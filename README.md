@@ -28,23 +28,11 @@ Only Jasmine 2.x is supported, this extension **will not work** with Jasmine 1.3
 
 ### Installation
 
-The easiest way is to keep *karma-jasmine-diff-reporter* as a devDependency in your `package.json`:
-
-```json
-{
-  "devDependencies": {
-    "karma": "^0.12.0",
-    "karma-jasmine": "^0.3.0",
-    "karma-jasmine-diff-reporter": "^0.3.0"
-  }
-}
-```
-
-or install via console:
-
 ```bash
 npm install karma-jasmine-diff-reporter --save-dev
 ```
+
+*Note: you also need to have karma and karma-jasmine installed*
 
 ### Configuration
 

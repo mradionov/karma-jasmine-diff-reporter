@@ -1,10 +1,15 @@
 'use strict';
 
 var path = require('path');
+
+var karma = require('karma');
+
 var jasmineDiff = require('./src/jasmine-diff');
 var createColorFormatter = require('./src/color-formatter');
 
-function JasmineDiffReporter(baseReporterDecorator, config) {
+var karmaMajorVersion = Number(karma.VERSION.split('.')[0]);
+
+function JasmineDiffReporter(baseReporterDecorator, config, logger) {
   var self = this;
 
   // Extend Karma Base reporter
@@ -63,7 +68,15 @@ function JasmineDiffReporter(baseReporterDecorator, config) {
   // Secretly inject a framework to be able to patch Jasmine
   // Frameworks are included earlier in Karma workflow so it is possible
   // to inject some script on a test page.
-  config.frameworks.push('jasmine-diff');
+
+  // Framework injection is different in 0.x and 1.x karma, manually injecting
+  // a framework won't work in 1.x, but files injection does work from inside
+  // of the reporter in 1.x, so call it manually for 1.x versions
+  if (karmaMajorVersion < 1) {
+    config.frameworks.push('jasmine-diff');
+  } else {
+    JasmineDiffFramework(config, logger);
+  }
 
 }
 
@@ -113,10 +126,18 @@ function JasmineDiffFramework(config, logger) {
 
 }
 
-JasmineDiffReporter.$inject = ['baseReporterDecorator', 'config'];
+JasmineDiffReporter.$inject = ['baseReporterDecorator', 'config', 'logger'];
 JasmineDiffFramework.$inject = ['config', 'logger'];
 
-module.exports = {
-  'reporter:jasmine-diff': ['type', JasmineDiffReporter],
-  'framework:jasmine-diff': ['factory', JasmineDiffFramework]
+var modules = {
+  'reporter:jasmine-diff': ['type', JasmineDiffReporter]
 };
+
+// Framework insertion is different in 0.x and 1.x karma, manually injecting
+// a framework won't work in 1.x, but files injection does work from inside
+// of the reporter
+if (karmaMajorVersion < 1) {
+  modules['framework:jasmine-diff'] = ['factory', JasmineDiffFramework];
+}
+
+module.exports = modules;
