@@ -294,6 +294,29 @@ module.exports = function(config) {
 };
 ```
 
+#### JSON
+
+JSON option allows to have output to be formatted as JSON instead of using Jasmine default pretty-printer, which adds extras like `Object({})`, so it could be possible to copy JSON right from terminal and use it. Setting `json` option to `true` will turn the feature on for all supported matchers, instead of `toThrow` and `toThrowError`, because there is no way to correctly represent errors in JSON format. The option **can't** be configured individually for each matcher, it will affect all of them. Internally objects are passed to `JSON.stringify`.
+
+```js
+// karma.conf.js
+module.exports = function(config) {
+  config.set({
+
+    frameworks: ['jasmine'],
+
+    reporters: ['jasmine-diff']
+
+    jasmineDiffReporter: {
+
+      json: true // format results as JSON
+
+    }
+
+  });
+};
+```
+
 ### Dependencies
 
 - [diff](https://www.npmjs.com/package/diff) - Text differencing
