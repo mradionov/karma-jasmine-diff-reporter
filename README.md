@@ -315,15 +315,6 @@ module.exports = function(config) {
 
 Diffs won't be displayed for a deep nested objects or large arrays, a threshold for these situations is configured in Jasmine. By default it has object nest level `MAX_PRETTY_PRINT_DEPTH = 40` and array length `MAX_PRETTY_PRINT_ARRAY_LENGTH = 100`. It means that if the diff is out of these bounds, then Jasmine will return the same strings for both compared objects and *karma-jasmine-diff-reporter* won't be able to highlight those diffs.
 
-### Changelog
+### License
 
-- 0.5.0 - Added JSON option. Fixed pretty print for Karma 1.x
-- 0.4.0 - Add multiline feature, add tests
-- 0.3.4 - Remove weird characters around strings in Windows terminals
-- 0.3.3 - Detect stack trace for PhantomJS
-- 0.3.2 - Override default colors
-- 0.3.1 - Detect newlines in strings
-- 0.3.0 - Pretty print, default color
-- 0.2.2 - Fix duplicate console.logs
-- 0.2.0 - Diff for custom matchers
-- 0.1.0 - Initial
+[MIT](LICENSE)
