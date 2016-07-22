@@ -109,12 +109,14 @@ module.exports = function(config) {
       // Bg - background
       // Fg - foreground (text)
       color: {
-        expectedBg: 'bgYellow', // default 'bgRed'
-        expectedFg: 'black',    // default 'white'
-        actualBg: 'bgCyan',     // default 'bgGreen'
-        actualFg: 'red',        // default 'white',
-        defaultBg: 'white',     // default - none
-        defaultFg: 'grey'       // default - none
+        expectedBg: 'bgYellow',           // default 'bgRed'
+        expectedFg: 'black',              // default 'white'
+        actualBg: 'bgCyan',               // default 'bgGreen'
+        actualFg: 'red',                  // default 'white',
+        defaultBg: 'white',               // default - none
+        defaultFg: 'grey'                 // default - none,
+        expectedWhitespaceBg: 'bgYellow', // default 'bgRed'
+        actualWhitespaceBg: 'bgCyan'      // default 'bgGreen'
       }
     }
 
@@ -126,9 +128,11 @@ Example: ![Example custom colors](http://i.imgur.com/eOTgERa.jpg "Example custom
 
 You can use any [colors](https://github.com/chalk/chalk#styles) that a supported by [`chalk`](https://github.com/chalk/chalk).
 
-Defaults for "expected" message is red background with white text and for "actual" - green background with white text. Default background and foreground is for a part of Jasmine object that was not changed, it allows to highlight the rest of the object and distinguish it from matcher text.
+* Defaults for "expected" message is red background with white text and for "actual" - green background with white text.
+* `defaultBg` and `defaultFg` - for parts of the diff that were not changed, it allows to highlight the rest of the object and distinguish it from matcher text
+* `expectedWhitespaceBg` and `actualWhitespaceBg` - for the cases when you have a diff background of the same color as a terminal and only foreground color is used to identify diffs. In this case whitespace diffs won't be visible, when diff background has the same color as a terminal. To workaround it, it is possible to set a separate background for whitespace only using these options.
 
-To use default color use empty value:
+To use default terminal color use empty value:
 ```js
 // karma.conf.js
 module.exports = function(config) {
