@@ -14,10 +14,20 @@ function createTestFormatter() {
     return '<d>' + string + '</d>';
   }
 
+  function actualWhitespace(string) {
+    return '<aw>' + string + '</aw>';
+  }
+
+  function expectedWhitespace(string) {
+    return '<ew>' + string + '</ew>';
+  }
+
   return {
     actual: actual,
     expected: expected,
-    defaults: defaults
+    defaults: defaults,
+    actualWhitespace: actualWhitespace,
+    expectedWhitespace: expectedWhitespace
   };
 }
 

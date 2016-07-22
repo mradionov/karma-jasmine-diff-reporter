@@ -67,8 +67,8 @@ test('toBe: string with whitespace', function (assert) {
     "Expected 'space space' to be 'space\nspace'." +
     stack;
   var expected =
-    "Expected <d>'space</d><a> </a><d>space'</d>" +
-    " to be <d>'space</d><e>\n</e><d>space'</d>." +
+    "Expected <d>'space</d><aw> </aw><d>space'</d>" +
+    " to be <d>'space</d><ew>\n</ew><d>space'</d>." +
     stack;
 
   var out = diff(input, formatter);
@@ -83,8 +83,8 @@ test('toBe: string with whitespace right after dot', function (assert) {
     "Expected 'space. dot' to be 'space.\ndot'." +
     stack;
   var expected =
-    "Expected <d>'space.</d><a> </a><d>dot'</d>" +
-    " to be <d>'space.</d><e>\n</e><d>dot'</d>." +
+    "Expected <d>'space.</d><aw> </aw><d>dot'</d>" +
+    " to be <d>'space.</d><ew>\n</ew><d>dot'</d>." +
     stack;
 
   var out = diff(input, formatter);
@@ -114,7 +114,7 @@ test('toBe: undefined vs string with newlines', function (assert) {
     "Expected undefined to be 'space\nspace'." +
     stack;
   var expected =
-    "Expected <a>undefined</a> to be <e>'space\nspace'</e>." +
+    "Expected <a>undefined</a> to be <e>'space</e><ew>\n</ew><e>space'</e>." +
     stack;
 
   var out = diff(input, formatter);

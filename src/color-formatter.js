@@ -7,6 +7,11 @@ var chalk = require('chalk');
 var CLEAR_COLOR = '\x1B[K';
 
 
+function getOwnProperty(object, prop, defaultValue) {
+  return object.hasOwnProperty(prop) ? object[prop] : defaultValue;
+}
+
+
 function createColorFormatter(options) {
   options = options || {};
 
@@ -29,16 +34,16 @@ function createColorFormatter(options) {
 
   function actual(string) {
     var styles = [
-      options.hasOwnProperty('actualBg') ? options.actualBg : 'bgGreen',
-      options.hasOwnProperty('actualFg') ? options.actualFg : 'white'
+      getOwnProperty(options, 'actualBg', 'bgGreen'),
+      getOwnProperty(options, 'actualFg', 'white')
     ];
     return addStyles(string, styles);
   }
 
   function expected(string) {
     var styles = [
-      options.hasOwnProperty('expectedBg') ? options.expectedBg : 'bgRed',
-      options.hasOwnProperty('expectedFg') ? options.expectedFg : 'white'
+      getOwnProperty(options, 'expectedBg', 'bgRed'),
+      getOwnProperty(options, 'expectedFg', 'white')
     ];
     return addStyles(string, styles);
   }
@@ -51,10 +56,26 @@ function createColorFormatter(options) {
     return addStyles(string, styles);
   }
 
+  function actualWhitespace(string) {
+    var styles = [
+      getOwnProperty(options, 'actualWhitespaceBg', 'bgGreen')
+    ];
+    return addStyles(string, styles);
+  }
+
+  function expectedWhitespace(string) {
+    var styles = [
+      getOwnProperty(options, 'expectedWhitespaceBg', 'bgRed')
+    ];
+    return addStyles(string, styles);
+  }
+
   return {
     actual: actual,
     expected: expected,
-    defaults: defaults
+    defaults: defaults,
+    actualWhitespace: actualWhitespace,
+    expectedWhitespace: expectedWhitespace
   };
 }
 

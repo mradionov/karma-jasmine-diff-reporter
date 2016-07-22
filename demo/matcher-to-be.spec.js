@@ -29,6 +29,10 @@ describe('Matcher', function () {
       expect('yo ba\tnana apple').toBe('yo gavana ap\tple');
     });
 
+    it('should diff strings with single space diff', function () {
+      expect('foo bar').toBe('foo  bar');
+    });
+
     it('should diff arrays', function () {
       var a = [1, 2, 3];
       var b = [1, 2, 4];

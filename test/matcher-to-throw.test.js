@@ -16,7 +16,7 @@ test('toThrow: without message', function (assert) {
     "Expected function to throw" +
     " <e>TypeError</e><d>: </d><e>foo</e>," +
     " but it threw" +
-    " <a>ReferenceError</a><d>: </d><a>a is not defined</a>." +
+    " <a>ReferenceError</a><d>: </d><a>a</a><aw> </aw><a>is</a><aw> </aw><a>not</a><aw> </aw><a>defined</a>." +
     stack;
 
   var out = diff(input, formatter);

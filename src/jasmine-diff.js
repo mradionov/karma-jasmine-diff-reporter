@@ -320,19 +320,28 @@ function createDiffMessage(message, formatter, options) {
 
   diff.forEach(function (part) {
 
+    var value = part.value;
+    var formattedValue = value;
+
     if (part.added) {
 
-      actualDiff += formatter.actual(part.value);
+      formattedValue = formattedValue.replace(/\S+/g, formatter.actual);
+      formattedValue = formattedValue.replace(/\s+/g, formatter.actualWhitespace);
+
+      actualDiff += formattedValue;
 
     } else if (part.removed) {
 
-      expectedDiff += formatter.expected(part.value);
+      formattedValue = formattedValue.replace(/\S+/g, formatter.expected);
+      formattedValue = formattedValue.replace(/\s+/g, formatter.expectedWhitespace);
+
+      expectedDiff += formattedValue;
 
     } else {
 
       // add unmodified part to both outputs
-      expectedDiff += formatter.defaults(part.value);
-      actualDiff += formatter.defaults(part.value);
+      expectedDiff += formatter.defaults(value);
+      actualDiff += formatter.defaults(value);
 
     }
   });
