@@ -19,8 +19,9 @@
 // Because Jasmine hides all objects and does not allow to extend it easily
 // I am replacing the entire Jasmine's pretty print module with a patched copy
 // Version of pretty print module taken from Jamsine 2.3.4
-// At the moment, the only thing patched is a method
+// Patched methods:
 //  StringPrettyPrinter.prototype.emitString
+//  StringPrettyPrinter.prototype.emitObject
 
 window.jasmine.pp = ppPatched(window.jasmine);
 
@@ -38,6 +39,22 @@ function markString(string) {
   return MARKER + '\'' + MARKER + string + MARKER + '\'' + MARKER;
 }
 
+// https://github.com/mradionov/karma-jasmine-diff-reporter/issues/16
+// Objects might have their properties specified in different order, it might
+// result in a not very correct diff, when the same prop appears in different
+// places of compared objects. Fix it by soring object properties in
+// alphabetical order.
+// NOTE: Order of props is not guaranteed in JS,
+// see http://stackoverflow.com/questions/5525795/does-javascript-guarantee-object-property-order
+// But according to: http://stackoverflow.com/a/29622653/1573638
+// "most of the browser's implementations values in objects are stored
+// in the order in which they were added" - we can use it, it won't harm anyway
+function sortObject(obj) {
+  return Object.keys(obj).sort().reduce(function (result, key) {
+    result[key] = obj[key];
+    return result;
+  }, {});
+}
 
 function ppPatched(j$) {
 
@@ -167,14 +184,16 @@ function ppPatched(j$) {
     this.append('({ ');
     var first = true;
 
-    this.iterateObject(obj, function(property, isGetter) {
+    var sortedObj = sortObject(obj);
+
+    this.iterateObject(sortedObj, function(property, isGetter) {
       if (first) {
         first = false;
       } else {
         self.append(', ');
       }
 
-      self.formatProperty(obj, property, isGetter);
+      self.formatProperty(sortedObj, property, isGetter);
     });
 
     this.append(' })');

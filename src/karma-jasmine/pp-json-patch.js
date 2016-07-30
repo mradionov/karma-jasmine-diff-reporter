@@ -20,10 +20,31 @@ function markJSONString(string) {
   return MARKER + string + MARKER;
 }
 
+// https://github.com/mradionov/karma-jasmine-diff-reporter/issues/16
+// Objects might have their properties specified in different order, it might
+// result in a not very correct diff, when the same prop appears in different
+// places of compared objects. Fix it by soring object properties in
+// alphabetical order.
+// NOTE: Order of props is not guaranteed in JS,
+// see http://stackoverflow.com/questions/5525795/does-javascript-guarantee-object-property-order
+// But according to: http://stackoverflow.com/a/29622653/1573638
+// "most of the browser's implementations values in objects are stored
+// in the order in which they were added" - we can use it, it won't harm anyway
+function sortObject(obj) {
+  return Object.keys(obj).sort().reduce(function (result, key) {
+    result[key] = obj[key];
+    return result;
+  }, {});
+}
+
 var toString = Object.prototype.toString;
 
 function isError(value) {
   return toString.call(value) === '[object Error]';
+}
+
+function isPlainObject(value) {
+  return toString.call(value) === '[object Object]';
 }
 
 
@@ -40,6 +61,10 @@ function ppJSONPatched(j$) {
       // Make sure to wrap strings in string marker
       if (typeof value === 'string') {
         return markJSONString(value);
+      }
+
+      if (isPlainObject(value)) {
+        return sortObject(value);
       }
 
       return value;
