@@ -1,5 +1,6 @@
 ### Changelog
 
+- 0.6.1 - Sort object properties before comparing
 - 0.6.0 - Add a color option to highlight whitespaces independently
 - 0.5.0 - Added JSON option. Fixed pretty print for Karma 1.x
 - 0.4.0 - Add multiline feature, add tests
