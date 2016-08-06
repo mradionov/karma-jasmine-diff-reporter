@@ -41,6 +41,14 @@ describe('Matcher', function () {
       expect(a).toEqual(b);
     });
 
+    it('should NOT diff with jasmine.objectContaining', function () {
+      var a = {
+        foo: 42,
+        bar: 'baz'
+      };
+      expect(a).toEqual(jasmine.objectContaining({ foo: 43 }));
+    });
+
   });
 
 });
