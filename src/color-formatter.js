@@ -70,12 +70,20 @@ function createColorFormatter(options) {
     return addStyles(string, styles);
   }
 
+  function reference(string) {
+    var styles = [
+      'bgOrange'
+    ];
+    return addStyles(string, styles);
+  }
+
   return {
     actual: actual,
     expected: expected,
     defaults: defaults,
     actualWhitespace: actualWhitespace,
-    expectedWhitespace: expectedWhitespace
+    expectedWhitespace: expectedWhitespace,
+    reference: reference
   };
 }
 

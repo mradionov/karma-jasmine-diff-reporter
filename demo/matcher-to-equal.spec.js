@@ -41,6 +41,30 @@ describe('Matcher', function () {
       expect(a).toEqual(b);
     });
 
+    it('should NOT diff with jasmine.objectContaining', function () {
+      var a = {
+        foo: 42,
+        'ma-bar': 'baz'
+      };
+      expect(a).toEqual(jasmine.objectContaining({ foo: 43 }));
+    });
+
+    fit('should NOT diff with jasmine.objectContaining', function () {
+      // var a = {
+      //   foo: function () {},
+      //   bar: function () {}
+      // };
+      // var b = {
+      //   foo: function () {},
+      //   bar: jasmine.any(Function)
+      // };
+      // var a = function(){};
+      // var b = function() {};
+      // expect(a).toEqual(b);
+      var a = 3;
+      var b = 3;
+      expect(a).toBeGreaterThan(b);
+    });
   });
 
 });
