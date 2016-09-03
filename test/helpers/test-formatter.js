@@ -22,12 +22,17 @@ function createTestFormatter() {
     return '<ew>' + string + '</ew>';
   }
 
+  function reference(string) {
+    return '<r>' + string + '</r>';
+  }
+
   return {
     actual: actual,
     expected: expected,
     defaults: defaults,
     actualWhitespace: actualWhitespace,
-    expectedWhitespace: expectedWhitespace
+    expectedWhitespace: expectedWhitespace,
+    reference: reference
   };
 }
 

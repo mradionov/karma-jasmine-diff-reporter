@@ -3,6 +3,8 @@
 var jsDiff = require('diff');
 var extend = require('extend');
 
+var parse = require('./parse');
+
 // "reverse" means that "actual" object comes first in the string
 var defaultMatchers = {
   toBe: {
