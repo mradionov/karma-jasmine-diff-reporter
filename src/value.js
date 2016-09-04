@@ -1,39 +1,46 @@
 'use strict';
 
+function findValueInPairsByKey(pairs, key) {
+  for (var i = 0; i < pairs.length; i++) {
+    if (pairs[i].key === key) {
+      return pairs[i].value;
+    }
+  }
+}
+
 function Value(type, text, children) {
   this.type = type;
   this.text = text;
   this.children = children || [];
 }
 
-Value.prototype.toString = function () {
-  return this.text;
-};
-
 Value.prototype.byPath = function (path) {
-  var key = path;
-
-  if (this.type === Value.ARRAY) {
-    key = NUMBER(path);
-    return this.children[key];
+  if (path === '') {
+    return this;
   }
 
-  var pair;
-  this.children.forEach(function (child) {
-    if (child.key === path) {
-      pair = child;
+  if (this.type !== Value.ARRAY && this.type !== Value.OBJECT) {
+    return;
+  }
+
+  var parts = path.split('.');
+  var result = this;
+
+  for (var i = 0; i < parts.length; i++) {
+    var key = parts[i];
+    if (result.type === Value.ARRAY) {
+      key = Number(key);
     }
-  });
 
-  if (pair) {
-    return pair.value;
+    var found = findValueInPairsByKey(result.children, key);
+    if (!found) {
+      return;
+    }
+
+    result = found;
   }
 
-  return;
-};
-
-Value.prototype.isEqual = function (value) {
-  return this.type === value.type && this.text === value.text;
+  return result;
 };
 
 Value.BOOLEAN = 'BOOLEAN';

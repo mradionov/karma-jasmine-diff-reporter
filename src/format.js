@@ -44,7 +44,11 @@ function formatObject(value, oppositeValue, formatValue, formatter) {
   traverse(value, {
     enter: function (enterValue, enterKey, path, nestLevel) {
       if (enterValue.type === Value.OBJECT) {
-        diff += 'Object({ ';
+        if (nestLevel === 0) {
+          diff += 'Object({ ';
+        } else {
+          diff += enterKey + ': Object({ '
+        }
       } else {
         var expectedEnterValue = oppositeValue.byPath(path);
         if (expectedEnterValue) {
@@ -56,18 +60,18 @@ function formatObject(value, oppositeValue, formatValue, formatter) {
             if (enterValue.type === Value.FUNCTION &&
               expectedEnterValue.type === Value.FUNCTION
             ) {
-              diff += formatter.reference(enterValue);
+              diff += formatter.reference(enterValue.text);
 
             } else {
-              diff += enterValue;
+              diff += enterValue.text;
             }
 
           } else {
-            diff += formatValue(enterValue);
+            diff += formatValue(enterValue.text);
           }
 
         } else {
-          diff += formatValue(enterKey + ': ' + enterValue);
+          diff += formatValue(enterKey + ': ' + enterValue.text);
         }
 
       }
