@@ -45,6 +45,22 @@ test('format: toEqual: arrays', function (assert) {
   assert.end();
 });
 
+test('format: toEqual: nested arrays', function (assert) {
+  var input =
+    "Expected [1, [2, [3, 4]]] " +
+    "to equal [1, [5, [7, 4]]]." +
+    stack;
+  var expected =
+    "Expected [1, [<a>2</a>, [<a>3</a>, 4]]] " +
+    "to equal [1, [<e>5</e>, [<e>7</e>, 4]]]." +
+    stack;
+
+  var out = format(input, formatter);
+
+  assert.equal(out, expected);
+  assert.end();
+});
+
 test('format: toEqual: objects', function (assert) {
   var input =
     "Expected Object({ foo: 42 }) to equal Object({ foo: 43 })." +
@@ -95,6 +111,38 @@ test('format: toEqual: objects with functions', function (assert) {
   var expected =
     "Expected Object({ foo: <r>Function</r> }) " +
     "to equal Object({ foo: <r>Function</r> })." +
+    stack;
+
+  var out = format(input, formatter);
+
+  assert.equal(out, expected);
+  assert.end();
+});
+
+test('format: toEqual: object with missing key', function (assert) {
+  var input =
+    "Expected Object({ foo: 42, bar: 43, qux: 44 }) " +
+    "to equal Object({ foo: 42, qux: 44 })." +
+    stack;
+  var expected =
+    "Expected Object({ foo: 42, <a>bar: 43</a>, qux: 44 }) " +
+    "to equal Object({ foo: 42, qux: 44 })." +
+    stack;
+
+  var out = format(input, formatter);
+
+  assert.equal(out, expected);
+  assert.end();
+});
+
+test('format: toEqual: nested objects', function (assert) {
+  var input =
+    "Expected Object({ foo: Object({ bar: 42, qux: 43 }) }) " +
+    "to equal Object({ foo: Object({ bar: 33 }) })." +
+    stack;
+  var expected =
+    "Expected Object({ foo: Object({ bar: <a>42</a>, <a>qux: 43</a> }) }) " +
+    "to equal Object({ foo: Object({ bar: <e>33</e> }) })." +
     stack;
 
   var out = format(input, formatter);
