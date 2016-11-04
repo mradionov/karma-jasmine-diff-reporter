@@ -111,28 +111,6 @@ function isInsideString(string, index) {
   return markersCount % 2 !== 0;
 }
 
-function findIndexUntil(string, sub, predicate) {
-  var index = 0;
-  do {
-    index = string.indexOf(sub, index - 1);
-    if (predicate(index, string)) {
-      break;
-    }
-  } while (index !== -1);
-  return index;
-}
-
-function findLastIndexUntil(string, sub, predicate) {
-  var index = string.length;
-  do {
-    index = string.lastIndexOf(sub, index - 1);
-    if (predicate(index, string)) {
-      break;
-    }
-  } while (index !== -1);
-  return index;
-}
-
 function pretty(str, indent, commonIndent, options) {
   var out = '';
 
@@ -220,9 +198,13 @@ function createDiffMessage(message, formatter, options) {
   // is inside a string, it can be done by checking string markers.
   // If there is no any strings inside the message, then it is a position
   // of a stack trace for sure.
-  var dotIndex = findLastIndexUntil(message, '.\n', function (index) {
-    return !isInsideString(message, index);
-  });
+  var dotIndex = message.length;
+  do {
+    dotIndex = message.lastIndexOf('.\n', dotIndex - 1);
+    if (!isInsideString(message, dotIndex)) {
+      break;
+    }
+  } while (dotIndex != -1);
 
   // If stacktrace start position found - separate it from Jasmine message
   if (dotIndex !== -1) {
@@ -332,58 +314,37 @@ function createDiffMessage(message, formatter, options) {
     actualTmp = pretty(actualTmp, indent, commonIndent, options);
   }
 
-  // Find out if jasmine.objectContaining is used
-  var objectContainingIndex = findIndexUntil(
-    expected,
-    '<jasmine.objectContaining',
-    function (index) {
-      return !isInsideString(expected, index);
-    }
-  );
-  var hasObjectContaining = objectContainingIndex > -1;
-
+  var diff = jsDiff.diffWordsWithSpace(expectedTmp, actualTmp);
 
   var expectedDiff = '', actualDiff = '';
 
-  // If jasmine.objectContaining is used do not diff the message, but still
-  // use pretty and multiline options if they are turned on.
-  if (hasObjectContaining) {
+  diff.forEach(function (part) {
 
-    expectedDiff = expectedTmp;
-    actualDiff = actualTmp;
+    var value = part.value;
+    var formattedValue = value;
 
-  } else {
+    if (part.added) {
 
-    var diff = jsDiff.diffWordsWithSpace(expectedTmp, actualTmp);
+      formattedValue = formattedValue.replace(/\S+/g, formatter.actual);
+      formattedValue = formattedValue.replace(/\s+/g, formatter.actualWhitespace);
 
-    diff.forEach(function (part) {
+      actualDiff += formattedValue;
 
-      var value = part.value;
-      var formattedValue = value;
+    } else if (part.removed) {
 
-      if (part.added) {
+      formattedValue = formattedValue.replace(/\S+/g, formatter.expected);
+      formattedValue = formattedValue.replace(/\s+/g, formatter.expectedWhitespace);
 
-        formattedValue = formattedValue.replace(/\S+/g, formatter.actual);
-        formattedValue = formattedValue.replace(/\s+/g, formatter.actualWhitespace);
+      expectedDiff += formattedValue;
 
-        actualDiff += formattedValue;
+    } else {
 
-      } else if (part.removed) {
+      // add unmodified part to both outputs
+      expectedDiff += formatter.defaults(value);
+      actualDiff += formatter.defaults(value);
 
-        formattedValue = formattedValue.replace(/\S+/g, formatter.expected);
-        formattedValue = formattedValue.replace(/\s+/g, formatter.expectedWhitespace);
-
-        expectedDiff += formattedValue;
-
-      } else {
-
-        // add unmodified part to both outputs
-        expectedDiff += formatter.defaults(value);
-        actualDiff += formatter.defaults(value);
-
-      }
-    });
-  }
+    }
+  });
 
   // Use multiline options declared earlier and append newlines/indent to result
   if (multilineOptions) {

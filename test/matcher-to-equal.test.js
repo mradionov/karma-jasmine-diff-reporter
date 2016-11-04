@@ -20,8 +20,6 @@ test('toEqual: objects', function (assert) {
   assert.end();
 });
 
-// Note: this behavior is a bit weird comparing to toBeUndefined and others -
-// that equal parts are highlighted with default colors. Not critical
 test('toEqual: no diff for equal objects', function (assert) {
   var input =
     "Expected Object({ foo: 'bar' }) not to equal Object({ foo: 'bar' })." +
@@ -30,20 +28,6 @@ test('toEqual: no diff for equal objects', function (assert) {
     "Expected <d>Object({ foo: 'bar' })</d>" +
     " not to equal <d>Object({ foo: 'bar' })</d>." +
     stack;
-
-  var out = diff(input, formatter);
-
-  assert.equal(out, expected);
-  assert.end();
-});
-
-test('toEqual: no diff for objectContaining', function (assert) {
-  var input =
-    "Expected Object({ foo: 'bar' }) to equal " +
-    "<jasmine.objectContaining(Object({ foo: 'qux' }))>.";
-  var expected =
-    "Expected Object({ foo: 'bar' }) to equal " +
-    "<jasmine.objectContaining(Object({ foo: 'qux' }))>.";
 
   var out = diff(input, formatter);
 

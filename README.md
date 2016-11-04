@@ -18,7 +18,7 @@ Example: ![Example base](http://i.imgur.com/5fkAvw2.jpg "Example base")
 
 Expectations have red background, actual results - green.
 
-*Note: there are matchers like `toBeTruthy` or `toBeDefined` in Jasmine, but they won't be highlighted because the messages outputed are `Expected 0 to be truthy` or `Expected undefined to be defined` respectively, and words `truthy` and `defined` are not the part of JavaScript. When using jasmine.objectContaining() message won't be highlighted too.*
+*Note: there are matchers like `toBeTruthy` or `toBeDefined` in Jasmine, but they won't be highlighted because the messages outputed are `Expected 0 to be truthy` or `Expected undefined to be defined` respectively, and words `truthy` and `defined` are not the part of JavaScript.*
 
 *Note: if you use custom matchers, they also might be accidently highlighted, if their messages match the patterns I use to extract the data for comparison. There is no a solution to disable it yet. You can find more about custom matchers below.*
 
