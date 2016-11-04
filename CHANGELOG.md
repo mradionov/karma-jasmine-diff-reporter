@@ -1,5 +1,6 @@
 ### Changelog
 
+- 0.6.3 - Revert 0.6.2 and bring diffs for jasmine.objectCOntaining back, even though it's buggy
 - 0.6.2 - Do not diff with jasmine.objectContaining
 - 0.6.1 - Sort object properties before comparing
 - 0.6.0 - Add a color option to highlight whitespaces independently
