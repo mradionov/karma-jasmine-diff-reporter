@@ -294,3 +294,37 @@ test('traverse: two level array', function (assert) {
   assert.equal(leaveCalls, 6);
 });
 
+test('traverse: skip path', function (assert) {
+  assert.plan(11);
+
+  var value = parse('Object({ foo: Object({ bar: 42 }) })');
+  var enterCalls = 0, leaveCalls = 0;
+
+  traverse(value, {
+    enter: function (enterValue, enterKey, path, nestLevel, skipPath) {
+      if (enterCalls === 0) {
+        assert.deepEqual(enterValue, value);
+        assert.equal(enterKey, undefined);
+        assert.equal(path, '');
+        assert.equal(nestLevel, 0);
+      }
+      if (enterCalls === 1) {
+        skipPath(path);
+      }
+      enterCalls++;
+    },
+    leave: function (leaveValue, leaveKey, path, nestLevel, isLast) {
+      if (leaveCalls === 0) {
+        assert.deepEqual(leaveValue, value);
+        assert.equal(leaveKey, undefined);
+        assert.equal(path, '');
+        assert.equal(nestLevel, 0);
+        assert.equal(isLast, true);
+      }
+      leaveCalls++;
+    }
+  });
+
+  assert.equal(enterCalls, 2);
+  assert.equal(leaveCalls, 1);
+});

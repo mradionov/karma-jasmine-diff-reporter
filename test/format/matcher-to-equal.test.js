@@ -150,3 +150,79 @@ test('format: toEqual: nested objects', function (assert) {
   assert.equal(out, expected);
   assert.end();
 });
+
+test('format: toEqual: objects any function', function (assert) {
+  var input =
+    "Expected Object({ foo: 42, bar: Function }) " +
+    "to equal Object({ foo: 43, bar: <jasmine.any(Function)> })."
+    + stack;
+  var expected =
+    "Expected Object({ foo: <a>42</a>, bar: Function }) " +
+    "to equal Object({ foo: <e>43</e>, bar: <jasmine.any(Function)> })." +
+    stack;
+
+  var out = format(input, formatter);
+
+  assert.equal(out, expected);
+  assert.end();
+});
+
+test('format: toEqual: instances', function (assert) {
+  var input =
+    "Expected Foo({ bar: 42 }) to equal Foo({ foo: 42 })." +
+    stack;
+  var expected =
+    "Expected Foo({ <a>bar: 42</a> }) to equal Foo({ <e>foo: 42</e> })." +
+    stack;
+
+  var out = format(input, formatter);
+
+  assert.equal(out, expected);
+  assert.end();
+});
+
+test('format: toEqual: different instances', function (assert) {
+  var input =
+    "Expected Foo({ bar: 42 }) to equal Bar({ foo: 42 })." +
+    stack;
+  var expected =
+    "Expected <a>Foo({ bar: 42 })</a> to equal <e>Bar({ foo: 42 })</e>." +
+    stack;
+
+  var out = format(input, formatter);
+
+  assert.equal(out, expected);
+  assert.end();
+});
+
+test('format: toEqual: nested instances', function (assert) {
+  var input =
+    "Expected Foo({ bar: Bar({ qux: 42 }) }) " +
+    "to equal Foo({ bar: Bar({ xuq: 42 }) })." +
+    stack;
+  var expected =
+    "Expected Foo({ bar: Bar({ <a>qux: 42</a> }) }) " +
+    "to equal Foo({ bar: Bar({ <e>xuq: 42</e> }) })." +
+    stack;
+
+  var out = format(input, formatter);
+
+  assert.equal(out, expected);
+  assert.end();
+});
+
+test('format: toEqual: nested instances with different keys', function (assert) {
+  var input =
+    "Expected Foo({ bar: Bar({ qux: 42 }) }) " +
+    "to equal Foo({ baz: Bar({ qux: 42 }) })." +
+    stack;
+  var expected =
+    "Expected Foo({ <a>bar: Bar({ qux: 42 })</a> }) " +
+    "to equal Foo({ <e>baz: Bar({ qux: 42 })</e> })." +
+    stack;
+
+  var out = format(input, formatter);
+
+  assert.equal(out, expected);
+  assert.end();
+});

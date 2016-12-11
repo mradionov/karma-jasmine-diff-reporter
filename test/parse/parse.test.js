@@ -2,9 +2,15 @@
 
 var test = require('tape');
 
-var parse = require('../src/parse');
-var Pair = require('../src/pair');
-var Value = require('../src/value');
+var parse = require('../../src/parse');
+var Pair = require('../../src/pair');
+var Value = require('../../src/value');
+
+test('parse: unknown', function (assert) {
+  var value = parse('foo');
+  assert.equal(value.type, Value.UNKNOWN);
+  assert.end();
+});
 
 test('parse: boolean true', function (assert) {
   var value = parse('true');
@@ -15,6 +21,18 @@ test('parse: boolean true', function (assert) {
 test('parse: boolean false', function (assert) {
   var value = parse('false');
   assert.equal(value.type, Value.BOOLEAN);
+  assert.end();
+});
+
+test('parse: undefined', function (assert) {
+  var value = parse('undefined');
+  assert.equal(value.type, Value.UNDEFINED);
+  assert.end();
+});
+
+test('parse: null', function (assert) {
+  var value = parse('null');
+  assert.equal(value.type, Value.NULL);
   assert.end();
 });
 
@@ -116,6 +134,32 @@ test('parse: nested objects', function (assert) {
       new Pair('barex', new Value(Value.NUMBER, '2'))
     ])),
     new Pair('fooex', new Value(Value.NUMBER, '1'))
+  ]);
+  assert.end();
+});
+
+test('parse: instance', function (assert) {
+  var value = parse('Foo({ bar: 42 })');
+
+  assert.equal(value.type, Value.INSTANCE);
+  assert.deepEqual(value.children, [
+    new Pair('bar', new Value(Value.NUMBER, '42'))
+  ]);
+  assert.end();
+});
+
+test('parse: nested instance', function (assert) {
+  var instance2 = 'Bar({ qux: 44 })';
+  var instance1 = 'Foo({ bar: ' + instance2 + ' })';
+
+  var value = parse(instance1);
+
+  assert.equal(value.type, Value.INSTANCE);
+  assert.equal(value.instance, 'Foo');
+  assert.deepEqual(value.children, [
+    new Pair('bar', new Value(Value.INSTANCE, instance2, [
+      new Pair('qux', new Value(Value.NUMBER, '44'))
+    ], { instance: 'Bar' }))
   ]);
   assert.end();
 });

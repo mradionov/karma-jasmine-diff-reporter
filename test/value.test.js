@@ -60,11 +60,32 @@ test('value: byPath: object one level', function (assert) {
 
 test('value: byPath: object deep level', function (assert) {
   var value = new Value(
-    Value.OBJECT, 'Object({ foo: Object ({ bar: Object ({ qux: 42 }) }) })', [
+    Value.OBJECT, 'Object({ foo: Object({ bar: Object({ qux: 42 }) }) })', [
       new Pair('foo', new Value(
-        Value.OBJECT, 'Object ({ bar: Object ({ qux: 42 }) })', [
+        Value.OBJECT, 'Object({ bar: Object({ qux: 42 }) })', [
           new Pair('bar', new Value(
-            Value.OBJECT, 'Object ({ qux: 42 }', [
+            Value.OBJECT, 'Object({ qux: 42 }', [
+              new Pair('qux', new Value(Value.NUMBER, '42'))
+            ]
+          ))
+        ]
+      ))
+    ]
+  );
+
+  var child = value.byPath('foo.bar.qux');
+
+  assert.deepEqual(child, new Value(Value.NUMBER, '42'));
+  assert.end();
+});
+
+test('value: byPath: instance deep level', function (assert) {
+  var value = new Value(
+    Value.OBJECT, 'Foo({ foo: Object({ bar: Object({ qux: 42 }) }) })', [
+      new Pair('foo', new Value(
+        Value.OBJECT, 'Object({ bar: Object({ qux: 42 }) })', [
+          new Pair('bar', new Value(
+            Value.OBJECT, 'Object({ qux: 42 }', [
               new Pair('qux', new Value(Value.NUMBER, '42'))
             ]
           ))
