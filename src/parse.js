@@ -9,6 +9,10 @@ function isBoolean(valueStr) {
   return valueStr === 'true' || valueStr === 'false';
 }
 
+function isNull(valueStr) {
+  return valueStr === 'null';
+}
+
 // TODO: float
 function isNumber(valueStr) {
   return !!valueStr.match(/^\d+$/);
@@ -29,6 +33,19 @@ function isArray(valueStr) {
 
 function isObject(valueStr) {
   return valueStr.indexOf('Object({') === 0 && valueStr.lastIndexOf('})') === valueStr.length - 2;
+}
+
+// TODO: check for correct identifier
+function isInstance(valueStr) {
+  var index = valueStr.indexOf('({');
+  var lastIndex = valueStr.lastIndexOf('})');
+
+  return index > 0 && lastIndex === valueStr.length - 2;
+}
+
+function getInstance(valueStr) {
+  var index = valueStr.indexOf('({');
+  return valueStr.substr(0, index);
 }
 
 function isDefined(valueStr) {
@@ -116,7 +133,6 @@ function extractObjectValues(objectStr) {
   var objectContentStr = objectStr.substr(8, objectStr.length - 3 - 8);
   var objectValues = extractValues(objectContentStr);
 
-
   var objectKeyValues = [];
   for (var i = 0; i < objectValues.length; i++) {
     objectKeyValues.push(extractKeyValue(objectValues[i]));
@@ -125,14 +141,51 @@ function extractObjectValues(objectStr) {
   return objectKeyValues;
 }
 
+function extractInstanceValues(instanceStr) {
+  // cut Inst({...})
+  var index = instanceStr.indexOf('({');
+  var instanceContentStr = instanceStr.substr(index + 3, instanceStr.length - index - 3 - 2);
+
+  var instanceValues = extractValues(instanceContentStr);
+
+  var instanceKeyValues = [];
+  for (var i = 0; i < instanceValues.length; i++) {
+    instanceKeyValues.push(extractKeyValue(instanceValues[i]));
+  }
+
+  return instanceKeyValues;
+}
+
 var ANY_PATTERN = /^<jasmine\.any\((.*)\)>$/;
 
 function isAny(valueStr) {
-  return valueStr.test(ANY_PATTERN);
+  return !!valueStr.match(ANY_PATTERN);
+}
+
+function getAny(anyValueStr) {
+  var map = {
+    'Boolean': Value.BOOLEAN,
+    'Function': Value.FUNCTION
+  };
+
+  var type = Value.INSTANCE;
+  var match = anyValueStr.match(ANY_PATTERN);
+
+  var valueStr = match && match[1];
+  if (valueStr && map[valueStr]) {
+    type = map[valueStr];
+  }
+
+  return new Value(type, valueStr, [], { any: true })
 }
 
 // TODO: infinity? nan? float?
 function parse(valueStr) {
+  valueStr = valueStr.trim();
+
+  if (isAny(valueStr)) {
+    return getAny(valueStr);
+  }
   if (isBoolean(valueStr)) {
     return new Value(Value.BOOLEAN, valueStr);
   }
@@ -144,6 +197,9 @@ function parse(valueStr) {
   }
   if (isFunction(valueStr)) {
     return new Value(Value.FUNCTION, valueStr);
+  }
+  if (isNull(valueStr)) {
+    return new Value(Value.NULL, valueStr);
   }
   if (isUndefined(valueStr)) {
     return new Value(Value.UNDEFINED, valueStr);
@@ -186,7 +242,19 @@ function parse(valueStr) {
     }
     return new Value(Value.OBJECT, valueStr, children);
   }
-  throw new Error('Unknown type for value: ' + valueStr);
+  if (isInstance(valueStr)) {
+    var instanceValues = extractInstanceValues(valueStr);
+    var children = [];
+    for (var i = 0; i < instanceValues.length; i++) {
+      var instanceKey = instanceValues[i].key;
+      var instanceValue = instanceValues[i].value;
+      children.push(new Pair(instanceKey, parse(instanceValue)));
+    }
+    return new Value(Value.INSTANCE, valueStr, children, {
+      instance: getInstance(valueStr)
+    });
+  }
+  return new Value(Value.UNKNOWN, valueStr);
 }
 
 module.exports = parse;

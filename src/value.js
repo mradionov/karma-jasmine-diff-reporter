@@ -8,10 +8,16 @@ function findValueInPairsByKey(pairs, key) {
   }
 }
 
-function Value(type, text, children) {
+function Value(type, text, children, options) {
+  options = options || {};
+
   this.type = type;
   this.text = text;
   this.children = children || [];
+
+
+  this.any = options.any || false;
+  this.instance = options.instance || 'Object';
 }
 
 Value.prototype.byPath = function (path) {
@@ -19,7 +25,10 @@ Value.prototype.byPath = function (path) {
     return this;
   }
 
-  if (this.type !== Value.ARRAY && this.type !== Value.OBJECT) {
+  if (this.type !== Value.ARRAY &&
+      this.type !== Value.OBJECT &&
+      this.type !== Value.INSTANCE
+  ) {
     return;
   }
 
@@ -44,12 +53,14 @@ Value.prototype.byPath = function (path) {
 };
 
 Value.BOOLEAN = 'BOOLEAN';
+Value.UNDEFINED = 'UNDEFINED';
+Value.NULL = 'NULL';
 Value.STRING = 'STRING';
 Value.FUNCTION = 'FUNCTION';
 Value.NUMBER = 'NUMBER';
 Value.ARRAY = 'ARRAY';
 Value.OBJECT = 'OBJECT';
-Value.UNDEFINED = 'UNDEFINED';
+Value.INSTANCE = 'INSTANCE';
 Value.DEFINED = 'DEFINED';
 Value.TRUTHY = 'TRUTHY';
 Value.FALSY = 'FALSY';

@@ -61,9 +61,15 @@ describe('Matcher', function () {
       // var a = function(){};
       // var b = function() {};
       // expect(a).toEqual(b);
+
+      function Foo() {
+        this.bar = 42;
+        this.hello = function () {};
+      }
+
       var a = 3;
       var b = 3;
-      expect(a).toBeGreaterThan(b);
+      expect(new Foo()).toEqual(jasmine.any(Object));
     });
   });
 

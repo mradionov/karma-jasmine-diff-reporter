@@ -6,20 +6,36 @@ function noop() {
   return function() {};
 }
 
-function traverse(value, options, key, nestLevel, path, isLast) {
+function isSkipped(path, skippedPaths) {
+  return skippedPaths.some(function (skippedPath) {
+    return skippedPath.indexOf(path) === 0;
+  });
+}
+
+function traverse(value, options, key, nestLevel, path, skippedPaths, isLast) {
   options = options || {};
   var enter = options.enter || noop();
   var leave = options.leave || noop();
 
   nestLevel = nestLevel || 0;
 
-  path = path || ''
+  path = path || '';
+
+  skippedPaths = skippedPaths || [];
 
 
+
+  function skipPath(skippedPath) {
+    skippedPaths.push(skippedPath);
+  }
 
   isLast = typeof isLast === 'undefined' ? true : isLast;
 
-  enter(value, key, path, nestLevel);
+  enter(value, key, path, nestLevel, skipPath);
+
+  if (isSkipped(path, skippedPaths)) {
+    return;
+  }
 
   nestLevel++;
 
@@ -35,7 +51,7 @@ function traverse(value, options, key, nestLevel, path, isLast) {
 
     var isLevelLast = index === value.children.length - 1;
 
-    traverse(pair.value, options, pair.key, nestLevel, levelPath, isLevelLast);
+    traverse(pair.value, options, pair.key, nestLevel, levelPath, skippedPaths, isLevelLast);
   });
 
   nestLevel--;

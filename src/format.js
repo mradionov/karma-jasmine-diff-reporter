@@ -42,25 +42,54 @@ function formatObject(value, oppositeValue, formatValue, formatter) {
   var diff = '';
 
   traverse(value, {
-    enter: function (enterValue, enterKey, path, nestLevel) {
+    enter: function (enterValue, enterKey, path, nestLevel, skipPath) {
       if (enterValue.type === Value.OBJECT) {
         if (nestLevel === 0) {
           diff += 'Object({ ';
         } else {
-          diff += enterKey + ': Object({ '
+          diff += enterKey + ': Object({ ';
+        }
+      } else if (enterValue.type === Value.INSTANCE) {
+
+        var oppositeEnterValue = oppositeValue.byPath(path);
+        if (oppositeEnterValue) {
+
+          if (enterValue.instance !== oppositeEnterValue.instance) {
+            diff += formatValue(enterValue.text);
+            skipPath(path);
+          } else {
+            if (enterKey) {
+              diff += enterKey + ': ' + enterValue.instance + '({ ';
+            } else {
+              diff += enterValue.instance + '({ ';
+            }
+          }
+
+        } else {
+
+          diff += formatValue(enterKey + ': ' + enterValue.text);
+          skipPath(path);
+
         }
       } else {
-        var expectedEnterValue = oppositeValue.byPath(path);
-        if (expectedEnterValue) {
+        var oppositeEnterValue = oppositeValue.byPath(path);
+        if (oppositeEnterValue) {
 
           diff += enterKey + ': ';
 
-          if (enterValue.text === expectedEnterValue.text) {
+          if (enterValue.text === oppositeEnterValue.text) {
 
             if (enterValue.type === Value.FUNCTION &&
-              expectedEnterValue.type === Value.FUNCTION
+              oppositeEnterValue.type === Value.FUNCTION
             ) {
-              diff += formatter.reference(enterValue.text);
+
+              if (enterValue.any) {
+                diff += '<jasmine.any(' + enterValue.text + ')>';
+              } else if (oppositeEnterValue.any) {
+                diff += enterValue.text;
+              } else {
+                diff += formatter.reference(enterValue.text);
+              }
 
             } else {
               diff += enterValue.text;
@@ -77,7 +106,9 @@ function formatObject(value, oppositeValue, formatValue, formatter) {
       }
     },
     leave: function (leaveValue, leaveKey, path, nestLevel, isLast) {
-      if (leaveValue.type === Value.OBJECT) {
+      if (leaveValue.type === Value.OBJECT ||
+        leaveValue.type === Value.INSTANCE
+      ) {
         diff += ' })';
       } else {
         if (!isLast) {
@@ -214,7 +245,9 @@ function format(message, formatter, options) {
 
     if (expectedValue.type === actualValue.type) {
 
-      if (expectedValue.type === Value.OBJECT) {
+      if (expectedValue.type === Value.OBJECT ||
+        expectedValue.type === Value.INSTANCE
+      ) {
 
         var diff = diffObjects(expectedValue, actualValue, formatter);
         actualDiff += diff.actual;
