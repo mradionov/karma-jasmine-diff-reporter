@@ -42,24 +42,26 @@ function formatObject(value, oppositeValue, formatValue, formatter) {
   var diff = '';
 
   traverse(value, {
-    enter: function (enterValue, enterKey, path, nestLevel, skipPath) {
+    enter: function (enterValue, skipPath) {
       if (enterValue.type === Value.OBJECT) {
-        if (nestLevel === 0) {
+        if (enterValue.level === 0) {
           diff += 'Object({ ';
         } else {
-          diff += enterKey + ': Object({ ';
+          diff += enterValue.key + ': Object({ ';
         }
+      } else if (enterValue.type === Value.ARRAY) {
+        diff += '[';
       } else if (enterValue.type === Value.INSTANCE) {
 
-        var oppositeEnterValue = oppositeValue.byPath(path);
+        var oppositeEnterValue = oppositeValue.byPath(enterValue.getPath());
         if (oppositeEnterValue) {
 
           if (enterValue.instance !== oppositeEnterValue.instance) {
             diff += formatValue(enterValue.text);
-            skipPath(path);
+            skipPath(enterValue.getPath());
           } else {
-            if (enterKey) {
-              diff += enterKey + ': ' + enterValue.instance + '({ ';
+            if (enterValue.key) {
+              diff += enterValue.key + ': ' + enterValue.instance + '({ ';
             } else {
               diff += enterValue.instance + '({ ';
             }
@@ -67,15 +69,20 @@ function formatObject(value, oppositeValue, formatValue, formatter) {
 
         } else {
 
-          diff += formatValue(enterKey + ': ' + enterValue.text);
-          skipPath(path);
+          diff += formatValue(enterValue.key + ': ' + enterValue.text);
+          skipPath(enterValue.getPath());
 
         }
       } else {
-        var oppositeEnterValue = oppositeValue.byPath(path);
+        var oppositeEnterValue = oppositeValue.byPath(enterValue.getPath());
+
         if (oppositeEnterValue) {
 
-          diff += enterKey + ': ';
+          if (!enterValue.parent || enterValue.parent.type === Value.ARRAY) {
+
+          } else {
+            diff += enterValue.key + ': ';
+          }
 
           if (enterValue.text === oppositeEnterValue.text) {
 
@@ -100,18 +107,26 @@ function formatObject(value, oppositeValue, formatValue, formatter) {
           }
 
         } else {
-          diff += formatValue(enterKey + ': ' + enterValue.text);
+
+          if (!enterValue.parent || enterValue.parent.type === Value.ARRAY) {
+            diff += formatValue(enterValue.text);
+          } else {
+            diff += formatValue(enterValue.key + ': ' + enterValue.text);
+          }
+
         }
 
       }
     },
-    leave: function (leaveValue, leaveKey, path, nestLevel, isLast) {
+    leave: function (leaveValue) {
       if (leaveValue.type === Value.OBJECT ||
         leaveValue.type === Value.INSTANCE
       ) {
         diff += ' })';
+      } else if (leaveValue.type === Value.ARRAY) {
+        diff += ']';
       } else {
-        if (!isLast) {
+        if (!leaveValue.isLast()) {
           diff += ', ';
         }
       }
@@ -121,7 +136,7 @@ function formatObject(value, oppositeValue, formatValue, formatter) {
   return diff;
 }
 
-function diffObjects(expectedValue, actualValue, formatter) {
+function diffComplex(expectedValue, actualValue, formatter) {
   var result = {};
 
   result.expected = formatObject(
@@ -135,7 +150,7 @@ function diffObjects(expectedValue, actualValue, formatter) {
   return result;
 }
 
-function diffValues(expectedValue, actualValue, formatter) {
+function diffPrimitives(expectedValue, actualValue, formatter) {
   var result = {
     actual: '',
     expected: ''
@@ -212,27 +227,35 @@ function format(message, formatter, options) {
 
   var expectedDiff = '', actualDiff = '';
 
+  // Matcher - toBe
+  //
+  // 1. If values have different types - completely highlight them both
+  // 2. If values have the same type and this type is primitive - apply string
+  //    diff to their string representations
+  // 3. If values have complex types - matcher "toBe" behaves like "===",
+  //    which means that complex types are compared by reference.
+  //    It's impossible to check the reference from here, so just hightlight
+  //    these objects with warning color.
   if (matcherName === 'toBe') {
 
     if (expectedValue.type === actualValue.type) {
 
-      if (expectedValue.type === Value.OBJECT ||
-        expectedValue.type === Value.ARRAY ||
-        expectedValue.type === Value.FUNCTION
-      ) {
+      if (expectedValue.isComplex()) {
 
         expectedDiff = formatter.reference(expectedValue.text);
         actualDiff = formatter.reference(actualValue.text);
 
       } else {
+        // primitive
 
-        var diff = diffValues(expectedValue, actualValue, formatter);
+        var diff = diffPrimitives(expectedValue, actualValue, formatter);
         actualDiff += diff.actual;
         expectedDiff += diff.expected;
 
       }
 
     } else {
+      // different types
 
       expectedDiff = formatter.expected(expectedValue.text);
       actualDiff = formatter.actual(actualValue.text);
@@ -241,25 +264,50 @@ function format(message, formatter, options) {
 
   }
 
+  // Matcher - toEqual
+  //
+  // 1. If values have different types - completely highlight them both
+  // 2. If values have the same type and this type is primitive - apply string
+  //    diff to their string representations
+  // 3. If values have complex types, which can not nest - highlight them
+  //    with reference warning.
+  // 4. If values have complex types, which can nest - provide deep comparison
+  //    of all their nested values by applying the same steps.
+
   if (matcherName === 'toEqual') {
 
     if (expectedValue.type === actualValue.type) {
 
-      if (expectedValue.type === Value.OBJECT ||
-        expectedValue.type === Value.INSTANCE
-      ) {
+      if (expectedValue.isComplex()) {
 
-        var diff = diffObjects(expectedValue, actualValue, formatter);
-        actualDiff += diff.actual;
-        expectedDiff += diff.expected;
+        if (expectedValue.canNest()) {
+
+          var diff = diffComplex(expectedValue, actualValue, formatter);
+          actualDiff += diff.actual;
+          expectedDiff += diff.expected;
+
+        } else {
+          // complex, can not nest
+
+          expectedDiff = formatter.reference(expectedValue.text);
+          actualDiff = formatter.reference(actualValue.text);
+
+        }
 
       } else {
+        // primitive
 
-        var diff = diffValues(expectedValue, actualValue, formatter);
+        var diff = diffPrimitives(expectedValue, actualValue, formatter);
         actualDiff += diff.actual;
         expectedDiff += diff.expected;
 
       }
+
+    } else {
+      // different types
+
+      expectedDiff = formatter.expected(expectedValue.text);
+      actualDiff = formatter.actual(actualValue.text);
 
     }
 

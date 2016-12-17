@@ -12,51 +12,28 @@ function isSkipped(path, skippedPaths) {
   });
 }
 
-function traverse(value, options, key, nestLevel, path, skippedPaths, isLast) {
+function traverse(value, options, skippedPaths) {
   options = options || {};
   var enter = options.enter || noop();
   var leave = options.leave || noop();
 
-  nestLevel = nestLevel || 0;
-
-  path = path || '';
-
   skippedPaths = skippedPaths || [];
-
-
 
   function skipPath(skippedPath) {
     skippedPaths.push(skippedPath);
   }
 
-  isLast = typeof isLast === 'undefined' ? true : isLast;
+  enter(value, skipPath);
 
-  enter(value, key, path, nestLevel, skipPath);
-
-  if (isSkipped(path, skippedPaths)) {
+  if (isSkipped(value.getPath(), skippedPaths)) {
     return;
   }
 
-  nestLevel++;
-
-  value.children.forEach(function (pair, index) {
-
-    var levelPath = path;
-
-    if (levelPath) {
-      levelPath += '.';
-    }
-
-    levelPath += pair.key + '';
-
-    var isLevelLast = index === value.children.length - 1;
-
-    traverse(pair.value, options, pair.key, nestLevel, levelPath, skippedPaths, isLevelLast);
+  value.children.forEach(function (child, index) {
+    traverse(child, options, skippedPaths);
   });
 
-  nestLevel--;
-
-  leave(value, key, path, nestLevel, isLast);
+  leave(value);
 }
 
 module.exports = traverse;
