@@ -3,7 +3,6 @@
 var test = require('tape');
 
 var parse = require('../../src/parse');
-var Pair = require('../../src/pair');
 var Value = require('../../src/value');
 
 test('parse: any: unknown', function (assert) {

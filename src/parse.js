@@ -1,7 +1,6 @@
 'use strict';
 
 var Value = require('./value');
-var Pair = require('./pair');
 
 var MARKER = '\u200C';
 
@@ -162,7 +161,7 @@ function isAny(valueStr) {
   return !!valueStr.match(ANY_PATTERN);
 }
 
-function getAny(anyValueStr) {
+function getAny(anyValueStr, options) {
   var map = {
     'Boolean': Value.BOOLEAN,
     'Function': Value.FUNCTION
@@ -176,61 +175,65 @@ function getAny(anyValueStr) {
     type = map[valueStr];
   }
 
-  return new Value(type, valueStr, [], { any: true })
+  return new Value(type, valueStr, Object.assign({ any: true }, options))
 }
 
 // TODO: infinity? nan? float?
-function parse(valueStr) {
+function parse(valueStr, options) {
   valueStr = valueStr.trim();
 
   if (isAny(valueStr)) {
-    return getAny(valueStr);
+    return getAny(valueStr, options);
   }
   if (isBoolean(valueStr)) {
-    return new Value(Value.BOOLEAN, valueStr);
+    return new Value(Value.BOOLEAN, valueStr, options);
   }
   if (isString(valueStr)) {
-    return new Value(Value.STRING, valueStr);
+    return new Value(Value.STRING, valueStr, options);
   }
   if (isNumber(valueStr)) {
-    return new Value(Value.NUMBER, valueStr);
+    return new Value(Value.NUMBER, valueStr, options);
   }
   if (isFunction(valueStr)) {
-    return new Value(Value.FUNCTION, valueStr);
+    return new Value(Value.FUNCTION, valueStr, options);
   }
   if (isNull(valueStr)) {
-    return new Value(Value.NULL, valueStr);
+    return new Value(Value.NULL, valueStr, options);
   }
   if (isUndefined(valueStr)) {
-    return new Value(Value.UNDEFINED, valueStr);
+    return new Value(Value.UNDEFINED, valueStr, options);
   }
   if (isDefined(valueStr)) {
-    return new Value(Value.DEFINED, valueStr);
+    return new Value(Value.DEFINED, valueStr, options);
   }
   if (isTruthy(valueStr)) {
-    return new Value(Value.TRUTHY, valueStr);
+    return new Value(Value.TRUTHY, valueStr, options);
   }
   if (isFalsy(valueStr)) {
-    return new Value(Value.FALSY, valueStr);
+    return new Value(Value.FALSY, valueStr, options);
   }
   if (isCloseTo(valueStr)) {
-    return new Value(Value.CLOSE_TO, valueStr);
+    return new Value(Value.CLOSE_TO, valueStr, options);
   }
   if (isGreaterThan(valueStr)) {
-    return new Value(Value.GREATER_THAN, valueStr);
+    return new Value(Value.GREATER_THAN, valueStr, options);
   }
   if (isLessThan(valueStr)) {
-    return new Value(Value.LESS_THAN, valueStr);
+    return new Value(Value.LESS_THAN, valueStr, options);
   }
   if (isArray(valueStr)) {
-    var arrayValues = extractArrayValues(valueStr);
+    var arrayValues = extractArrayValues(valueStr, options);
     var children = [];
     for (var i = 0; i < arrayValues.length; i++) {
       var arrayKey = i;
       var arrayValue = arrayValues[i];
-      children.push(new Pair(arrayKey, parse(arrayValue)));
+      children.push(parse(arrayValue, {
+        key: arrayKey
+      }));
     }
-    return new Value(Value.ARRAY, valueStr, children);
+    return new Value(Value.ARRAY, valueStr, Object.assign({
+      children: children
+    }, options));
   }
   if (isObject(valueStr)) {
     var objectValues = extractObjectValues(valueStr);
@@ -238,9 +241,13 @@ function parse(valueStr) {
     for (var i = 0; i < objectValues.length; i++) {
       var objectKey = objectValues[i].key;
       var objectValue = objectValues[i].value;
-      children.push(new Pair(objectKey, parse(objectValue)));
+      children.push(parse(objectValue, {
+        key: objectKey
+      }));
     }
-    return new Value(Value.OBJECT, valueStr, children);
+    return new Value(Value.OBJECT, valueStr, Object.assign({
+      children: children
+    }, options));
   }
   if (isInstance(valueStr)) {
     var instanceValues = extractInstanceValues(valueStr);
@@ -248,11 +255,14 @@ function parse(valueStr) {
     for (var i = 0; i < instanceValues.length; i++) {
       var instanceKey = instanceValues[i].key;
       var instanceValue = instanceValues[i].value;
-      children.push(new Pair(instanceKey, parse(instanceValue)));
+      children.push(parse(instanceValue, {
+        key: instanceKey
+      }));
     }
-    return new Value(Value.INSTANCE, valueStr, children, {
+    return new Value(Value.INSTANCE, valueStr, Object.assign({
+      children: children,
       instance: getInstance(valueStr)
-    });
+    }, options));
   }
   return new Value(Value.UNKNOWN, valueStr);
 }
