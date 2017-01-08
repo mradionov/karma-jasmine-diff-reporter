@@ -75,8 +75,8 @@ describe('Matcher', function () {
 
   describe('toBeCloseTo', function () {
 
-    it('should NOT diff', function () {
-      expect(3).toBeCloseTo(5);
+    fit('should NOT diff', function () {
+      expect([1,2,3]).toEqual([1, jasmine.any(Object), 3]);
     });
 
   });

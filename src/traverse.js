@@ -8,7 +8,7 @@ function noop() {
 
 function isSkipped(path, skippedPaths) {
   return skippedPaths.some(function (skippedPath) {
-    return skippedPath.indexOf(path) === 0;
+    return path.indexOf(skippedPath) === 0;
   });
 }
 
