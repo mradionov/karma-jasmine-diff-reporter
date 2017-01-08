@@ -1,7 +1,5 @@
 'use strict';
 
-var Value = require('./value');
-
 function noop() {
   return function() {};
 }

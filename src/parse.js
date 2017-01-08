@@ -4,6 +4,7 @@ var Value = require('./value');
 
 var MARKER = '\u200C';
 var ANY_PATTERN = /^<jasmine\.any\((.*)\)>$/;
+var CONTAINING_PATTERN = /^<jasmine.objectContaining\((.*)\)>$/;
 
 
 function isGlobal(valueStr) {
@@ -74,7 +75,9 @@ function getInstance(valueStr) {
   return valueStr.substr(0, index);
 }
 
-
+function isAnything(valueStr) {
+  return valueStr === '<jasmine.anything>';
+}
 
 // jasmine.any works only with toEqual
 // It can be used both as expected and actual value.
@@ -104,6 +107,17 @@ function getAny(anyValueStr, options) {
   }
 
   return new Value(type, valueStr, Object.assign({ any: true }, options))
+}
+
+function isContaining(valueStr) {
+  return !!valueStr.match(CONTAINING_PATTERN);
+}
+
+function getContaining(containingValueStr, options) {
+  var match = containingValueStr.match(CONTAINING_PATTERN);
+  var valueStr = match && match[1];
+  var value = parse(valueStr, Object.assign({ containing: true }, options));
+  return value;
 }
 
 function isDefined(valueStr) {
@@ -225,8 +239,16 @@ function parse(valueStr, options) {
 
   // Check Jasmine wrappers
 
+  if (isAnything(valueStr)) {
+    return new Value(Value.ANYTHING, valueStr, options);
+  }
+
   if (isAny(valueStr)) {
     return getAny(valueStr, options);
+  }
+
+  if (isContaining(valueStr)) {
+    return getContaining(valueStr, options);
   }
 
   // Check JS types

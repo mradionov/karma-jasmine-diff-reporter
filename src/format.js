@@ -46,16 +46,15 @@ function formatComplex(value, oppositeValue, highlightValue, highlighter) {
   var diff = '';
 
   var formatters = {};
-  formatters[Value.OBJECT] = objectFormatter;
+  formatters[Value.OBJECT] = instanceFormatter;
   formatters[Value.INSTANCE] = instanceFormatter;
   formatters[Value.ARRAY] = arrayFormatter;
 
   traverse(value, {
     enter: function (enterValue, skipPath) {
       var formatter = formatters[enterValue.type] || propFormatter;
-      var oppositeEnterValue = oppositeValue.byPath(enterValue.getPath());
 
-      diff += formatter.enter(enterValue, oppositeEnterValue, highlightValue, highlighter, skipPath);
+      diff += formatter.enter(enterValue, oppositeValue, highlightValue, highlighter, skipPath);
     },
     leave: function (leaveValue) {
       var formatter = formatters[leaveValue.type] || propFormatter;
