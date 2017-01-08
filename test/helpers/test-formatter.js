@@ -22,7 +22,7 @@ function createTestFormatter() {
     return '<ew>' + string + '</ew>';
   }
 
-  function reference(string) {
+  function warning(string) {
     return '<r>' + string + '</r>';
   }
 
@@ -32,7 +32,7 @@ function createTestFormatter() {
     defaults: defaults,
     actualWhitespace: actualWhitespace,
     expectedWhitespace: expectedWhitespace,
-    reference: reference
+    warning: warning
   };
 }
 

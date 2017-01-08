@@ -7,6 +7,10 @@ var parse = require('./parse');
 var traverse = require('./traverse');
 var Value = require('./value');
 var marker = require('./marker');
+var objectFormatter = require('./formatters/object');
+var instanceFormatter = require('./formatters/instance');
+var arrayFormatter = require('./formatters/array');
+var propFormatter = require('./formatters/prop');
 
 // Replace while increasing indexFrom
 // If multiline is true - eat all spaces and punctuation around diffed objects -
@@ -38,134 +42,61 @@ function strictReplace(str, pairs, multiline) {
   return str;
 }
 
-function formatObject(value, oppositeValue, formatValue, formatter) {
+function formatComplex(value, oppositeValue, highlightValue, highlighter) {
   var diff = '';
+
+  var formatters = {};
+  formatters[Value.OBJECT] = objectFormatter;
+  formatters[Value.INSTANCE] = instanceFormatter;
+  formatters[Value.ARRAY] = arrayFormatter;
 
   traverse(value, {
     enter: function (enterValue, skipPath) {
-      if (enterValue.type === Value.OBJECT) {
-        if (enterValue.level === 0) {
-          diff += 'Object({ ';
-        } else {
-          diff += enterValue.key + ': Object({ ';
-        }
-      } else if (enterValue.type === Value.ARRAY) {
-        diff += '[';
-      } else if (enterValue.type === Value.INSTANCE) {
+      var formatter = formatters[enterValue.type] || propFormatter;
+      var oppositeEnterValue = oppositeValue.byPath(enterValue.getPath());
 
-        var oppositeEnterValue = oppositeValue.byPath(enterValue.getPath());
-        if (oppositeEnterValue) {
-
-          if (enterValue.instance !== oppositeEnterValue.instance) {
-            diff += formatValue(enterValue.text);
-            skipPath(enterValue.getPath());
-          } else {
-            if (enterValue.key) {
-              diff += enterValue.key + ': ' + enterValue.instance + '({ ';
-            } else {
-              diff += enterValue.instance + '({ ';
-            }
-          }
-
-        } else {
-
-          diff += formatValue(enterValue.key + ': ' + enterValue.text);
-          skipPath(enterValue.getPath());
-
-        }
-      } else {
-        var oppositeEnterValue = oppositeValue.byPath(enterValue.getPath());
-
-        if (oppositeEnterValue) {
-
-          if (!enterValue.parent || enterValue.parent.type === Value.ARRAY) {
-
-          } else {
-            diff += enterValue.key + ': ';
-          }
-
-          if (enterValue.text === oppositeEnterValue.text) {
-
-            if (enterValue.type === Value.FUNCTION &&
-              oppositeEnterValue.type === Value.FUNCTION
-            ) {
-
-              if (enterValue.any) {
-                diff += '<jasmine.any(' + enterValue.text + ')>';
-              } else if (oppositeEnterValue.any) {
-                diff += enterValue.text;
-              } else {
-                diff += formatter.reference(enterValue.text);
-              }
-
-            } else {
-              diff += enterValue.text;
-            }
-
-          } else {
-            diff += formatValue(enterValue.text);
-          }
-
-        } else {
-
-          if (!enterValue.parent || enterValue.parent.type === Value.ARRAY) {
-            diff += formatValue(enterValue.text);
-          } else {
-            diff += formatValue(enterValue.key + ': ' + enterValue.text);
-          }
-
-        }
-
-      }
+      diff += formatter.enter(enterValue, oppositeEnterValue, highlightValue, highlighter, skipPath);
     },
     leave: function (leaveValue) {
-      if (leaveValue.type === Value.OBJECT ||
-        leaveValue.type === Value.INSTANCE
-      ) {
-        diff += ' })';
-      } else if (leaveValue.type === Value.ARRAY) {
-        diff += ']';
-      } else {
-        if (!leaveValue.isLast()) {
-          diff += ', ';
-        }
-      }
+      var formatter = formatters[leaveValue.type] || propFormatter;
+
+      diff += formatter.leave(leaveValue);
     }
   });
 
   return diff;
 }
 
-function diffComplex(expectedValue, actualValue, formatter) {
+function diffComplex(expectedValue, actualValue, highlighter) {
   var result = {};
 
-  result.expected = formatObject(
-    expectedValue, actualValue, formatter.expected, formatter
+  result.expected = formatComplex(
+    expectedValue, actualValue, highlighter.expected, highlighter
   );
 
-  result.actual = formatObject(
-    actualValue, expectedValue, formatter.actual, formatter
+  result.actual = formatComplex(
+    actualValue, expectedValue, highlighter.actual, highlighter
   );
 
   return result;
 }
 
-function diffPrimitives(expectedValue, actualValue, formatter) {
+function diffPrimitives(expectedValue, actualValue, highlighter) {
   var result = {
     actual: '',
     expected: ''
   };
 
-  var diff = jsDiff.diffWordsWithSpace(expectedValue.text, actualValue.text);
+  var diff = jsDiff.diffWordsWithSpace(expectedValue.out(), actualValue.out());
 
   diff.forEach(function (part) {
 
     var value = part.value;
 
     if (part.added) {
-      result.actual += formatter.actual(value);
+      result.actual += highlighter.actual(value);
     } else if (part.removed) {
-      result.expected += formatter.expected(value);
+      result.expected += highlighter.expected(value);
     } else {
       result.expected += value;
       result.actual += value;
@@ -176,7 +107,7 @@ function diffPrimitives(expectedValue, actualValue, formatter) {
   return result;
 }
 
-function format(message, formatter, options) {
+function format(message, highlighter, options) {
   options = options || {};
 
   // Separate stack trace info from an actual Jasmine message
@@ -242,13 +173,13 @@ function format(message, formatter, options) {
 
       if (expectedValue.isComplex()) {
 
-        expectedDiff = formatter.reference(expectedValue.text);
-        actualDiff = formatter.reference(actualValue.text);
+        expectedDiff = highlighter.warning(expectedValue.text);
+        actualDiff = highlighter.warning(actualValue.text);
 
       } else {
         // primitive
 
-        var diff = diffPrimitives(expectedValue, actualValue, formatter);
+        var diff = diffPrimitives(expectedValue, actualValue, highlighter);
         actualDiff += diff.actual;
         expectedDiff += diff.expected;
 
@@ -257,8 +188,8 @@ function format(message, formatter, options) {
     } else {
       // different types
 
-      expectedDiff = formatter.expected(expectedValue.text);
-      actualDiff = formatter.actual(actualValue.text);
+      expectedDiff = highlighter.expected(expectedValue.text);
+      actualDiff = highlighter.actual(actualValue.text);
 
     }
 
@@ -282,22 +213,22 @@ function format(message, formatter, options) {
 
         if (expectedValue.canNest()) {
 
-          var diff = diffComplex(expectedValue, actualValue, formatter);
+          var diff = diffComplex(expectedValue, actualValue, highlighter);
           actualDiff += diff.actual;
           expectedDiff += diff.expected;
 
         } else {
           // complex, can not nest
 
-          expectedDiff = formatter.reference(expectedValue.text);
-          actualDiff = formatter.reference(actualValue.text);
+          expectedDiff = highlighter.warning(expectedValue.text);
+          actualDiff = highlighter.warning(actualValue.text);
 
         }
 
       } else {
         // primitive
 
-        var diff = diffPrimitives(expectedValue, actualValue, formatter);
+        var diff = diffPrimitives(expectedValue, actualValue, highlighter);
         actualDiff += diff.actual;
         expectedDiff += diff.expected;
 
@@ -306,8 +237,8 @@ function format(message, formatter, options) {
     } else {
       // different types
 
-      expectedDiff = formatter.expected(expectedValue.text);
-      actualDiff = formatter.actual(actualValue.text);
+      expectedDiff = highlighter.expected(expectedValue.out());
+      actualDiff = highlighter.actual(actualValue.out());
 
     }
 

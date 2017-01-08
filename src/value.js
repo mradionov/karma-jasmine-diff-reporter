@@ -16,6 +16,7 @@ function Value(type, text, options) {
 
   this.key = typeof options.key !== 'undefined'  ? options.key + '' : '';
   this.any = options.any || false;
+  this.anything = options.anything || false;
   this.instance = options.instance || 'Object';
 
   this.children = options.children || [];
@@ -84,16 +85,25 @@ Value.prototype.byPath = function (path) {
   return result;
 };
 
+Value.prototype.out = function () {
+  if (this.any) {
+    return '<jasmine.any(' + this.text + ')>';
+  }
+  return this.text;
+};
+
 Value.prototype.isPrimitive = function () {
   return !this.isComplex();
 };
 
+// Tells if type should be highlighted as warning
 Value.prototype.isComplex = function () {
   var complexTypes = [
     Value.OBJECT,
     Value.INSTANCE,
     Value.ARRAY,
-    Value.FUNCTION
+    Value.FUNCTION,
+    Value.GLOBAL,
   ];
   return complexTypes.indexOf(this.type) !== -1;
 };
@@ -107,14 +117,20 @@ Value.prototype.canNest = function () {
   return nestTypes.indexOf(this.type) !== -1;
 };
 
-Value.BOOLEAN = 'BOOLEAN';
+// JS
 Value.UNDEFINED = 'UNDEFINED';
 Value.NULL = 'NULL';
+Value.BOOLEAN = 'BOOLEAN';
 Value.STRING = 'STRING';
 Value.FUNCTION = 'FUNCTION';
 Value.NUMBER = 'NUMBER';
 Value.ARRAY = 'ARRAY';
 Value.OBJECT = 'OBJECT';
+// Jasmine
+Value.NODE = 'NODE';
+Value.SPY = 'SPY';
+Value.NEGATIVE_ZERO = 'NEGATIVE_ZERO';
+Value.GLOBAL = 'GLOBAL';
 Value.INSTANCE = 'INSTANCE';
 Value.DEFINED = 'DEFINED';
 Value.TRUTHY = 'TRUTHY';
@@ -122,5 +138,8 @@ Value.FALSY = 'FALSY';
 Value.CLOSE_TO = 'CLOSE_TO';
 Value.GREATER_THAN = 'GREATER_THAN';
 Value.LESS_THAN = 'LESS_THAN';
+
+Value.PRIMITIVE = 'PRIMITIVE';
+Value.UNKNOWN = 'UNKNOWN';
 
 module.exports = Value;

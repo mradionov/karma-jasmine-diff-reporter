@@ -1,13 +1,17 @@
 'use strict';
 
-var test = require('tape');
+var tape = require('tape');
 
 var format = require('../../src/format');
 var formatter = require('../helpers/test-formatter')();
 var stack = require('../helpers/stack');
 var m = require('../../src/marker').wrapString;
 
-test('format: toBe: booleans', function (assert) {
+var test = function (name, body) {
+  return tape('format: toBe: ' + name,  body);
+};
+
+test('booleans', function (assert) {
   var input =
     "Expected true to be false." + stack;
   var expected =
@@ -19,7 +23,7 @@ test('format: toBe: booleans', function (assert) {
   assert.end();
 });
 
-test('format: toBe: strings', function (assert) {
+test('strings', function (assert) {
   var input =
     "Expected " + m('foo') + " to be " + m('bar') + "." +
     stack;
@@ -33,7 +37,7 @@ test('format: toBe: strings', function (assert) {
   assert.end();
 });
 
-test('format: toBe: undefined facing a string', function (assert) {
+test('undefined facing a string', function (assert) {
   var input =
     "Expected " + m('defined') + " to be undefined." +
     stack;
@@ -47,7 +51,7 @@ test('format: toBe: undefined facing a string', function (assert) {
   assert.end();
 });
 
-test('format: toBe: defined', function (assert) {
+test('defined', function (assert) {
   var input =
     "Expected undefined to be defined." + stack;
   var expected =
@@ -59,7 +63,7 @@ test('format: toBe: defined', function (assert) {
   assert.end();
 });
 
-test('format: toBe: truthy', function (assert) {
+test('truthy', function (assert) {
   var input =
     "Expected false to be truthy." + stack;
   var expected =
@@ -71,7 +75,7 @@ test('format: toBe: truthy', function (assert) {
   assert.end();
 });
 
-test('format: toBe: falsy', function (assert) {
+test('falsy', function (assert) {
   var input =
     "Expected true to be falsy." + stack;
   var expected =
@@ -83,7 +87,7 @@ test('format: toBe: falsy', function (assert) {
   assert.end();
 });
 
-test('format: toBe: close to', function (assert) {
+test('close to', function (assert) {
   var input =
     "Expected 3 to be close to 5." + stack;
   var expected =
@@ -95,7 +99,7 @@ test('format: toBe: close to', function (assert) {
   assert.end();
 });
 
-test('format: toBe: greater than', function (assert) {
+test('greater than', function (assert) {
   var input =
     "Expected 3 to be greater than 5." + stack;
   var expected =
@@ -107,7 +111,7 @@ test('format: toBe: greater than', function (assert) {
   assert.end();
 });
 
-test('format: toBe: less than', function (assert) {
+test('less than', function (assert) {
   var input =
     "Expected 5 to be less than 3." + stack;
   var expected =
@@ -119,7 +123,7 @@ test('format: toBe: less than', function (assert) {
   assert.end();
 });
 
-test('format: toBe: objects by ref', function (assert) {
+test('objects by ref', function (assert) {
   var input =
     "Expected Object({ foo: 42 }) to be Object({ foo: 42 })." +
     stack;
@@ -133,7 +137,7 @@ test('format: toBe: objects by ref', function (assert) {
   assert.end();
 });
 
-test('format: toBe: arrays by ref', function (assert) {
+test('arrays by ref', function (assert) {
   var input =
     "Expected [1, 2, 3] to be [1, 2, 3]." + stack;
   var expected =
@@ -145,7 +149,7 @@ test('format: toBe: arrays by ref', function (assert) {
   assert.end();
 });
 
-test('format: toBe: functions by ref', function (assert) {
+test('functions by ref', function (assert) {
   var input =
     "Expected Function to be Function." + stack;
   var expected =

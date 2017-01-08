@@ -3,6 +3,33 @@
 var Value = require('./value');
 
 var MARKER = '\u200C';
+var ANY_PATTERN = /^<jasmine\.any\((.*)\)>$/;
+
+
+function isGlobal(valueStr) {
+  return valueStr === '<global>';
+}
+
+function isNode(valueStr) {
+  return valueStr === 'HTMLNode';
+}
+
+// Occurs in arrays when array length is bigger than MAX_PRETTY_PRINT_ARRAY_LENGTH
+function isEllipsis(valueStr) {
+  return valueStr === '...';
+}
+
+function isDate(valueStr) {
+  return !!valueStr.match(/^Date\(.*\)$/);
+}
+
+function isCircularReference(valueStr) {
+  return !!valueStr.match(/^<circular reference: (Array|Object)>$/);
+}
+
+function isNegativeZero(valueStr) {
+  return valueStr === '-0';
+}
 
 function isBoolean(valueStr) {
   return valueStr === 'true' || valueStr === 'false';
@@ -47,6 +74,38 @@ function getInstance(valueStr) {
   return valueStr.substr(0, index);
 }
 
+
+
+// jasmine.any works only with toEqual
+// It can be used both as expected and actual value.
+// It checks for String, Number, Function, Object, Boolean; other types are
+// checked using instanceof.
+// We need it only to remove possible highlight for matches of the same type.
+// All instances can't be checked, so remove highlights only for popular ones.
+function isAny(valueStr) {
+  return !!valueStr.match(ANY_PATTERN);
+}
+
+function getAny(anyValueStr, options) {
+  var map = {
+    'String': Value.STRING,
+    'Number': Value.NUMBER,
+    'Function': Value.FUNCTION,
+    'Object': Value.OBJECT,
+    'Boolean': Value.BOOLEAN
+  };
+
+  var type = Value.INSTANCE;
+  var match = anyValueStr.match(ANY_PATTERN);
+
+  var valueStr = match && match[1];
+  if (valueStr && map[valueStr]) {
+    type = map[valueStr];
+  }
+
+  return new Value(type, valueStr, Object.assign({ any: true }, options))
+}
+
 function isDefined(valueStr) {
   return valueStr === 'defined';
 }
@@ -76,6 +135,10 @@ function isGreaterThan(valueStr) {
 // TODO: float
 function isLessThan(valueStr) {
   return !!valueStr.match(/^less than \d+$/);
+}
+
+function isSpy(valueStr) {
+  return !!valueStr.match(/^spy on/);
 }
 
 function extractValues(valueStr) {
@@ -155,72 +218,43 @@ function extractInstanceValues(instanceStr) {
   return instanceKeyValues;
 }
 
-var ANY_PATTERN = /^<jasmine\.any\((.*)\)>$/;
-
-function isAny(valueStr) {
-  return !!valueStr.match(ANY_PATTERN);
-}
-
-function getAny(anyValueStr, options) {
-  var map = {
-    'Boolean': Value.BOOLEAN,
-    'Function': Value.FUNCTION
-  };
-
-  var type = Value.INSTANCE;
-  var match = anyValueStr.match(ANY_PATTERN);
-
-  var valueStr = match && match[1];
-  if (valueStr && map[valueStr]) {
-    type = map[valueStr];
-  }
-
-  return new Value(type, valueStr, Object.assign({ any: true }, options))
-}
-
 // TODO: infinity? nan? float?
+// TODO: extract complex types and compare as string the rest.
 function parse(valueStr, options) {
   valueStr = valueStr.trim();
+
+  // Check Jasmine wrappers
 
   if (isAny(valueStr)) {
     return getAny(valueStr, options);
   }
-  if (isBoolean(valueStr)) {
-    return new Value(Value.BOOLEAN, valueStr, options);
-  }
-  if (isString(valueStr)) {
-    return new Value(Value.STRING, valueStr, options);
-  }
-  if (isNumber(valueStr)) {
-    return new Value(Value.NUMBER, valueStr, options);
-  }
-  if (isFunction(valueStr)) {
-    return new Value(Value.FUNCTION, valueStr, options);
-  }
-  if (isNull(valueStr)) {
-    return new Value(Value.NULL, valueStr, options);
-  }
+
+  // Check JS types
+
   if (isUndefined(valueStr)) {
     return new Value(Value.UNDEFINED, valueStr, options);
   }
-  if (isDefined(valueStr)) {
-    return new Value(Value.DEFINED, valueStr, options);
+
+  if (isNull(valueStr)) {
+    return new Value(Value.NULL, valueStr, options);
   }
-  if (isTruthy(valueStr)) {
-    return new Value(Value.TRUTHY, valueStr, options);
+
+  if (isBoolean(valueStr)) {
+    return new Value(Value.BOOLEAN, valueStr, options);
   }
-  if (isFalsy(valueStr)) {
-    return new Value(Value.FALSY, valueStr, options);
+
+  if (isNumber(valueStr)) {
+    return new Value(Value.NUMBER, valueStr, options);
   }
-  if (isCloseTo(valueStr)) {
-    return new Value(Value.CLOSE_TO, valueStr, options);
+
+  if (isFunction(valueStr)) {
+    return new Value(Value.FUNCTION, valueStr, options);
   }
-  if (isGreaterThan(valueStr)) {
-    return new Value(Value.GREATER_THAN, valueStr, options);
+
+  if (isString(valueStr)) {
+    return new Value(Value.STRING, valueStr, options);
   }
-  if (isLessThan(valueStr)) {
-    return new Value(Value.LESS_THAN, valueStr, options);
-  }
+
   if (isArray(valueStr)) {
     var arrayValues = extractArrayValues(valueStr, options);
     var children = [];
@@ -235,6 +269,7 @@ function parse(valueStr, options) {
       children: children
     }, options));
   }
+
   if (isObject(valueStr)) {
     var objectValues = extractObjectValues(valueStr);
     var children = [];
@@ -249,6 +284,7 @@ function parse(valueStr, options) {
       children: children
     }, options));
   }
+
   if (isInstance(valueStr)) {
     var instanceValues = extractInstanceValues(valueStr);
     var children = [];
@@ -264,7 +300,43 @@ function parse(valueStr, options) {
       instance: getInstance(valueStr)
     }, options));
   }
-  return new Value(Value.UNKNOWN, valueStr);
+
+  // ??
+  if (isNegativeZero(valueStr)) {
+    return new Value(Value.NEGATIVE_ZERO, valueStr, options);
+  }
+
+  // Check custom Jasmine syntax
+
+  if (isGlobal(valueStr)) {
+    return new Value(Value.GLOBAL, valueStr, options);
+  }
+
+  if (isDefined(valueStr)) {
+    return new Value(Value.DEFINED, valueStr, options);
+  }
+
+  if (isTruthy(valueStr)) {
+    return new Value(Value.TRUTHY, valueStr, options);
+  }
+
+  if (isFalsy(valueStr)) {
+    return new Value(Value.FALSY, valueStr, options);
+  }
+
+  if (isCloseTo(valueStr)) {
+    return new Value(Value.CLOSE_TO, valueStr, options);
+  }
+
+  if (isGreaterThan(valueStr)) {
+    return new Value(Value.GREATER_THAN, valueStr, options);
+  }
+
+  if (isLessThan(valueStr)) {
+    return new Value(Value.LESS_THAN, valueStr, options);
+  }
+
+  return new Value(Value.PRIMITIVE, valueStr);
 }
 
 module.exports = parse;
