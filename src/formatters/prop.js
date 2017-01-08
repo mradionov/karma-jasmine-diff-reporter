@@ -2,12 +2,18 @@ var Value = require('../value');
 
 module.exports = {
 
-  enter: function (value, oppositeValue, highlightValue, highlighter, skipPath) {
-    const isParentArray = value.parent.type === Value.ARRAY;
+  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath) {
+    var oppositeValue = oppositeRootValue.byPath(value.getPath());
+    var oppositeParent = oppositeRootValue.byPath(value.getParentPath());
 
-    const key = isParentArray ? '' : value.key + ': ';
+    var isParentArray = value.parent.type === Value.ARRAY;
+    var key = isParentArray ? '' : value.key + ': ';
 
     if (!oppositeValue) {
+      if (oppositeParent && oppositeParent.containing) {
+        return key + value.out();
+      }
+
       return highlightValue(key + value.out());
     }
 
@@ -15,6 +21,10 @@ module.exports = {
       if (value.type === Value.FUNCTION) {
         return key + highlighter.warning(value.out());
       }
+      return key + value.out();
+    }
+
+    if (value.type === Value.ANYTHING || oppositeValue.type === Value.ANYTHING) {
       return key + value.out();
     }
 

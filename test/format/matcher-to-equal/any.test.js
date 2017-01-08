@@ -70,3 +70,19 @@ test('object with function vs any function',
   `Expected Object({ foo: <a>42</a>, bar: Function }) ` +
   `to equal Object({ foo: <e>43</e>, bar: <jasmine.any(Function)> }).`
 );
+
+test('array with number vs any string',
+
+  `Expected [1, 2, 3] to equal [1, <jasmine.any(String)>, 3].`,
+
+  `Expected [1, <a>2</a>, 3] to equal [1, <e><jasmine.any(String)></e>, 3].`
+);
+
+test('object with instance vs any instance',
+
+  `Expected Object({ foo: 42, bar: Foo({ baz: 53 }) }) ` +
+  `to equal Object({ foo: 43, bar: <jasmine.any(Foo)> }).`,
+
+  `Expected Object({ foo: <a>42</a>, bar: Foo({ baz: 53 }) }) ` +
+  `to equal Object({ foo: <e>43</e>, bar: <jasmine.any(Foo)> }).`
+);

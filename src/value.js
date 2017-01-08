@@ -16,7 +16,7 @@ function Value(type, text, options) {
 
   this.key = typeof options.key !== 'undefined'  ? options.key + '' : '';
   this.any = options.any || false;
-  this.anything = options.anything || false;
+  this.containing = options.containing || false;
   this.instance = options.instance || 'Object';
 
   this.children = options.children || [];
@@ -51,6 +51,13 @@ Value.prototype.getPath = function () {
     parent = parent.parent;
   }
   return path;
+};
+
+Value.prototype.getParentPath = function () {
+  var path = this.getPath();
+  var parts = path.split('.');
+  var parentPath = parts.slice(0, parts.length - 1).join('.');
+  return parentPath;
 };
 
 Value.prototype.isLast = function () {
@@ -127,6 +134,7 @@ Value.NUMBER = 'NUMBER';
 Value.ARRAY = 'ARRAY';
 Value.OBJECT = 'OBJECT';
 // Jasmine
+Value.ANYTHING = 'ANYTHING';
 Value.NODE = 'NODE';
 Value.SPY = 'SPY';
 Value.NEGATIVE_ZERO = 'NEGATIVE_ZERO';

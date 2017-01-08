@@ -8,16 +8,25 @@ module.exports = {
       return value.key + ': ' + value.out();
     }
 
-    if (oppositeValue && oppositeValue.any) {
+    if (!oppositeValue) {
+      skipPath(value.getPath());
+      return highlightValue(value.key + ': ' + value.out());
+    }
+
+    if (oppositeValue.any) {
       skipPath(value.getPath());
       return value.key + ': ' + value.out();
     }
 
-    if (value.level === 0) {
-      return 'Object({ ';
+    if (value.containing) {
+      console.log('hz');
     }
 
-    return value.key + ': Object({ ';
+    if (value.key) {
+      return value.key + ': Object({ ';
+    }
+
+    return 'Object({ ';
   },
 
   leave: function (value) {
