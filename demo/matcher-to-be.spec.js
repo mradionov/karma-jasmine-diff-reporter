@@ -76,7 +76,7 @@ describe('Matcher', function () {
   describe('toBeCloseTo', function () {
 
     fit('should NOT diff', function () {
-      expect({ foo: 42 }).toEqual(jasmine.objectContaining({ foo: 43 }));
+      expect(function () {}).toEqual(function () {});
     });
 
   });

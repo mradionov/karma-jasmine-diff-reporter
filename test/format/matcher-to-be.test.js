@@ -1,162 +1,91 @@
 'use strict';
 
-var tape = require('tape');
-
-var format = require('../../src/format');
-var formatter = require('../helpers/test-formatter')();
-var stack = require('../helpers/stack');
+var createTest = require('../helpers/test');
 var m = require('../../src/marker').wrapString;
 
-var test = function (name, body) {
-  return tape('format: toBe: ' + name,  body);
-};
+var test = createTest('format: toBe:');
 
-test('booleans', function (assert) {
-  var input =
-    "Expected true to be false." + stack;
-  var expected =
-    "Expected <a>true</a> to be <e>false</e>." + stack;
+test('booleans',
 
-  var out = format(input, formatter);
+  `Expected true to be false.`,
 
-  assert.equal(out, expected);
-  assert.end();
-});
+  `Expected <a>true</a> to be <e>false</e>.`
+);
 
-test('strings', function (assert) {
-  var input =
-    "Expected " + m('foo') + " to be " + m('bar') + "." +
-    stack;
-  var expected =
-    "Expected '<a>foo</a>' to be '<e>bar</e>'." +
-    stack;
+test('strings',
 
-  var out = format(input, formatter);
+  `Expected ${m('foo')} to be ${m('bar')}.`,
 
-  assert.equal(out, expected);
-  assert.end();
-});
+  `Expected '<a>foo</a>' to be '<e>bar</e>'.`
+);
 
-test('undefined facing a string', function (assert) {
-  var input =
-    "Expected " + m('defined') + " to be undefined." +
-    stack;
-  var expected =
-    "Expected <a>'defined'</a> to be <e>undefined</e>." +
-    stack;
+test('undefined facing a string',
 
-  var out = format(input, formatter);
+  `Expected ${m('defined')} to be undefined.`,
 
-  assert.equal(out, expected);
-  assert.end();
-});
+  `Expected <a>'defined'</a> to be <e>undefined</e>.`
+);
 
-test('defined', function (assert) {
-  var input =
-    "Expected undefined to be defined." + stack;
-  var expected =
-    "Expected <a>undefined</a> to be <e>defined</e>." + stack;
+test('defined',
 
-  var out = format(input, formatter);
+  `Expected undefined to be defined.`,
 
-  assert.equal(out, expected);
-  assert.end();
-});
+  `Expected <a>undefined</a> to be <e>defined</e>.`
+);
 
-test('truthy', function (assert) {
-  var input =
-    "Expected false to be truthy." + stack;
-  var expected =
-    "Expected <a>false</a> to be <e>truthy</e>." + stack;
+test('truthy',
 
-  var out = format(input, formatter);
+  `Expected false to be truthy.`,
 
-  assert.equal(out, expected);
-  assert.end();
-});
+  `Expected <a>false</a> to be <e>truthy</e>.`
+);
 
-test('falsy', function (assert) {
-  var input =
-    "Expected true to be falsy." + stack;
-  var expected =
-    "Expected <a>true</a> to be <e>falsy</e>." + stack;
+test('falsy',
 
-  var out = format(input, formatter);
+  `Expected true to be falsy.`,
 
-  assert.equal(out, expected);
-  assert.end();
-});
+  `Expected <a>true</a> to be <e>falsy</e>.`
+);
 
-test('close to', function (assert) {
-  var input =
-    "Expected 3 to be close to 5." + stack;
-  var expected =
-    "Expected <a>3</a> to be <e>close to 5</e>." + stack;
+test('close to',
 
-  var out = format(input, formatter);
+  `Expected 3 to be close to 5.`,
 
-  assert.equal(out, expected);
-  assert.end();
-});
+  `Expected <a>3</a> to be <e>close to 5</e>.`
+);
 
-test('greater than', function (assert) {
-  var input =
-    "Expected 3 to be greater than 5." + stack;
-  var expected =
-    "Expected <a>3</a> to be <e>greater than 5</e>." + stack;
+test('greater than',
 
-  var out = format(input, formatter);
+  `Expected 3 to be greater than 5.`,
 
-  assert.equal(out, expected);
-  assert.end();
-});
+  `Expected <a>3</a> to be <e>greater than 5</e>.`
+);
 
-test('less than', function (assert) {
-  var input =
-    "Expected 5 to be less than 3." + stack;
-  var expected =
-    "Expected <a>5</a> to be <e>less than 3</e>." + stack;
+test('less than',
 
-  var out = format(input, formatter);
+  `Expected 5 to be less than 3.`,
 
-  assert.equal(out, expected);
-  assert.end();
-});
+  `Expected <a>5</a> to be <e>less than 3</e>.`
+);
 
-test('objects by ref', function (assert) {
-  var input =
-    "Expected Object({ foo: 42 }) to be Object({ foo: 42 })." +
-    stack;
-  var expected =
-    "Expected <r>Object({ foo: 42 })</r> to be <r>Object({ foo: 42 })</r>." +
-    stack;
+test('objects by ref',
 
-  var out = format(input, formatter);
+  `Expected Object({ foo: 42 }) to be Object({ foo: 42 }).`,
 
-  assert.equal(out, expected);
-  assert.end();
-});
+  `Expected <w>Object({ foo: 42 })</w> to be <w>Object({ foo: 42 })</w>.`
+);
 
-test('arrays by ref', function (assert) {
-  var input =
-    "Expected [1, 2, 3] to be [1, 2, 3]." + stack;
-  var expected =
-    "Expected <r>[1, 2, 3]</r> to be <r>[1, 2, 3]</r>." + stack;
+test('arrays by ref',
 
-  var out = format(input, formatter);
+  `Expected [1, 2, 3] to be [1, 2, 3].`,
 
-  assert.equal(out, expected);
-  assert.end();
-});
+  `Expected <w>[1, 2, 3]</w> to be <w>[1, 2, 3]</w>.`
 
-test('functions by ref', function (assert) {
-  var input =
-    "Expected Function to be Function." + stack;
-  var expected =
-    "Expected <r>Function</r> to be <r>Function</r>." + stack;
+  );
 
-  var out = format(input, formatter);
+test('functions by ref',
 
-  assert.equal(out, expected);
-  assert.end();
-});
+  `Expected Function to be Function.`,
+
+  `Expected <w>Function</w> to be <w>Function</w>.`
+);

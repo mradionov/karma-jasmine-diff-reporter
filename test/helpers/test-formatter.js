@@ -23,7 +23,7 @@ function createTestFormatter() {
   }
 
   function warning(string) {
-    return '<r>' + string + '</r>';
+    return '<w>' + string + '</w>';
   }
 
   return {

@@ -4,7 +4,8 @@ var Value = require('./value');
 
 var MARKER = '\u200C';
 var ANY_PATTERN = /^<jasmine\.any\((.*)\)>$/;
-var CONTAINING_PATTERN = /^<jasmine.objectContaining\((.*)\)>$/;
+var OBJECT_CONTAINING_PATTERN = /^<jasmine.objectContaining\((.*)\)>$/;
+var ARRAY_CONTAINING_PATTERN = /^<jasmine.arrayContaining\((.*)\)>$/;
 
 
 function isGlobal(valueStr) {
@@ -109,12 +110,23 @@ function getAny(anyValueStr, options) {
   return new Value(type, valueStr, Object.assign({ any: true }, options))
 }
 
-function isContaining(valueStr) {
-  return !!valueStr.match(CONTAINING_PATTERN);
+function isObjectContaining(valueStr) {
+  return !!valueStr.match(OBJECT_CONTAINING_PATTERN);
 }
 
-function getContaining(containingValueStr, options) {
-  var match = containingValueStr.match(CONTAINING_PATTERN);
+function getObjectContaining(containingValueStr, options) {
+  var match = containingValueStr.match(OBJECT_CONTAINING_PATTERN);
+  var valueStr = match && match[1];
+  var value = parse(valueStr, Object.assign({ containing: true }, options));
+  return value;
+}
+
+function isArrayContaining(valueStr) {
+  return !!valueStr.match(ARRAY_CONTAINING_PATTERN);
+}
+
+function getArrayContaining(containingValueStr, options) {
+  var match = containingValueStr.match(ARRAY_CONTAINING_PATTERN);
   var valueStr = match && match[1];
   var value = parse(valueStr, Object.assign({ containing: true }, options));
   return value;
@@ -247,8 +259,12 @@ function parse(valueStr, options) {
     return getAny(valueStr, options);
   }
 
-  if (isContaining(valueStr)) {
-    return getContaining(valueStr, options);
+  if (isObjectContaining(valueStr)) {
+    return getObjectContaining(valueStr, options);
+  }
+
+  if (isArrayContaining(valueStr)) {
+    return getArrayContaining(valueStr, options);
   }
 
   // Check JS types

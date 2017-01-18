@@ -8,7 +8,8 @@ var traverse = require('./traverse');
 var Value = require('./value');
 var marker = require('./marker');
 var objectFormatter = require('./formatters/object');
-var instanceFormatter = require('./formatters/instance');
+var objectPropFormatter = require('./formatters/object-prop');
+var arrayPropFormatter = require('./formatters/array-prop');
 var arrayFormatter = require('./formatters/array');
 var propFormatter = require('./formatters/prop');
 
@@ -42,24 +43,47 @@ function strictReplace(str, pairs, multiline) {
   return str;
 }
 
+function pickFormatter(value) {
+  var formatters = {};
+  formatters[Value.OBJECT] = objectFormatter;
+  formatters[Value.INSTANCE] = objectFormatter;
+  formatters[Value.ARRAY] = arrayFormatter;
+
+  var formatter = formatters[value.type] || propFormatter;
+
+  return formatter;
+}
+
+function pickPropFormatter(value) {
+  var propFormatters = {};
+  propFormatters[Value.OBJECT] = objectPropFormatter;
+  propFormatters[Value.INSTANCE] = objectPropFormatter;
+  propFormatters[Value.ARRAY] = arrayPropFormatter;
+
+  var formatter = propFormatters[value.parent.type];
+
+  return formatter;
+}
+
 function formatComplex(value, oppositeValue, highlightValue, highlighter) {
   var diff = '';
 
-  var formatters = {};
-  formatters[Value.OBJECT] = instanceFormatter;
-  formatters[Value.INSTANCE] = instanceFormatter;
-  formatters[Value.ARRAY] = arrayFormatter;
-
   traverse(value, {
-    enter: function (enterValue, skipPath) {
-      var formatter = formatters[enterValue.type] || propFormatter;
-
-      diff += formatter.enter(enterValue, oppositeValue, highlightValue, highlighter, skipPath);
+    enterProp: function (value, skipPath) {
+      var propFormatter = pickPropFormatter(value);
+      diff += propFormatter.enter(value, oppositeValue, highlightValue, highlighter, skipPath);
     },
-    leave: function (leaveValue) {
-      var formatter = formatters[leaveValue.type] || propFormatter;
-
-      diff += formatter.leave(leaveValue);
+    enter: function (value, skipPath) {
+      var formatter = pickFormatter(value);
+      diff += formatter.enter(value, oppositeValue, highlightValue, highlighter, skipPath);
+    },
+    leave: function (value) {
+      var formatter = pickFormatter(value);
+      diff += formatter.leave(value);
+    },
+    leaveProp: function (value) {
+      var propFormatter = pickPropFormatter(value);
+      diff += propFormatter.leave(value);
     }
   });
 
