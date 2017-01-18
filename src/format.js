@@ -181,6 +181,14 @@ function format(message, highlighter, options) {
 
   var expectedDiff = '', actualDiff = '';
 
+  if (matcherName === 'toThrow') {
+
+    var diff = diffPrimitives(expectedValue, actualValue, highlighter);
+    expectedDiff += diff.expected;
+    actualDiff += diff.actual;
+
+  }
+
   // Matcher - toBe
   //
   // 1. If values have different types - completely highlight them both
@@ -203,8 +211,8 @@ function format(message, highlighter, options) {
         // primitive
 
         var diff = diffPrimitives(expectedValue, actualValue, highlighter);
-        actualDiff += diff.actual;
         expectedDiff += diff.expected;
+        actualDiff += diff.actual;
 
       }
 
