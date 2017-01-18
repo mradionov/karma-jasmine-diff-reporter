@@ -3,11 +3,25 @@ var Value = require('../value');
 module.exports = {
 
   enter: function (value, oppositeValue, highlightValue, highlighter, skipPath) {
-    return '[';
+    var diff = '';
+
+    if (value.containing) {
+      diff += '<jasmine.arrayContaining(';
+    }
+
+    diff += '[';
+
+    return diff;
   },
 
   leave: function (value) {
-    return ']';
+    var diff = ']';
+
+    if (value.containing) {
+      diff += ')>';
+    }
+
+    return diff;
   },
 
 };

@@ -60,10 +60,6 @@ Value.prototype.getParentPath = function () {
   return parentPath;
 };
 
-Value.prototype.isLast = function () {
-  return this.next === null;
-};
-
 Value.prototype.byPath = function (path) {
   if (path === '') {
     return this;
@@ -97,6 +93,23 @@ Value.prototype.out = function () {
     return '<jasmine.any(' + this.text + ')>';
   }
   return this.text;
+};
+
+Value.prototype.includes = function (value) {
+  for (var i = 0; i < this.children.length; i++) {
+    if (value.isEqual(this.children[i])) {
+      return true;
+    }
+  }
+  return false;
+};
+
+Value.prototype.isLast = function () {
+  return this.next === null;
+};
+
+Value.prototype.isEqual = function (value) {
+  return this.out() === value.out();
 };
 
 Value.prototype.isPrimitive = function () {

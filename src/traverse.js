@@ -14,11 +14,24 @@ function traverse(value, options, skippedPaths) {
   options = options || {};
   var enter = options.enter || noop();
   var leave = options.leave || noop();
+  var enterProp = options.enterProp || noop();
+  var leaveProp = options.leaveProp || noop();
 
   skippedPaths = skippedPaths || [];
 
   function skipPath(skippedPath) {
     skippedPaths.push(skippedPath);
+  }
+
+  if (value.parent) {
+    enterProp(value, skipPath);
+  }
+
+  if (isSkipped(value.getPath(), skippedPaths)) {
+    if (value.parent) {
+      leaveProp(value);
+    }
+    return;
   }
 
   enter(value, skipPath);
@@ -32,6 +45,10 @@ function traverse(value, options, skippedPaths) {
   });
 
   leave(value);
+
+  if (value.parent) {
+    leaveProp(value);
+  }
 }
 
 module.exports = traverse;

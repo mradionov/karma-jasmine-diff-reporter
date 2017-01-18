@@ -2,38 +2,44 @@ var Value = require('../value');
 
 module.exports = {
 
-  enter: function (value, oppositeValue, highlightValue, highlighter, skipPath) {
-    if (value.any) {
+  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath) {
+    var oppositeValue = oppositeRootValue.byPath(value.getPath());
+
+    // Different types are not comparable
+    if (value.type !== oppositeValue.type) {
       skipPath(value.getPath());
-      return value.key + ': ' + value.out();
+      return highlightValue(value.out());
     }
 
-    if (!oppositeValue) {
+    if (value.any || oppositeValue.any) {
       skipPath(value.getPath());
-      return highlightValue(value.key + ': ' + value.out());
+      return value.out();
     }
 
-    if (oppositeValue.any) {
+    if (value.instance !== oppositeValue.instance) {
       skipPath(value.getPath());
-      return value.key + ': ' + value.out();
+      return highlightValue(value.text);
     }
+
+    var diff = '';
 
     if (value.containing) {
-      console.log('hz');
+      diff += '<jasmine.objectContaining('
     }
 
-    if (value.key) {
-      return value.key + ': Object({ ';
-    }
+    diff += value.instance + '({ ';
 
-    return 'Object({ ';
+    return diff;
   },
 
   leave: function (value) {
-    if (value.any) {
-      return '';
+    var diff = ' })';
+
+    if (value.containing) {
+      diff += ')>';
     }
-    return ' })';
+
+    return diff;
   },
 
 };
