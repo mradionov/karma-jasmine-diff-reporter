@@ -181,24 +181,16 @@ function format(message, highlighter, options) {
 
   var expectedDiff = '', actualDiff = '';
 
-  if (matcherName === 'toThrow') {
-
-    var diff = diffPrimitives(expectedValue, actualValue, highlighter);
-    expectedDiff += diff.expected;
-    actualDiff += diff.actual;
-
-  }
-
-  // Matcher - toBe
-  //
-  // 1. If values have different types - completely highlight them both
-  // 2. If values have the same type and this type is primitive - apply string
-  //    diff to their string representations
-  // 3. If values have complex types - matcher "toBe" behaves like "===",
-  //    which means that complex types are compared by reference.
-  //    It's impossible to check the reference from here, so just hightlight
-  //    these objects with warning color.
   if (matcherName === 'toBe') {
+    // Matcher - toBe
+    //
+    // 1. If values have different types - completely highlight them both
+    // 2. If values have the same type and this type is primitive - apply string
+    //    diff to their string representations
+    // 3. If values have complex types - matcher "toBe" behaves like "===",
+    //    which means that complex types are compared by reference.
+    //    It's impossible to check the reference from here, so just hightlight
+    //    these objects with warning color.
 
     if (expectedValue.type === actualValue.type) {
 
@@ -224,19 +216,16 @@ function format(message, highlighter, options) {
 
     }
 
-  }
-
-  // Matcher - toEqual
-  //
-  // 1. If values have different types - completely highlight them both
-  // 2. If values have the same type and this type is primitive - apply string
-  //    diff to their string representations
-  // 3. If values have complex types, which can not nest - highlight them
-  //    with reference warning.
-  // 4. If values have complex types, which can nest - provide deep comparison
-  //    of all their nested values by applying the same steps.
-
-  if (matcherName === 'toEqual') {
+  } else if (matcherName === 'toEqual') {
+    // Matcher - toEqual
+    //
+    // 1. If values have different types - completely highlight them both
+    // 2. If values have the same type and this type is primitive - apply string
+    //    diff to their string representations
+    // 3. If values have complex types, which can not nest - highlight them
+    //    with reference warning.
+    // 4. If values have complex types, which can nest - provide deep comparison
+    //    of all their nested values by applying the same steps.
 
     if (expectedValue.type === actualValue.type) {
 
@@ -273,6 +262,27 @@ function format(message, highlighter, options) {
 
     }
 
+  } else if (matcherName === 'toHaveBeenCalledWith') {
+    // Matcher - toHaveBeenCalledWith
+    //
+    // Behaves like toEqual, compare results as arrays
+
+    var diff = diffComplex(expectedValue, actualValue, highlighter);
+    actualDiff += diff.actual;
+    expectedDiff += diff.expected;
+
+
+  } else if (matcherName === 'toThrow') {
+    // Matcher - toThrow and toThrowError
+    //
+    // Simply compare results as primitive strings
+
+    var diff = diffPrimitives(expectedValue, actualValue, highlighter);
+    expectedDiff += diff.expected;
+    actualDiff += diff.actual;
+
+  } else {
+    // TODO: custom matchers
   }
 
   var replacePairs = [[expected, expectedDiff], [actual, actualDiff]];
