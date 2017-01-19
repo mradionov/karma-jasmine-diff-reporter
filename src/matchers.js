@@ -23,10 +23,6 @@ exports.DEFAULT_MATCHERS = {
 
   toThrow: {
     pattern: /Expected function to throw ([\S\s]*), but it threw ([\S\s]*)\./
-  },
-
-  toThrowError: {
-    pattern: /Expected function to throw ([\S\s]*), but it threw ([\S\s]*)\./
   }
 
 };
