@@ -1,7 +1,6 @@
 'use strict';
 
-var createTest = require('../../helpers/test');
-var m = require('../../../src/marker').wrapString;
+var createTest = require('../helpers/test');
 
 var test = createTest('format: toEqual: object containing:');
 

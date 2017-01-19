@@ -1,49 +1,27 @@
 'use strict';
 
-var test = require('tape');
-var diff = require('../src/jasmine-diff').createDiffMessage;
-var formatter = require('./helpers/test-formatter')();
-var stack = require('./helpers/stack');
-var mark = require('./helpers/mark').mark;
+var createTest = require('./helpers/test');
+var m = require('./helpers/mark');
 
-test('marker: clear when processed', function (assert) {
-  var input =
-    "Expected " + mark('foo') + " to be " + mark('bar') + "." +
-    stack;
-  var expected =
-    "Expected <d>'</d><a>foo</a><d>'</d> to be <d>'</d><e>bar</e><d>'</d>." +
-    stack;
+var test = createTest('marker:');
 
-  var out = diff(input, formatter);
+// test('clear when processed',
 
-  assert.equal(out, expected);
-  assert.end();
-});
+//   `Expected ${m('foo')} to be ${m('bar')}.`,
 
-test('marker: clear when unknown matcher', function (assert) {
-  var input =
-    "Unknown message format " + mark('foo') + " with marked string." +
-    stack;
-  var expected =
-    "Unknown message format 'foo' with marked string." +
-    stack;
+//   `Expected <d>'</d><a>foo</a><d>'</d> to be <d>'</d><e>bar</e><d>'</d>.`
+// );
 
-  var out = diff(input, formatter);
+// test('clear when unknown matcher',
 
-  assert.equal(out, expected);
-  assert.end();
-});
+//   `Unknown message format ${m('foo')} with marked string.`,
 
-test('marker: clear when unwanted matcher', function (assert) {
-  var input =
-    "Expected " + mark('foo') + " to be falsy." +
-    stack;
-  var expected =
-    "Expected 'foo' to be falsy." +
-    stack;
+//   `Unknown message format 'foo' with marked string.`
+// );
 
-  var out = diff(input, formatter);
+// test('clear when unwanted matcher',
 
-  assert.equal(out, expected);
-  assert.end();
-});
+//   `Expected ${m('foo')} to be falsy.`,
+
+//   `Expected 'foo' to be falsy.`
+// );

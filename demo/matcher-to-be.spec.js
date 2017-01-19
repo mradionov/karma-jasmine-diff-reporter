@@ -75,8 +75,8 @@ describe('Matcher', function () {
 
   describe('toBeCloseTo', function () {
 
-    fit('should NOT diff', function () {
-      expect(function () {}).toEqual(function () {});
+    it('should NOT diff', function () {
+      expect('defined').toBeCloseTo(5);
     });
 
   });
