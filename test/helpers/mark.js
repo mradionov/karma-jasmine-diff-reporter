@@ -1,15 +1,7 @@
 'use strict';
 
-// Wrap string in markers used in pp-patch.js
+var marker = require('../../src/marker');
 
-var MARKER = '\u200C';
-
-exports.mark = function(string) {
-  return MARKER + "'" + MARKER + string + MARKER + "'" + MARKER;
+module.exports = function mark(string) {
+  return marker.wrapString(string);
 }
-
-exports.markJSON = function(string) {
-  return MARKER + string + MARKER;
-}
-
-exports.MARKER = MARKER;
