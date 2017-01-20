@@ -165,7 +165,7 @@ function format(message, highlighter, options) {
 
   // Simply return original message if matcher was not detected
   if (!match) {
-    return message;
+    return marker.removeFromString(message);
   }
 
 
@@ -173,6 +173,14 @@ function format(message, highlighter, options) {
   var expected = match[1], actual = match[2];
   if (matcher.reverse) {
     expected = match[2]; actual = match[1];
+  }
+
+
+  // Exclude "not" from the message, which may appear using ".not.toSometing()"
+  // Message won't be highlighted then because "actual" becomes equal "expected"
+  var not = ' not', notIndex = actual.length - not.length;
+  if (notIndex > 0 && actual.indexOf(not) === notIndex) {
+    actual = actual.slice(0, notIndex);
   }
 
 
