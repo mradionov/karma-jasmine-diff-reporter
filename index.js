@@ -21,8 +21,7 @@ function JasmineDiffReporter(baseReporterDecorator, config, logger) {
     matchers: reporterOptions.matchers || {},
     color: reporterOptions.color || {},
     pretty: reporterOptions.pretty || false,
-    multiline: reporterOptions.multiline || false,
-    json: reporterOptions.json || false
+    multiline: reporterOptions.multiline || false
   };
 
   options.color.enabled = !!config.colors;
@@ -81,11 +80,6 @@ function JasmineDiffReporter(baseReporterDecorator, config, logger) {
 }
 
 function JasmineDiffFramework(config, logger) {
-  var reporterOptions = config.jasmineDiffReporter || {};
-  var options = {
-    json: reporterOptions.json || false
-  };
-
   var log = logger.create('jasmine-diff');
 
   // karma-jasmine uses adapter to work with Jasmine
@@ -110,12 +104,7 @@ function JasmineDiffFramework(config, logger) {
     return false;
   }
 
-  var patchFileName = 'pp-patch.js';
-  if (options.json) {
-    patchFileName = 'pp-json-patch.js';
-  }
-
-  var patchPath = path.join(__dirname, 'src', 'karma-jasmine', patchFileName);
+  var patchPath = path.join(__dirname, 'src', 'karma-jasmine', 'pp-patch.js');
 
   config.files.splice(index + 2, 0, {
     pattern: patchPath,
