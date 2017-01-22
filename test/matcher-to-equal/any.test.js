@@ -73,9 +73,9 @@ test('object with function vs any function',
 
 test('array with number vs any string',
 
-  `Expected [1, 2, 3] to equal [1, <jasmine.any(String)>, 3].`,
+  `Expected [ 1, 2, 3 ] to equal [ 1, <jasmine.any(String)>, 3 ].`,
 
-  `Expected [1, <a>2</a>, 3] to equal [1, <e><jasmine.any(String)></e>, 3].`
+  `Expected [ 1, <a>2</a>, 3 ] to equal [ 1, <e><jasmine.any(String)></e>, 3 ].`
 );
 
 test('object with instance vs any instance',

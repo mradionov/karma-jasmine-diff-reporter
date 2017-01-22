@@ -1,5 +1,4 @@
-- arrays are actualy spaced
-- whitespaces
+- whitespaces (warning whitespace?)
 - branch for custom matchers
 - multiline
 - get rid of "extend" dependency
@@ -7,7 +6,7 @@
 - get rid of primitive types and handle them as one type, check another complex types
 - update docs
 - release notes and breaking changes
-- compatibility with latest karma and jasmine
+- compatibility with latest karma and jasmine, npm3
 - drop customizing matchers pretty and multiline, use all for one
 - refactor tests to support old node versions (backticks Node 4+) or drop Node.JS 0.12 support?
 
