@@ -2,7 +2,7 @@ var Value = require('../value');
 
 module.exports = {
 
-  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath) {
+  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath, options) {
     var oppositeValue = oppositeRootValue.byPath(value.getPath());
 
     // Different types are not comparable
@@ -27,13 +27,27 @@ module.exports = {
       diff += '<jasmine.objectContaining('
     }
 
-    diff += value.instance + '({ ';
+    diff += value.instance + '({';
+
+    if (options.pretty) {
+      diff += '\n';
+    } else {
+      diff += ' ';
+    }
 
     return diff;
   },
 
-  leave: function (value) {
-    var diff = ' })';
+  leave: function (value, options) {
+    var indent = value.indent(options);
+
+    var diff = indent;
+
+    if (!options.pretty) {
+      diff += ' ';
+    }
+
+    diff += '})';
 
     if (value.containing) {
       diff += ')>';

@@ -1,8 +1,13 @@
-- branch for custom matchers
-- pretty
-- multiline
+- arrays are actualy spaced
 - whitespaces
-- drop JSON
+- branch for custom matchers
+- multiline
 - get rid of "extend" dependency
-- handle "not"
+- check elipsis
+- get rid of primitive types and handle them as one type, check another complex types
+- update docs
+- release notes and breaking changes
+- compatibility with latest karma and jasmine
+- drop customizing matchers pretty and multiline, use all for one
+- refactor tests to support old node versions (backticks Node 4+) or drop Node.JS 0.12 support?
 
