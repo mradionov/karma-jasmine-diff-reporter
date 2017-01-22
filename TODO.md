@@ -1,4 +1,3 @@
-- rename color/test formatter to highlighter
 - whitespaces (warning whitespace?)
 - branch for custom matchers
 - check elipsis

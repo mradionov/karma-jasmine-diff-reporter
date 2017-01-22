@@ -5,7 +5,7 @@ var path = require('path');
 var karma = require('karma');
 
 var jasmineDiff = require('./src/jasmine-diff');
-var createColorFormatter = require('./src/color-formatter');
+var createColorHighlighter = require('./src/color-highlighter');
 var defaults = require('./src/utils/object').defaults;
 
 var karmaMajorVersion = Number(karma.VERSION.split('.')[0]);
@@ -27,7 +27,7 @@ function JasmineDiffReporter(baseReporterDecorator, config, logger) {
 
   // Create formatter responsible for highlighting message fragments
   // and pass it to diff function as a dep to be able to replace it in tests
-  var colorFormatter = createColorFormatter(reporterConfig.color);
+  var colorFormatter = createColorHighlighter(reporterConfig.color);
 
   // Check if reporter is last in the list of config reporters
   var reporterName = 'jasmine-diff';

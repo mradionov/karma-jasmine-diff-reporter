@@ -12,7 +12,7 @@ function getOwnProperty(object, prop, defaultValue) {
 }
 
 
-function createColorFormatter(options) {
+function createColorHighlighter(options) {
   options = options || {};
 
   function addStyles(string, styles) {
@@ -87,4 +87,4 @@ function createColorFormatter(options) {
   };
 }
 
-module.exports = createColorFormatter;
+module.exports = createColorHighlighter;
