@@ -6,6 +6,7 @@ var karma = require('karma');
 
 var jasmineDiff = require('./src/jasmine-diff');
 var createColorFormatter = require('./src/color-formatter');
+var defaults = require('./src/utils/object').defaults;
 
 var karmaMajorVersion = Number(karma.VERSION.split('.')[0]);
 
@@ -15,20 +16,18 @@ function JasmineDiffReporter(baseReporterDecorator, config, logger) {
   // Extend Karma Base reporter
   baseReporterDecorator(self);
 
-  var reporterOptions = config.jasmineDiffReporter || {};
+  var reporterConfig = defaults(config.jasmineDiffReporter || {}, {
+    matchers: {},
+    color: {},
+    pretty: false,
+    multiline: false
+  });
 
-  var options = {
-    matchers: reporterOptions.matchers || {},
-    color: reporterOptions.color || {},
-    pretty: reporterOptions.pretty || false,
-    multiline: reporterOptions.multiline || false
-  };
-
-  options.color.enabled = !!config.colors;
+  reporterConfig.color.enabled = !!config.colors;
 
   // Create formatter responsible for highlighting message fragments
   // and pass it to diff function as a dep to be able to replace it in tests
-  var colorFormatter = createColorFormatter(options.color);
+  var colorFormatter = createColorFormatter(reporterConfig.color);
 
   // Check if reporter is last in the list of config reporters
   var reporterName = 'jasmine-diff';
@@ -42,7 +41,7 @@ function JasmineDiffReporter(baseReporterDecorator, config, logger) {
   self.specFailure = function (browser, result) {
 
     result.log = result.log.map(function (message) {
-      return jasmineDiff.createDiffMessage(message, colorFormatter, options);
+      return jasmineDiff.createDiffMessage(message, colorFormatter, reporterConfig);
     });
 
     // If reporter is last in the list of reporters from config

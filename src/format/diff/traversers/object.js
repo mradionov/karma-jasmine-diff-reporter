@@ -1,4 +1,5 @@
-var Value = require('../value');
+'use strict';
+
 
 module.exports = {
 

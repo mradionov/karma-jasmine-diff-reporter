@@ -1,4 +1,7 @@
-var Value = require('../value');
+'use strict';
+
+var Value = require('../../../value');
+
 
 module.exports = {
 
