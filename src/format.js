@@ -1,137 +1,22 @@
 'use strict';
 
-var jsDiff = require('diff');
-
 var defaultMatchers = require('./matchers');
 var parse = require('./parse');
-var traverse = require('./traverse');
-var Value = require('./value');
 var marker = require('./marker');
-var objectFormatter = require('./formatters/object');
-var objectPropFormatter = require('./formatters/object-prop');
-var arrayPropFormatter = require('./formatters/array-prop');
-var arrayFormatter = require('./formatters/array');
-var propFormatter = require('./formatters/prop');
 
-// Replace while increasing indexFrom
-// If multiline is true - eat all spaces and punctuation around diffed objects -
-// it will keep things look nice.
-function strictReplace(str, pairs, multiline) {
-  var index, fromIndex = 0;
+var processOptions = require('./options');
 
-  pairs.some(function (pair) {
-    var toReplace = pair[0], replaceWith = pair[1];
+var matcherFormatters = {
+  toBe: require('./format/to-be'),
+  toEqual: require('./format/to-equal'),
+  toHaveBeenCalledWith: require('./format/to-have-been-called-with'),
+  toThrow: require('./format/to-throw'),
+};
+var formatCustomMatcher = require('./format/custom');
 
-    index = str.indexOf(toReplace, fromIndex);
-    if (index === -1) {
-      return true;
-    }
-
-    var lhs = str.substr(0, index);
-    var rhs = str.substr(index + toReplace.length);
-
-    if (multiline) {
-      lhs = trimSpaceAndPunctuation(lhs);
-      rhs = trimSpaceAndPunctuation(rhs);
-    }
-
-    str = lhs + replaceWith + rhs;
-
-    fromIndex = index + replaceWith.length;
-  });
-
-  return str;
-}
-
-function pickFormatter(value) {
-  var formatters = {};
-  formatters[Value.OBJECT] = objectFormatter;
-  formatters[Value.INSTANCE] = objectFormatter;
-  formatters[Value.ARRAY] = arrayFormatter;
-
-  var formatter = formatters[value.type] || propFormatter;
-
-  return formatter;
-}
-
-function pickPropFormatter(value) {
-  var propFormatters = {};
-  propFormatters[Value.OBJECT] = objectPropFormatter;
-  propFormatters[Value.INSTANCE] = objectPropFormatter;
-  propFormatters[Value.ARRAY] = arrayPropFormatter;
-
-  var formatter = propFormatters[value.parent.type];
-
-  return formatter;
-}
-
-function formatComplex(value, oppositeValue, highlightValue, highlighter, options) {
-  var diff = '';
-
-  traverse(value, {
-    enterProp: function (value, skipPath) {
-      var propFormatter = pickPropFormatter(value);
-      diff += propFormatter.enter(value, oppositeValue, highlightValue, highlighter, skipPath, options);
-    },
-    enter: function (value, skipPath) {
-      var formatter = pickFormatter(value);
-      diff += formatter.enter(value, oppositeValue, highlightValue, highlighter, skipPath, options);
-    },
-    leave: function (value) {
-      var formatter = pickFormatter(value);
-      diff += formatter.leave(value, options);
-    },
-    leaveProp: function (value) {
-      var propFormatter = pickPropFormatter(value);
-      diff += propFormatter.leave(value, options);
-    }
-  });
-
-  return diff;
-}
-
-function diffComplex(expectedValue, actualValue, highlighter, options) {
-  var result = {};
-
-  result.expected = formatComplex(
-    expectedValue, actualValue, highlighter.expected, highlighter, options
-  );
-
-  result.actual = formatComplex(
-    actualValue, expectedValue, highlighter.actual, highlighter, options
-  );
-
-  return result;
-}
-
-function diffPrimitives(expectedValue, actualValue, highlighter) {
-  var result = {
-    actual: '',
-    expected: ''
-  };
-
-  var diff = jsDiff.diffWordsWithSpace(expectedValue.out(), actualValue.out());
-
-  diff.forEach(function (part) {
-
-    var value = part.value;
-
-    if (part.added) {
-      result.actual += highlighter.actual(value);
-    } else if (part.removed) {
-      result.expected += highlighter.expected(value);
-    } else {
-      result.expected += value;
-      result.actual += value;
-    }
-
-  });
-
-  return result;
-}
 
 function format(message, highlighter, options) {
-  options = options || {};
+  options = processOptions(options);
 
   // Separate stack trace info from an actual Jasmine message
   // So it would be easier to detect newlines in Jasmine message
@@ -187,111 +72,19 @@ function format(message, highlighter, options) {
   var expectedValue = parse(expected);
   var actualValue = parse(actual);
 
-  var expectedDiff = '', actualDiff = '';
+  var formatMatcher = matcherFormatters[matcherName];
+  if (!formatMatcher) {
+    formatMatcher = formatCustomMatcher;
+  }
 
-  if (matcherName === 'toBe') {
-    // Matcher - toBe
-    //
-    // 1. If values have different types - completely highlight them both
-    // 2. If values have the same type and this type is primitive - apply string
-    //    diff to their string representations
-    // 3. If values have complex types - matcher "toBe" behaves like "===",
-    //    which means that complex types are compared by reference.
-    //    It's impossible to check the reference from here, so just hightlight
-    //    these objects with warning color.
+  var diff = formatMatcher(expectedValue, actualValue, highlighter, options);
 
-    if (expectedValue.type === actualValue.type) {
+  var expectedDiff = diff.expected;
+  var actualDiff = diff.actual;
 
-      if (expectedValue.isComplex()) {
-
-        // No point to pretty the objects if they are compared by reference.
-        expectedDiff = highlighter.warning(expectedValue.out());
-        actualDiff = highlighter.warning(actualValue.out());
-
-      } else {
-        // primitive
-
-        var diff = diffPrimitives(expectedValue, actualValue, highlighter);
-        expectedDiff += diff.expected;
-        actualDiff += diff.actual;
-
-      }
-
-    } else {
-      // different types
-
-      expectedDiff = highlighter.expected(expectedValue.out());
-      actualDiff = highlighter.actual(actualValue.out());
-
-    }
-
-  } else if (matcherName === 'toEqual') {
-    // Matcher - toEqual
-    //
-    // 1. If values have different types - completely highlight them both
-    // 2. If values have the same type and this type is primitive - apply string
-    //    diff to their string representations
-    // 3. If values have complex types, which can not nest - highlight them
-    //    with reference warning.
-    // 4. If values have complex types, which can nest - provide deep comparison
-    //    of all their nested values by applying the same steps.
-
-    if (expectedValue.type === actualValue.type) {
-
-      if (expectedValue.isComplex()) {
-
-        if (expectedValue.canNest()) {
-
-          var diff = diffComplex(expectedValue, actualValue, highlighter, options);
-          actualDiff += diff.actual;
-          expectedDiff += diff.expected;
-
-        } else {
-          // complex, can not nest
-
-          expectedDiff = highlighter.warning(expectedValue.out());
-          actualDiff = highlighter.warning(actualValue.out());
-
-        }
-
-      } else {
-        // primitive
-
-        var diff = diffPrimitives(expectedValue, actualValue, highlighter);
-        actualDiff += diff.actual;
-        expectedDiff += diff.expected;
-
-      }
-
-    } else {
-      // different types
-
-      expectedDiff = highlighter.expected(expectedValue.out());
-      actualDiff = highlighter.actual(actualValue.out());
-
-    }
-
-  } else if (matcherName === 'toHaveBeenCalledWith') {
-    // Matcher - toHaveBeenCalledWith
-    //
-    // Behaves like toEqual, compare results as arrays
-
-    var diff = diffComplex(expectedValue, actualValue, highlighter, options);
-    actualDiff += diff.actual;
-    expectedDiff += diff.expected;
-
-
-  } else if (matcherName === 'toThrow') {
-    // Matcher - toThrow and toThrowError
-    //
-    // Simply compare results as primitive strings
-
-    var diff = diffPrimitives(expectedValue, actualValue, highlighter);
-    expectedDiff += diff.expected;
-    actualDiff += diff.actual;
-
-  } else {
-    // TODO: custom matchers
+  if (options.multiline) {
+    expectedDiff = options.multiline.before + expectedDiff + options.multiline.after;
+    actualDiff = options.multiline.before + actualDiff + options.multiline.after;
   }
 
   var replacePairs = [[expected, expectedDiff], [actual, actualDiff]];
@@ -299,7 +92,9 @@ function format(message, highlighter, options) {
     replacePairs = [[actual, actualDiff], [expected, expectedDiff]];
   }
 
-  var formattedMatcherMessage = strictReplace(matcherMessage, replacePairs);
+  var formattedMatcherMessage = strictReplace(
+    matcherMessage, replacePairs, !!options.multiline
+  );
 
   // Compose final message
   var formattedMessage = marker.removeFromString(
@@ -307,6 +102,44 @@ function format(message, highlighter, options) {
   );
 
   return formattedMessage;
+}
+
+
+
+
+// Remove space, dots and commas from both sides of the string
+function trimSpaceAndPunctuation(str) {
+  return str.replace(/^[\s,]*/, '').replace(/[\s,]*$/, '');
+}
+
+// Replace while increasing indexFrom
+// If multiline is true - eat all spaces and punctuation around diffed objects -
+// it will keep things look nice.
+function strictReplace(str, pairs, multiline) {
+  var index, fromIndex = 0;
+
+  pairs.some(function (pair) {
+    var toReplace = pair[0], replaceWith = pair[1];
+
+    index = str.indexOf(toReplace, fromIndex);
+    if (index === -1) {
+      return true;
+    }
+
+    var lhs = str.substr(0, index);
+    var rhs = str.substr(index + toReplace.length);
+
+    if (multiline) {
+      lhs = trimSpaceAndPunctuation(lhs);
+      rhs = trimSpaceAndPunctuation(rhs);
+    }
+
+    str = lhs + replaceWith + rhs;
+
+    fromIndex = index + replaceWith.length;
+  });
+
+  return str;
 }
 
 module.exports = format;

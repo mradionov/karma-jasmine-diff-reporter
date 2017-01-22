@@ -87,17 +87,26 @@ Value.prototype.out = function () {
 };
 
 Value.prototype.indent = function (options) {
-  if (!options.pretty) return '';
+  var indent = '';
 
-  // 2 spaces by default
-  var levelIndent = options.pretty !== true ? options.pretty : 2;
-  if (typeof levelIndent === 'number') {
-    levelIndent = stringUtils.times(' ', levelIndent);
+  if (options.pretty) {
+
+    if (options.multiline) {
+      indent += options.multiline.indent;
+    }
+
+    indent += stringUtils.times(options.pretty, this.level);
+
+  } else {
+
+    // When not pretty, only add multiline offset to parent
+    if (options.multiline && this.level === 0) {
+      indent += options.multiline.indent;
+    }
+
   }
 
-  var totalIndent = stringUtils.times(levelIndent, this.level);
-
-  return totalIndent;
+  return indent;
 }
 
 Value.prototype.includes = function (value) {

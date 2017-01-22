@@ -1,8 +1,10 @@
-var Value = require('../value');
+'use strict';
+
 
 module.exports = {
 
   enter: function (value, oppositeValue, highlightValue, highlighter, skipPath, options) {
+
     var diff = '';
 
     if (value.containing) {
@@ -23,9 +25,11 @@ module.exports = {
   leave: function (value, options) {
     var indent = value.indent(options);
 
-    var diff = indent;
+    var diff = '';
 
-    if (!options.pretty) {
+    if (options.pretty) {
+      diff += indent;
+    } else {
       diff += ' ';
     }
 
