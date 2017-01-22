@@ -2,38 +2,51 @@ var Value = require('../value');
 
 module.exports = {
 
-  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath) {
+  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath, options) {
     var oppositeValue = oppositeRootValue.byPath(value.getPath());
     var oppositeParent = oppositeRootValue.byPath(value.parent.getPath());
+    var indent = value.indent(options);
 
     if (value.parent.containing) {
+      // TODO: deep include?
       if (oppositeParent.includes(value)) {
         skipPath(value.getPath());
-        return value.out();
+        return indent + value.out();
       } else {
         skipPath(value.getPath());
-        return highlightValue(value.out());
+        return indent + highlightValue(value.out());
       }
     }
 
     if (oppositeParent && oppositeParent.containing) {
-      skipPath(value.getPath()); // ? skips array itsbad
-      return value.out();
+      skipPath(value.getPath()); // TODO: skips array itsbad
+      return indent + value.out();
     }
 
     if (!oppositeValue) {
-      skipPath(value.getPath()); // ? skips array itsbad
-      return highlightValue(value.out());
+      skipPath(value.getPath()); // TODO: skips array itsbad
+      return indent + highlightValue(value.out());
     }
 
-    return '';
+    return indent;
   },
 
-  leave: function (value) {
-    if (value.isLast()) {
-      return '';
+  leave: function (value, options) {
+    var diff = '';
+
+    if (!value.isLast()) {
+      diff += ',';
     }
-    return ', ';
+
+    if (options.pretty) {
+      diff += '\n';
+    } else {
+      if (!value.isLast()) {
+        diff += ' ';
+      }
+    }
+
+    return diff;
   },
 
 };

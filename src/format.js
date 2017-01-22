@@ -65,40 +65,40 @@ function pickPropFormatter(value) {
   return formatter;
 }
 
-function formatComplex(value, oppositeValue, highlightValue, highlighter) {
+function formatComplex(value, oppositeValue, highlightValue, highlighter, options) {
   var diff = '';
 
   traverse(value, {
     enterProp: function (value, skipPath) {
       var propFormatter = pickPropFormatter(value);
-      diff += propFormatter.enter(value, oppositeValue, highlightValue, highlighter, skipPath);
+      diff += propFormatter.enter(value, oppositeValue, highlightValue, highlighter, skipPath, options);
     },
     enter: function (value, skipPath) {
       var formatter = pickFormatter(value);
-      diff += formatter.enter(value, oppositeValue, highlightValue, highlighter, skipPath);
+      diff += formatter.enter(value, oppositeValue, highlightValue, highlighter, skipPath, options);
     },
     leave: function (value) {
       var formatter = pickFormatter(value);
-      diff += formatter.leave(value);
+      diff += formatter.leave(value, options);
     },
     leaveProp: function (value) {
       var propFormatter = pickPropFormatter(value);
-      diff += propFormatter.leave(value);
+      diff += propFormatter.leave(value, options);
     }
   });
 
   return diff;
 }
 
-function diffComplex(expectedValue, actualValue, highlighter) {
+function diffComplex(expectedValue, actualValue, highlighter, options) {
   var result = {};
 
   result.expected = formatComplex(
-    expectedValue, actualValue, highlighter.expected, highlighter
+    expectedValue, actualValue, highlighter.expected, highlighter, options
   );
 
   result.actual = formatComplex(
-    actualValue, expectedValue, highlighter.actual, highlighter
+    actualValue, expectedValue, highlighter.actual, highlighter, options
   );
 
   return result;
@@ -204,8 +204,9 @@ function format(message, highlighter, options) {
 
       if (expectedValue.isComplex()) {
 
-        expectedDiff = highlighter.warning(expectedValue.text);
-        actualDiff = highlighter.warning(actualValue.text);
+        // No point to pretty the objects if they are compared by reference.
+        expectedDiff = highlighter.warning(expectedValue.out());
+        actualDiff = highlighter.warning(actualValue.out());
 
       } else {
         // primitive
@@ -219,8 +220,8 @@ function format(message, highlighter, options) {
     } else {
       // different types
 
-      expectedDiff = highlighter.expected(expectedValue.text);
-      actualDiff = highlighter.actual(actualValue.text);
+      expectedDiff = highlighter.expected(expectedValue.out());
+      actualDiff = highlighter.actual(actualValue.out());
 
     }
 
@@ -241,15 +242,15 @@ function format(message, highlighter, options) {
 
         if (expectedValue.canNest()) {
 
-          var diff = diffComplex(expectedValue, actualValue, highlighter);
+          var diff = diffComplex(expectedValue, actualValue, highlighter, options);
           actualDiff += diff.actual;
           expectedDiff += diff.expected;
 
         } else {
           // complex, can not nest
 
-          expectedDiff = highlighter.warning(expectedValue.text);
-          actualDiff = highlighter.warning(actualValue.text);
+          expectedDiff = highlighter.warning(expectedValue.out());
+          actualDiff = highlighter.warning(actualValue.out());
 
         }
 
@@ -275,7 +276,7 @@ function format(message, highlighter, options) {
     //
     // Behaves like toEqual, compare results as arrays
 
-    var diff = diffComplex(expectedValue, actualValue, highlighter);
+    var diff = diffComplex(expectedValue, actualValue, highlighter, options);
     actualDiff += diff.actual;
     expectedDiff += diff.expected;
 

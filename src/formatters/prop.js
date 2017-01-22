@@ -2,7 +2,7 @@ var Value = require('../value');
 
 module.exports = {
 
-  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath) {
+  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath, options) {
     var oppositeValue = oppositeRootValue.byPath(value.getPath());
 
     if (value.type === Value.ANYTHING || oppositeValue.type === Value.ANYTHING) {
@@ -85,7 +85,7 @@ module.exports = {
 
   },
 
-  leave: function (value) {
+  leave: function (value, options) {
     return '';
   },
 

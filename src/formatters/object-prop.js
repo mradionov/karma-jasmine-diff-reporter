@@ -2,9 +2,10 @@ var Value = require('../value');
 
 module.exports = {
 
-  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath) {
+  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath, options) {
     var oppositeValue = oppositeRootValue.byPath(value.getPath());
     var oppositeParent = oppositeRootValue.byPath(value.parent.getPath());
+    var indent = value.indent(options);
 
     const key = value.key + ': ';
 
@@ -12,21 +13,32 @@ module.exports = {
 
       if (oppositeParent && oppositeParent.containing) {
         skipPath(value.getPath());
-        return key + value.out();
+        return indent + key + value.out();
       }
 
       skipPath(value.getPath());
-      return highlightValue(key + value.out());
+      return indent + highlightValue(key + value.out());
     }
 
-    return key;
+    return indent + key;
   },
 
-  leave: function (value) {
-    if (value.isLast()) {
-      return '';
+  leave: function (value, options) {
+    var diff = '';
+
+    if (!value.isLast()) {
+      diff += ',';
     }
-    return ', ';
+
+    if (options.pretty) {
+      diff += '\n';
+    } else {
+      if (!value.isLast()) {
+        diff += ' ';
+      }
+    }
+
+    return diff;
   },
 
 };

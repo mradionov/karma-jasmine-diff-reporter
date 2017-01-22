@@ -1,12 +1,7 @@
 'use strict';
 
-function findValueInPairsByKey(children, key) {
-  for (var i = 0; i < children.length; i++) {
-    if (children[i].key === key) {
-      return children[i];
-    }
-  }
-}
+var stringUtils = require('./utils/string');
+var collectionUtils = require('./utils/collection');
 
 function Value(type, text, options) {
   options = options || {};
@@ -31,7 +26,6 @@ function Value(type, text, options) {
 
 Value.prototype.updateReferences = function (level) {
   level = typeof level === 'undefined' ? this.level + 1 : level;
-  // console.log(level);
   for (var i = 0; i < this.children.length; i++) {
     var child = this.children[i];
     child.parent = this;
@@ -65,10 +59,7 @@ Value.prototype.byPath = function (path) {
     return this;
   }
 
-  if (this.type !== Value.ARRAY &&
-      this.type !== Value.OBJECT &&
-      this.type !== Value.INSTANCE
-  ) {
+  if (!this.isComplex()) {
     return;
   }
 
@@ -77,7 +68,7 @@ Value.prototype.byPath = function (path) {
 
   for (var i = 0; i < parts.length; i++) {
     var key = parts[i];
-    var found = findValueInPairsByKey(result.children, key);
+    var found = collectionUtils.findBy(result.children, 'key', key);
     if (!found) {
       return;
     }
@@ -94,6 +85,20 @@ Value.prototype.out = function () {
   }
   return this.text;
 };
+
+Value.prototype.indent = function (options) {
+  if (!options.pretty) return '';
+
+  // 2 spaces by default
+  var levelIndent = options.pretty !== true ? options.pretty : 2;
+  if (typeof levelIndent === 'number') {
+    levelIndent = stringUtils.times(' ', levelIndent);
+  }
+
+  var totalIndent = stringUtils.times(levelIndent, this.level);
+
+  return totalIndent;
+}
 
 Value.prototype.includes = function (value) {
   for (var i = 0; i < this.children.length; i++) {

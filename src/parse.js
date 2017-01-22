@@ -1,8 +1,10 @@
 'use strict';
 
 var Value = require('./value');
+var MARKER = require('./marker').MARKER;
 
-var MARKER = '\u200C';
+var stringUtils = require('./utils/string');
+
 var ANY_PATTERN = /^<jasmine\.any\((.*)\)>$/;
 var OBJECT_CONTAINING_PATTERN = /^<jasmine.objectContaining\((.*)\)>$/;
 var ARRAY_CONTAINING_PATTERN = /^<jasmine.arrayContaining\((.*)\)>$/;
@@ -171,26 +173,44 @@ function extractValues(valueStr) {
   var value = '';
   var values = [];
   var nestLevel = 0;
+  var inString = false;
 
   for (var i = 0; i < valueStr.length; i++) {
     var ch = valueStr[i];
 
-    if (ch === '[' || ch === '{') {
-      nestLevel++;
-      value += ch;
-      continue;
-    }
+    // Detect if current character represents the beginning/end of the string
+    // So we could know later if we are inside a string
 
-    if (ch === ']' || ch === '}') {
-      nestLevel--;
-      value += ch;
-      continue;
-    }
+    // For Jasmine output strings are wrapped in single quotes and markers:
+    // <marker><single quote><marker><string></marker></single quote></marker>
+    if (ch === MARKER && stringUtils.endsWith(value, MARKER + "'")) {
 
-    if (ch === ',' && nestLevel === 0) {
-      values.push(value.trim());
-      value = '';
-      continue;
+      inString = !inString;
+
+    } else if (!inString) {
+
+      if (ch === '[' || ch === '{') {
+        nestLevel++;
+        value += ch;
+        continue;
+      }
+
+      if (ch === ']' || ch === '}') {
+        nestLevel--;
+        value += ch;
+        continue;
+      }
+
+      if (ch === ' ' && nestLevel === 0) {
+        continue;
+      }
+
+      if (ch === ',' && nestLevel === 0) {
+        values.push(value.trim());
+        value = '';
+        continue;
+      }
+
     }
 
     value += ch;

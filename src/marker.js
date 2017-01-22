@@ -5,6 +5,8 @@
 // https://en.wikipedia.org/wiki/Zero-width_non-joiner
 var MARKER = '\u200C';
 
+exports.MARKER = MARKER;
+
 exports.wrapString = function(string) {
   return MARKER + "'" + MARKER + string + MARKER + "'" + MARKER;
 };
