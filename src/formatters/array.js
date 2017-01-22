@@ -13,6 +13,8 @@ module.exports = {
 
     if (options.pretty) {
       diff += '\n';
+    } else {
+      diff += ' ';
     }
 
     return diff;
@@ -22,6 +24,10 @@ module.exports = {
     var indent = value.indent(options);
 
     var diff = indent;
+
+    if (!options.pretty) {
+      diff += ' ';
+    }
 
     diff += ']';
 

@@ -91,9 +91,9 @@ test('objects by ref',
 
 test('arrays by ref',
 
-  `Expected [1, 2, 3] to be [1, 2, 3].`,
+  `Expected [ 1, 2, 3 ] to be [ 1, 2, 3 ].`,
 
-  `Expected <w>[1, 2, 3]</w> to be <w>[1, 2, 3]</w>.`
+  `Expected <w>[ 1, 2, 3 ]</w> to be <w>[ 1, 2, 3 ]</w>.`
 
   );
 
