@@ -3,7 +3,7 @@
 var tape = require('tape');
 
 var format = require('../../src/format');
-var formatter = require('./test-formatter')();
+var highlighter = require('./test-highlighter')();
 var stack = require('./stack');
 
 function wrapTape(tapeFn, namespace) {
@@ -14,7 +14,7 @@ function wrapTape(tapeFn, namespace) {
     options.format = options.format || {};
 
     return tapeFn(namespace + ' ' + name,  function (assert) {
-      var out = format(input + stack, formatter, options.format);
+      var out = format(input + stack, highlighter, options.format);
 
       assert.equal(out, expected + stack);
       assert.end();
