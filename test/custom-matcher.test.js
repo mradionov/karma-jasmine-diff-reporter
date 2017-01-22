@@ -1,45 +1,33 @@
 'use strict';
 
-// var test = require('tape');
-// var diff = require('../src/jasmine-diff').createDiffMessage;
-// var formatter = require('./helpers/test-formatter')();
-// var stack = require('./helpers/stack');
+var createTest = require('./helpers/test');
+var m = require('./helpers/mark');
 
-// test('custom-matcher: default order', function (assert) {
-//   var options = {
-//     matchers: {
-//       toLookTheSameAS: {
-//         pattern: /Expected ([\S\s]*?) to look the same as ([\S\s]*?)\./
-//       }
-//     }
-//   };
-//   var input =
-//     "Expected true to look the same as false." + stack;
-//   var expected =
-//     "Expected <e>true</e> to look the same as <a>false</a>." + stack;
+var test = createTest('format: custom:');
 
-//   var out = diff(input, formatter, options);
+test('default order',
 
-//   assert.equal(out, expected);
-//   assert.end();
-// });
+  `Expected true to look the same as false.`,
 
-// test('custom-matcher: reverse order', function (assert) {
-//   var options = {
-//     matchers: {
-//       toLookTheSameAS: {
-//         pattern: /Expected ([\S\s]*?) to look the same as ([\S\s]*?)\./,
-//         reverse: true
-//       }
-//     }
-//   };
-//   var input =
-//     "Expected true to look the same as false." + stack;
-//   var expected =
-//     "Expected <a>true</a> to look the same as <e>false</e>." + stack;
+  `Expected <e>true</e> to look the same as <a>false</a>.`,
 
-//   var out = diff(input, formatter, options);
+  { format: { matchers: {
+    toLookTheSameAS: {
+      pattern: /Expected ([\S\s]*?) to look the same as ([\S\s]*?)\./
+    }
+  }}}
+);
 
-//   assert.equal(out, expected);
-//   assert.end();
-// });
+test('reverse order',
+
+  `Expected true to look the same as false.`,
+
+  `Expected <a>true</a> to look the same as <e>false</e>.`,
+
+  { format: { matchers: {
+    toLookTheSameAS: {
+      pattern: /Expected ([\S\s]*?) to look the same as ([\S\s]*?)\./,
+      reverse: true
+    }
+  }}}
+);
