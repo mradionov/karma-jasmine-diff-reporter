@@ -1,10 +1,11 @@
 'use strict';
 
+var diff = require('./diff');
 
-// TODO: primitives I guess
-module.exports = function formatCustom() {
-  return {
-    expected: '',
-    actual: '',
-  };
+
+// Behave like toEqual, deep compare the values
+module.exports = function formatCustom(
+  expectedValue, actualValue, highlighter, options
+) {
+  return diff.complex(expectedValue, actualValue, highlighter, options);
 };
