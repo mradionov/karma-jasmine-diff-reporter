@@ -44,6 +44,8 @@ module.exports = function(config) {
   config.set({
 
     frameworks: ['jasmine'],
+    
+    plugins: ['karma-jasmine-diff-reporter'],
 
     // use Progress reporter and still highlight diffs
     reporters: ['jasmine-diff', 'progress']
@@ -83,6 +85,8 @@ module.exports = function(config) {
   config.set({
 
     frameworks: ['jasmine'],
+    
+    plugins: ['karma-jasmine-diff-reporter'],
 
     reporters: ['jasmine-diff'],
 
@@ -102,6 +106,8 @@ module.exports = function(config) {
   config.set({
 
     frameworks: ['jasmine'],
+    
+    plugins: ['karma-jasmine-diff-reporter'],
 
     reporters: ['jasmine-diff'],
 
@@ -161,6 +167,8 @@ module.exports = function(config) {
   config.set({
 
     frameworks: ['jasmine'],
+    
+    plugins: ['karma-jasmine-diff-reporter'],
 
     reporters: ['jasmine-diff']
 
@@ -194,6 +202,8 @@ module.exports = function(config) {
   config.set({
 
     frameworks: ['jasmine'],
+    
+    plugins: ['karma-jasmine-diff-reporter'],
 
     reporters: ['jasmine-diff']
 
@@ -229,6 +239,8 @@ module.exports = function(config) {
   config.set({
 
     frameworks: ['jasmine'],
+    
+    plugins: ['karma-jasmine-diff-reporter'],
 
     reporters: ['jasmine-diff']
 
@@ -257,6 +269,8 @@ module.exports = function(config) {
   config.set({
 
     frameworks: ['jasmine'],
+    
+    plugins: ['karma-jasmine-diff-reporter'],
 
     reporters: ['jasmine-diff']
 
@@ -296,6 +310,8 @@ module.exports = function(config) {
   config.set({
 
     frameworks: ['jasmine'],
+    
+    plugins: ['karma-jasmine-diff-reporter'],
 
     reporters: ['jasmine-diff']
 
