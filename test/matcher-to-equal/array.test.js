@@ -9,7 +9,8 @@ test(
 
   `Expected [ 1, 2, 3 ] to equal [ 1, 4, 3 ].`,
 
-  `Expected [ 1, <a>2</a>, 3 ] to equal [ 1, <e>4</e>, 3 ].`
+  `Expected [ 1, <a>2</a>, 3 ] ` +
+  `to equal [ 1, <e>4</e>, 3 ].`
 );
 
 test('with object with wrong value',
