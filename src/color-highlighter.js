@@ -33,25 +33,15 @@ function createColorHighlighter(options) {
   }
 
   function actual(string) {
+    return string
+      .replace(/\S+/g, actualText)
+      .replace(/\s+/g, actualWhitespace);
+  }
+
+  function actualText(string) {
     var styles = [
       getOwnProperty(options, 'actualBg', 'bgGreen'),
       getOwnProperty(options, 'actualFg', 'white')
-    ];
-    return addStyles(string, styles);
-  }
-
-  function expected(string) {
-    var styles = [
-      getOwnProperty(options, 'expectedBg', 'bgRed'),
-      getOwnProperty(options, 'expectedFg', 'white')
-    ];
-    return addStyles(string, styles);
-  }
-
-  function defaults(string) {
-    var styles = [
-      options.defaultFg,
-      options.defaultBg
     ];
     return addStyles(string, styles);
   }
@@ -63,6 +53,21 @@ function createColorHighlighter(options) {
     return addStyles(string, styles);
   }
 
+
+  function expected(string) {
+    return string
+      .replace(/\S+/g, expectedText)
+      .replace(/\s+/g, expectedWhitespace);
+  }
+
+  function expectedText(string) {
+    var styles = [
+      getOwnProperty(options, 'expectedBg', 'bgRed'),
+      getOwnProperty(options, 'expectedFg', 'white')
+    ];
+    return addStyles(string, styles);
+  }
+
   function expectedWhitespace(string) {
     var styles = [
       getOwnProperty(options, 'expectedWhitespaceBg', 'bgRed')
@@ -70,20 +75,42 @@ function createColorHighlighter(options) {
     return addStyles(string, styles);
   }
 
+
   function warning(string) {
+    return string
+      .replace(/\S+/g, warningText)
+      .replace(/\s+/g, warningWhitespace);
+  }
+
+  function warningText(string) {
     var styles = [
-      'bgOrange'
+      getOwnProperty(options, 'warningBg', 'bgYellow')
     ];
     return addStyles(string, styles);
   }
+
+  function warningWhitespace(string) {
+    var styles = [
+      getOwnProperty(options, 'warningWhitespaceBg', 'bgYellow'),
+    ];
+    return addStyles(string, styles);
+  }
+
+
+  function defaults(string) {
+    var styles = [
+      options.defaultFg,
+      options.defaultBg
+    ];
+    return addStyles(string, styles);
+  }
+
 
   return {
     actual: actual,
     expected: expected,
     defaults: defaults,
-    actualWhitespace: actualWhitespace,
-    expectedWhitespace: expectedWhitespace,
-    warning: warning
+    warning: warning,
   };
 }
 

@@ -36,56 +36,6 @@ module.exports = {
     }
 
     return value.out();
-
-    // var isParentArray = value.parent.type === Value.ARRAY;
-    // var key = isParentArray ? '' : value.key + ': ';
-
-    // if (isParentArray) {
-    //   // If current value is in array and it is being checked for containment,
-    //   // do not hightlight any props.
-    //   if (oppositeParent && oppositeParent.containing) {
-    //     return key + value.out();
-    //   }
-
-    //   if (value.parent.containing) {
-    //     if (oppositeParent.includes(value)) {
-    //       return key + value.out();
-    //     } else {
-    //       return highlightValue(key + value.out());
-    //     }
-    //   }
-    // }
-
-    // // If there is no value by the same path in an opposite root value
-    // if (!oppositeValue) {
-    //   // Do not highlight any props in current object, if the opposite value
-    //   // is try to check for containment.
-    //   if (oppositeParent && oppositeParent.containing) {
-    //     return key + value.out();
-      // }
-
-    //   // Otherwise, highlight the whole props, because it is missing
-      // return highlightValue(key + value.out());
-      // return hi
-    // }
-
-    // if (value.out() === oppositeValue.out()) {
-    //   if (value.type === Value.FUNCTION) {
-    //     return key + highlighter.warning(value.out());
-    //   }
-    //   return key + value.out();
-    // }
-
-    // if (value.type === Value.ANYTHING || oppositeValue.type === Value.ANYTHING) {
-    //   return key + value.out();
-    // }
-
-
-
-    // if (value.any || oppositeValue.any) {
-    //   return key + value.out();
-    // }
-
   },
 
   leave: function (value, options) {

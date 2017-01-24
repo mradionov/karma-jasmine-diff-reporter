@@ -19,12 +19,18 @@ module.exports = function diffPrimitives(
     var value = part.value;
 
     if (part.added) {
+
       result.actual += highlighter.actual(value);
+
     } else if (part.removed) {
+
       result.expected += highlighter.expected(value);
+
     } else {
+
       result.expected += value;
       result.actual += value;
+
     }
 
   });

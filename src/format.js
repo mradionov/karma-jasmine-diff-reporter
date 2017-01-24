@@ -82,6 +82,10 @@ function format(message, highlighter, options) {
   var expectedDiff = diff.expected;
   var actualDiff = diff.actual;
 
+  // Do not include leading spaces in default highlight
+  expectedDiff = expectedDiff.replace(/\S[\S\s]*/, highlighter.defaults);
+  actualDiff = actualDiff.replace(/\S[\S\s]*/, highlighter.defaults);
+
   if (options.multiline) {
     expectedDiff = options.multiline.before + expectedDiff + options.multiline.after;
     actualDiff = options.multiline.before + actualDiff + options.multiline.after;
@@ -103,9 +107,6 @@ function format(message, highlighter, options) {
 
   return formattedMessage;
 }
-
-
-
 
 // Remove space, dots and commas from both sides of the string
 function trimSpaceAndPunctuation(str) {

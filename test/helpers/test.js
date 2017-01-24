@@ -3,7 +3,7 @@
 var tape = require('tape');
 
 var format = require('../../src/format');
-var highlighter = require('./test-highlighter')();
+var createHighlighter = require('./test-highlighter');
 var stack = require('./stack');
 
 function wrapTape(tapeFn, namespace) {
@@ -12,6 +12,9 @@ function wrapTape(tapeFn, namespace) {
     options = options || {};
     options.stack = options.stack || stack;
     options.format = options.format || {};
+    options.highlighter = options.highlighter || {};
+
+    var highlighter = createHighlighter(options.highlighter);
 
     return tapeFn(namespace + ' ' + name,  function (assert) {
       var out = format(input + stack, highlighter, options.format);
