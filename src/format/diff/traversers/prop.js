@@ -8,6 +8,7 @@ module.exports = {
   enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath, options) {
     var oppositeValue = oppositeRootValue.byPath(value.getPath());
 
+
     if (value.type === Value.ANYTHING || oppositeValue.type === Value.ANYTHING) {
       return value.out();
     }
@@ -16,6 +17,7 @@ module.exports = {
     if (value.type !== oppositeValue.type) {
       return highlightValue(value.out());
     }
+
 
     // Don't highlight "any" for same types
     if (value.any || oppositeValue.any) {

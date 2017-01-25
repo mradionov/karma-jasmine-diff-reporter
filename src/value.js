@@ -9,7 +9,7 @@ function Value(type, text, options) {
   this.type = type;
   this.text = text;
 
-  this.key = typeof options.key !== 'undefined'  ? options.key + '' : '';
+  this.key = typeof options.key !== 'undefined' ? options.key + '' : '';
   this.any = options.any || false;
   this.containing = options.containing || false;
   this.instance = options.instance || 'Object';
@@ -133,48 +133,51 @@ Value.prototype.isPrimitive = function () {
 // Tells if type should be highlighted as warning
 Value.prototype.isComplex = function () {
   var complexTypes = [
+    Value.ARRAY,
     Value.OBJECT,
     Value.INSTANCE,
-    Value.ARRAY,
     Value.FUNCTION,
+    Value.NODE,
     Value.GLOBAL,
+    Value.CIRCULAR_REFERENCE,
   ];
   return complexTypes.indexOf(this.type) !== -1;
 };
 
 Value.prototype.canNest = function () {
   var nestTypes = [
+    Value.ARRAY,
     Value.OBJECT,
     Value.INSTANCE,
-    Value.ARRAY,
   ];
   return nestTypes.indexOf(this.type) !== -1;
 };
 
-// JS
+// Identified primitives (for "any")
+
 Value.UNDEFINED = 'UNDEFINED';
 Value.NULL = 'NULL';
 Value.BOOLEAN = 'BOOLEAN';
 Value.STRING = 'STRING';
-Value.FUNCTION = 'FUNCTION';
 Value.NUMBER = 'NUMBER';
+
+// Complex, can nest
 Value.ARRAY = 'ARRAY';
 Value.OBJECT = 'OBJECT';
-// Jasmine
-Value.ANYTHING = 'ANYTHING';
-Value.NODE = 'NODE';
-Value.SPY = 'SPY';
-Value.NEGATIVE_ZERO = 'NEGATIVE_ZERO';
-Value.GLOBAL = 'GLOBAL';
 Value.INSTANCE = 'INSTANCE';
-Value.DEFINED = 'DEFINED';
-Value.TRUTHY = 'TRUTHY';
-Value.FALSY = 'FALSY';
-Value.CLOSE_TO = 'CLOSE_TO';
-Value.GREATER_THAN = 'GREATER_THAN';
-Value.LESS_THAN = 'LESS_THAN';
 
+// Complex, can NOT nest
+Value.FUNCTION = 'FUNCTION';
+Value.NODE = 'NODE';
+Value.GLOBAL = 'GLOBAL';
+Value.CIRCULAR_REFERENCE = 'CIRCULAR_REFERENCE';
+
+// Jasmine-specific
+Value.ANYTHING = 'ANYTHING';
+Value.SPY = 'SPY';
+
+// Basic types compared as strings,
+// anything not parsed will be considered primitive
 Value.PRIMITIVE = 'PRIMITIVE';
-Value.UNKNOWN = 'UNKNOWN';
 
 module.exports = Value;

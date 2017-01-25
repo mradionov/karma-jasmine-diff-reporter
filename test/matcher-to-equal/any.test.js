@@ -19,6 +19,22 @@ test('any string vs number',
   `Expected <a><jasmine.any(String)></a> to equal <e>3</e>.`
 );
 
+test('number vs any date',
+
+  `Expected 4 to equal <jasmine.any(Date)>.`,
+
+  `Expected <a>4</a> to equal <e><jasmine.any(Date)></e>.`
+);
+
+test('any number vs date',
+
+  `Expected <jasmine.any(Number)> ` +
+  `to equal Date(Wed Jan 25 2017 22:26:56 GMT+0300 (+03)).`,
+
+  `Expected <a><jasmine.any(Number)></a> ` +
+  `to equal <e>Date(Wed Jan 25 2017 22:26:56 GMT+0300 (+03))</e>.`
+);
+
 test('any number vs any string',
 
   `Expected <jasmine.any(Number)> to equal <jasmine.any(String)>.`,
