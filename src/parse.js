@@ -144,10 +144,6 @@ function extractValues(valueStr) {
         continue;
       }
 
-      if (ch === ' ' && nestLevel === 0) {
-        continue;
-      }
-
       if (ch === ',' && nestLevel === 0) {
         values.push(value.trim());
         value = '';
@@ -226,6 +222,10 @@ function isCircularReference(valueStr) {
 // Occurs in arrays when array length is bigger than MAX_PRETTY_PRINT_ARRAY_LENGTH
 function isEllipsis(valueStr) {
   return valueStr === '...';
+}
+
+function isDeepArray(valueStr) {
+  return valueStr === 'Array';
 }
 
 function isSpy(valueStr) {
@@ -339,7 +339,16 @@ function parse(valueStr, options) {
   }
 
   if (isCircularReference(valueStr)) {
-    return new Value(Value.CIRCULAR_REFERENCE, valueStr, options);
+    var a =  new Value(Value.CIRCULAR_REFERENCE, valueStr, options);
+    return a;
+  }
+
+  if (isEllipsis(valueStr)) {
+    return new Value(Value.ELLIPSIS, valueStr, options);
+  }
+
+  if (isDeepArray(valueStr)) {
+    return new Value(Value.DEEP_ARRAY, valueStr, options);
   }
 
   return new Value(Value.PRIMITIVE, valueStr, options);

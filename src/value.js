@@ -140,6 +140,8 @@ Value.prototype.isComplex = function () {
     Value.NODE,
     Value.GLOBAL,
     Value.CIRCULAR_REFERENCE,
+    Value.ELLIPSIS,
+    Value.DEEP_ARRAY
   ];
   return complexTypes.indexOf(this.type) !== -1;
 };
@@ -171,6 +173,8 @@ Value.FUNCTION = 'FUNCTION';
 Value.NODE = 'NODE';
 Value.GLOBAL = 'GLOBAL';
 Value.CIRCULAR_REFERENCE = 'CIRCULAR_REFERENCE';
+Value.ELLIPSIS = 'ELLIPSIS';
+Value.DEEP_ARRAY = 'DEEP_ARRAY';
 
 // Jasmine-specific
 Value.ANYTHING = 'ANYTHING';
