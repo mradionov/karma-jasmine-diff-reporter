@@ -4,79 +4,12 @@ var Value = require('./value');
 var MARKER = require('./marker').MARKER;
 
 var stringUtils = require('./utils/string');
+var endsWith = stringUtils.endsWith;
 
 var ANY_PATTERN = /^<jasmine\.any\((.*)\)>$/;
 var OBJECT_CONTAINING_PATTERN = /^<jasmine.objectContaining\((.*)\)>$/;
 var ARRAY_CONTAINING_PATTERN = /^<jasmine.arrayContaining\((.*)\)>$/;
 
-
-function isGlobal(valueStr) {
-  return valueStr === '<global>';
-}
-
-function isNode(valueStr) {
-  return valueStr === 'HTMLNode';
-}
-
-// Occurs in arrays when array length is bigger than MAX_PRETTY_PRINT_ARRAY_LENGTH
-function isEllipsis(valueStr) {
-  return valueStr === '...';
-}
-
-function isDate(valueStr) {
-  return !!valueStr.match(/^Date\(.*\)$/);
-}
-
-function isCircularReference(valueStr) {
-  return !!valueStr.match(/^<circular reference: (Array|Object)>$/);
-}
-
-function isNegativeZero(valueStr) {
-  return valueStr === '-0';
-}
-
-function isBoolean(valueStr) {
-  return valueStr === 'true' || valueStr === 'false';
-}
-
-function isNull(valueStr) {
-  return valueStr === 'null';
-}
-
-// TODO: float
-function isNumber(valueStr) {
-  return !!valueStr.match(/^\d+$/);
-}
-
-function isString(valueStr) {
-  var marker = MARKER + "'" + MARKER;
-  return valueStr.indexOf(marker) === 0 && valueStr.lastIndexOf(marker) === valueStr.length - 3;
-}
-
-function isFunction(valueStr) {
-  return valueStr === 'Function';
-}
-
-function isArray(valueStr) {
-  return valueStr[0] === '[' && valueStr[valueStr.length - 1] === ']';
-}
-
-function isObject(valueStr) {
-  return valueStr.indexOf('Object({') === 0 && valueStr.lastIndexOf('})') === valueStr.length - 2;
-}
-
-// TODO: check for correct identifier
-function isInstance(valueStr) {
-  var index = valueStr.indexOf('({');
-  var lastIndex = valueStr.lastIndexOf('})');
-
-  return index > 0 && lastIndex === valueStr.length - 2;
-}
-
-function getInstance(valueStr) {
-  var index = valueStr.indexOf('({');
-  return valueStr.substr(0, index);
-}
 
 function isAnything(valueStr) {
   return valueStr === '<jasmine.anything>';
@@ -134,39 +67,49 @@ function getArrayContaining(containingValueStr, options) {
   return value;
 }
 
-function isDefined(valueStr) {
-  return valueStr === 'defined';
-}
 
 function isUndefined(valueStr) {
   return valueStr === 'undefined';
 }
 
-function isTruthy(valueStr) {
-  return valueStr === 'truthy';
+function isNull(valueStr) {
+  return valueStr === 'null';
 }
 
-function isFalsy(valueStr) {
-  return valueStr === 'falsy';
+function isBoolean(valueStr) {
+  return valueStr === 'true' || valueStr === 'false';
 }
 
-// TODO: float
-function isCloseTo(valueStr) {
-  return !!valueStr.match(/^close to \d+$/);
+function isString(valueStr) {
+  var marker = MARKER + "'" + MARKER;
+  return valueStr.indexOf(marker) === 0 &&
+         valueStr.lastIndexOf(marker) === valueStr.length - 3;
 }
 
-// TODO: float
-function isGreaterThan(valueStr) {
-  return !!valueStr.match(/^greater than \d+$/);
+// http://stackoverflow.com/a/9716488/1573638
+function isNumber(valueStr) {
+  return !isNaN(parseFloat(valueStr)) && isFinite(valueStr);
 }
 
-// TODO: float
-function isLessThan(valueStr) {
-  return !!valueStr.match(/^less than \d+$/);
+function isArray(valueStr) {
+  return valueStr[0] === '[' && valueStr[valueStr.length - 1] === ']';
 }
 
-function isSpy(valueStr) {
-  return !!valueStr.match(/^spy on/);
+function isObject(valueStr) {
+  return valueStr.indexOf('Object({') === 0 && valueStr.lastIndexOf('})') === valueStr.length - 2;
+}
+
+// TODO: check for correct identifier?
+function isInstance(valueStr) {
+  var index = valueStr.indexOf('({');
+  var lastIndex = valueStr.lastIndexOf('})');
+
+  return index > 0 && lastIndex === valueStr.length - 2;
+}
+
+function getInstance(valueStr) {
+  var index = valueStr.indexOf('({');
+  return valueStr.substr(0, index);
 }
 
 function extractValues(valueStr) {
@@ -183,7 +126,7 @@ function extractValues(valueStr) {
 
     // For Jasmine output strings are wrapped in single quotes and markers:
     // <marker><single quote><marker><string></marker></single quote></marker>
-    if (ch === MARKER && stringUtils.endsWith(value, MARKER + "'")) {
+    if (ch === MARKER && endsWith(value, MARKER + "'")) {
 
       inString = !inString;
 
@@ -264,8 +207,32 @@ function extractInstanceValues(instanceStr) {
   return instanceKeyValues;
 }
 
-// TODO: infinity? nan? float?
-// TODO: extract complex types and compare as string the rest.
+function isFunction(valueStr) {
+  return valueStr === 'Function';
+}
+
+function isNode(valueStr) {
+  return valueStr === 'HTMLNode';
+}
+
+function isGlobal(valueStr) {
+  return valueStr === '<global>';
+}
+
+function isCircularReference(valueStr) {
+  return !!valueStr.match(/^<circular reference: (Array|Object)>$/);
+}
+
+// Occurs in arrays when array length is bigger than MAX_PRETTY_PRINT_ARRAY_LENGTH
+function isEllipsis(valueStr) {
+  return valueStr === '...';
+}
+
+function isSpy(valueStr) {
+  return !!valueStr.match(/^spy on/);
+}
+
+
 function parse(valueStr, options) {
   valueStr = valueStr.trim();
 
@@ -287,7 +254,7 @@ function parse(valueStr, options) {
     return getArrayContaining(valueStr, options);
   }
 
-  // Check JS types
+  // Check basic types
 
   if (isUndefined(valueStr)) {
     return new Value(Value.UNDEFINED, valueStr, options);
@@ -301,17 +268,15 @@ function parse(valueStr, options) {
     return new Value(Value.BOOLEAN, valueStr, options);
   }
 
+  if (isString(valueStr)) {
+    return new Value(Value.STRING, valueStr, options);
+  }
+
   if (isNumber(valueStr)) {
     return new Value(Value.NUMBER, valueStr, options);
   }
 
-  if (isFunction(valueStr)) {
-    return new Value(Value.FUNCTION, valueStr, options);
-  }
-
-  if (isString(valueStr)) {
-    return new Value(Value.STRING, valueStr, options);
-  }
+  // Check complex types, can nest
 
   if (isArray(valueStr)) {
     var arrayValues = extractArrayValues(valueStr, options);
@@ -359,42 +324,25 @@ function parse(valueStr, options) {
     }, options));
   }
 
-  // ??
-  if (isNegativeZero(valueStr)) {
-    return new Value(Value.NEGATIVE_ZERO, valueStr, options);
-  }
+  // Check complex types, can NOT nest
 
-  // Check custom Jasmine syntax
+  if (isFunction(valueStr)) {
+    return new Value(Value.FUNCTION, valueStr, options);
+  }
 
   if (isGlobal(valueStr)) {
     return new Value(Value.GLOBAL, valueStr, options);
   }
 
-  if (isDefined(valueStr)) {
-    return new Value(Value.DEFINED, valueStr, options);
+  if (isNode(valueStr)) {
+    return new Value(Value.NODE, valueStr, options);
   }
 
-  if (isTruthy(valueStr)) {
-    return new Value(Value.TRUTHY, valueStr, options);
+  if (isCircularReference(valueStr)) {
+    return new Value(Value.CIRCULAR_REFERENCE, valueStr, options);
   }
 
-  if (isFalsy(valueStr)) {
-    return new Value(Value.FALSY, valueStr, options);
-  }
-
-  if (isCloseTo(valueStr)) {
-    return new Value(Value.CLOSE_TO, valueStr, options);
-  }
-
-  if (isGreaterThan(valueStr)) {
-    return new Value(Value.GREATER_THAN, valueStr, options);
-  }
-
-  if (isLessThan(valueStr)) {
-    return new Value(Value.LESS_THAN, valueStr, options);
-  }
-
-  return new Value(Value.PRIMITIVE, valueStr);
+  return new Value(Value.PRIMITIVE, valueStr, options);
 }
 
 module.exports = parse;
