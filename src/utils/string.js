@@ -11,6 +11,7 @@ exports.times = function times(string, count) {
 
 // Check if string ends with substring
 exports.endsWith = function endsWith(string, substring) {
+  if (substring.length > string.length) return false;
   var index = string.length - substring.length;
   return string.lastIndexOf(substring) === index;
 }

@@ -1,6 +1,7 @@
 'use strict';
 
 var createTest = require('../helpers/test');
+var m = require('../helpers/mark');
 
 var test = createTest('format: toEqual: array:');
 
@@ -29,4 +30,13 @@ test('nested array',
 
   `Expected [ 1, [ <a>2</a>, [ <a>3</a>, 4 ] ] ] `+
   `to equal [ 1, [ <e>5</e>, [ <e>7</e>, 4 ] ] ].`
+);
+
+test('string in nested array',
+
+  `Expected [ 1, [ ${m('foo')} ], 2, ${m('bar')} ] ` +
+  `to equal [ 1, [ ${m('qux')} ], 3, ${m('bar')} ].`,
+
+  `Expected [ 1, [ <a>'foo'</a> ], <a>2</a>, 'bar' ] ` +
+  `to equal [ 1, [ <e>'qux'</e> ], <e>3</e>, 'bar' ].`
 );
