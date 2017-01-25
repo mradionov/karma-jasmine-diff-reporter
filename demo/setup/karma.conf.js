@@ -53,8 +53,7 @@ module.exports = function(config) {
         }
       },
       pretty: true,
-      multiline: true,
-      json: false
+      multiline: true
     }
 
   });

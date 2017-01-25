@@ -4,8 +4,8 @@ var path = require('path');
 
 var karma = require('karma');
 
-var jasmineDiff = require('./src/jasmine-diff');
 var createColorHighlighter = require('./src/color-highlighter');
+var format = require('./src/format');
 var defaults = require('./src/utils/object').defaults;
 
 var karmaMajorVersion = Number(karma.VERSION.split('.')[0]);
@@ -41,7 +41,7 @@ function JasmineDiffReporter(baseReporterDecorator, config, logger) {
   self.specFailure = function (browser, result) {
 
     result.log = result.log.map(function (message) {
-      return jasmineDiff.createDiffMessage(message, colorFormatter, reporterConfig);
+      return format(message, colorFormatter, reporterConfig);
     });
 
     // If reporter is last in the list of reporters from config
