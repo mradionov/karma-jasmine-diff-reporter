@@ -1,5 +1,6 @@
 'use strict';
 
+var Value = require('../../../value');
 
 module.exports = {
 
@@ -28,7 +29,13 @@ module.exports = {
       diff += '<jasmine.objectContaining('
     }
 
-    diff += value.instance + '({';
+    // Strip only object, instances should keep their output
+    if (value.type !== Value.OBJECT || options.verbose.object) {
+      diff += value.instance;
+      diff += '('
+    }
+
+    diff += '{';
 
     if (options.pretty) {
       diff += '\n';
@@ -48,7 +55,12 @@ module.exports = {
       diff += ' ';
     }
 
-    diff += '})';
+    diff += '}';
+
+    // Strip only object, instances should keep their output
+    if (value.type !== Value.OBJECT || options.verbose.object) {
+      diff += ')';
+    }
 
     if (value.containing) {
       diff += ')>';
