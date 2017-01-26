@@ -17,8 +17,7 @@
   },
   "dependencies": {
     "diff": "^1.4.0",
-    "chalk": "^1.1.0",
-    "extend": "^3.0.0"
+    "chalk": "^1.1.0"
   },
   "peerDependencies": {
     "karma": ">=0.9"
