@@ -1,24 +1,21 @@
 'use strict';
 
-var extend = require('extend');
+var extend = require('./utils/object').extend;
 
-exports.DEFAULT_MATCHERS = {
+var DEFAULT_MATCHERS = {
 
   toBe: {
     pattern: /Expected ([\S\s]*) to be ([\S\s]*)\./,
-    reverse: true,
-    pretty: true
+    reverse: true
   },
 
   toEqual: {
     pattern: /Expected ([\S\s]*) to equal ([\S\s]*)\./,
-    reverse: true,
-    pretty: true
+    reverse: true
   },
 
   toHaveBeenCalledWith: {
-    pattern: /Expected spy .* to have been called with ([\S\s]*) but actual calls were ([\S\s]*)\./,
-    pretty: true
+    pattern: /Expected spy .* to have been called with ([\S\s]*) but actual calls were ([\S\s]*)\./
   },
 
   toThrow: {
@@ -27,6 +24,14 @@ exports.DEFAULT_MATCHERS = {
 
 };
 
-exports.extend = function (matchers) {
-  return extend(true, {}, this.DEFAULT_MATCHERS, matchers);
+exports.extend = function (customMatchers) {
+  customMatchers = customMatchers || {};
+
+  var allMatchers = {};
+
+  extend(allMatchers, DEFAULT_MATCHERS);
+
+  extend(allMatchers, customMatchers);
+
+  return allMatchers;
 };

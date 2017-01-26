@@ -10,3 +10,10 @@ exports.defaults = function defaults(object, source) {
   });
   return object;
 };
+
+exports.extend = function extend(object, source) {
+  Object.keys(source).forEach(function (key) {
+    object[key] = source[key];
+  });
+  return object;
+};
