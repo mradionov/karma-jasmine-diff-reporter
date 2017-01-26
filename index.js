@@ -20,7 +20,8 @@ function JasmineDiffReporter(baseReporterDecorator, config, logger) {
     matchers: {},
     color: {},
     pretty: false,
-    multiline: false
+    multiline: false,
+    verbose: true
   });
 
   reporterConfig.color.enabled = !!config.colors;
