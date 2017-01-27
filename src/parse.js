@@ -99,7 +99,6 @@ function isObject(valueStr) {
   return valueStr.indexOf('Object({') === 0 && valueStr.lastIndexOf('})') === valueStr.length - 2;
 }
 
-// TODO: check for correct identifier?
 function isInstance(valueStr) {
   var index = valueStr.indexOf('({');
   var lastIndex = valueStr.lastIndexOf('})');
