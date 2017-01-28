@@ -1,13 +1,14 @@
 {
   "name": "karma-jasmine-diff-reporter",
   "version": "0.6.3",
-  "description": "Karma reporter to highlight diffs of failed equality expectations for Jasmine",
+  "description": "Diff and pretty print for failed tests",
   "main": "index.js",
   "keywords": [
     "karma-reporter",
     "karma-plugin",
     "jasmine",
-    "diff"
+    "diff",
+    "pretty"
   ],
   "author": "Michael Radionov",
   "license": "MIT",
