@@ -1,7 +1,7 @@
 'use strict';
 
 function noop() {
-  return function() {};
+  return function () {};
 }
 
 function isSkipped(path, skippedPaths) {
@@ -40,7 +40,7 @@ function traverse(value, options, skippedPaths) {
     return;
   }
 
-  value.children.forEach(function (child, index) {
+  value.children.forEach(function (child) {
     traverse(child, options, skippedPaths);
   });
 

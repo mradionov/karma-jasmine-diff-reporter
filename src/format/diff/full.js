@@ -1,7 +1,5 @@
 'use strict';
 
-var jsDiff = require('diff');
-
 
 module.exports = function diffFull(
   expectedValue, actualValue, highlighter, options
@@ -12,4 +10,4 @@ module.exports = function diffFull(
     actual: actualValue.indent(options) +
             highlighter.actual(actualValue.out())
   };
-}
+};

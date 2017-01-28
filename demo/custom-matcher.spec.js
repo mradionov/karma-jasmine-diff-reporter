@@ -8,7 +8,7 @@ describe('Option', function () {
         toLookTheSameAs: function (util, customEqualityTesters) {
           return {
             compare: function (actual, expected) {
-              if (expected === undefined) {
+              if (typeof expected === 'undefined') {
                 expected = '';
               }
               var result = {};
@@ -36,8 +36,8 @@ describe('Option', function () {
     });
 
     it('should diff objects', function () {
-      var a = { foo: 'bar' },
-          b = { baz: 'qux' };
+      var a = { foo: 'bar' };
+      var b = { baz: 'qux' };
       expect(a).toEqual(b);
     });
 

@@ -5,7 +5,9 @@ var Value = require('../../../value');
 
 module.exports = {
 
-  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath, options) {
+  enter: function (
+    value, oppositeRootValue, highlightValue, highlighter
+  ) {
     var oppositeValue = oppositeRootValue.byPath(value.getPath());
 
 
@@ -17,7 +19,6 @@ module.exports = {
     if (value.type !== oppositeValue.type) {
       return highlightValue(value.out());
     }
-
 
     // Don't highlight "any" for same types
     if (value.any || oppositeValue.any) {
@@ -40,8 +41,8 @@ module.exports = {
     return value.out();
   },
 
-  leave: function (value, options) {
+  leave: function () {
     return '';
-  },
+  }
 
 };

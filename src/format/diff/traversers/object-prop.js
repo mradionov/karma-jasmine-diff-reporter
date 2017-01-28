@@ -3,15 +3,16 @@
 
 module.exports = {
 
-  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath, options) {
+  enter: function (
+    value, oppositeRootValue, highlightValue, highlighter, skipPath, options
+  ) {
     var oppositeValue = oppositeRootValue.byPath(value.getPath());
     var oppositeParent = oppositeRootValue.byPath(value.parent.getPath());
     var indent = value.indent(options);
 
-    const key = value.key + ': ';
+    var key = value.key + ': ';
 
     if (!oppositeValue) {
-
       if (oppositeParent && oppositeParent.containing) {
         skipPath(value.getPath());
         return indent + key + value.out();
@@ -33,13 +34,11 @@ module.exports = {
 
     if (options.pretty) {
       diff += '\n';
-    } else {
-      if (!value.isLast()) {
-        diff += ' ';
-      }
+    } else if (!value.isLast()) {
+      diff += ' ';
     }
 
     return diff;
-  },
+  }
 
 };

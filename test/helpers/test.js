@@ -7,8 +7,7 @@ var createHighlighter = require('./test-highlighter');
 var stack = require('./stack');
 
 function wrapTape(tapeFn, namespace) {
-
-  return function (name, input, expected, options) {
+  return function test(name, input, expected, options) {
     options = options || {};
     options.stack = options.stack || stack;
     options.format = options.format || {};
@@ -16,14 +15,13 @@ function wrapTape(tapeFn, namespace) {
 
     var highlighter = createHighlighter(options.highlighter);
 
-    return tapeFn(namespace + ' ' + name,  function (assert) {
+    return tapeFn(namespace + ' ' + name,  function testBody(assert) {
       var out = format(input + stack, highlighter, options.format);
 
       assert.equal(out, expected + stack);
       assert.end();
     });
-  }
-
+  };
 }
 
 module.exports = function createTestFn(namespace) {

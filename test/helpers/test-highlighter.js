@@ -8,6 +8,14 @@ function createTestFormatter(options) {
   options.whitespace = options.whitespace || false;
   options.defaults = options.defaults || false;
 
+  function actualText(string) {
+    return '<a>' + string + '</a>';
+  }
+
+  function actualWhitespace(string) {
+    return '<aw>' + string + '</aw>';
+  }
+
   function actual(string) {
     if (!options.whitespace) {
       return actualText(string);
@@ -17,14 +25,14 @@ function createTestFormatter(options) {
       .replace(/\s+/g, actualWhitespace);
   }
 
-  function actualText(string) {
-    return '<a>' + string + '</a>';
+
+  function expectedText(string) {
+    return '<e>' + string + '</e>';
   }
 
-  function actualWhitespace(string) {
-    return '<aw>' + string + '</aw>';
+  function expectedWhitespace(string) {
+    return '<ew>' + string + '</ew>';
   }
-
 
   function expected(string) {
     if (!options.whitespace) {
@@ -35,14 +43,14 @@ function createTestFormatter(options) {
       .replace(/\s+/g, expectedWhitespace);
   }
 
-  function expectedText(string) {
-    return '<e>' + string + '</e>';
+
+  function warningText(string) {
+    return '<w>' + string + '</w>';
   }
 
-  function expectedWhitespace(string) {
-    return '<ew>' + string + '</ew>';
+  function warningWhitespace(string) {
+    return '<ww>' + string + '</ww>';
   }
-
 
   function warning(string) {
     if (!options.whitespace) {
@@ -51,14 +59,6 @@ function createTestFormatter(options) {
     return string
       .replace(/\S+/g, warningText)
       .replace(/\s+/g, warningWhitespace);
-  }
-
-  function warningText(string) {
-    return '<w>' + string + '</w>';
-  }
-
-  function warningWhitespace(string) {
-    return '<ww>' + string + '</ww>';
   }
 
 

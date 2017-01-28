@@ -4,7 +4,9 @@ var Value = require('../../../value');
 
 module.exports = {
 
-  enter: function (value, oppositeRootValue, highlightValue, highlighter, skipPath, options) {
+  enter: function (
+    value, oppositeRootValue, highlightValue, highlighter, skipPath, options
+  ) {
     var oppositeValue = oppositeRootValue.byPath(value.getPath());
 
     // Different types are not comparable
@@ -26,13 +28,13 @@ module.exports = {
     var diff = '';
 
     if (value.containing) {
-      diff += '<jasmine.objectContaining('
+      diff += '<jasmine.objectContaining(';
     }
 
     // Strip only object, instances should keep their output
     if (value.type !== Value.OBJECT || options.verbose.object) {
       diff += value.instance;
-      diff += '('
+      diff += '(';
     }
 
     diff += '{';
@@ -67,6 +69,6 @@ module.exports = {
     }
 
     return diff;
-  },
+  }
 
 };

@@ -7,9 +7,9 @@ var test = createTest('stacktrace:');
 // Issue #10 with Phantom JS
 test('don\'t capture stacktrace without "at"',
 
-  `Expected true to be false.`,
+  'Expected true to be false.',
 
-  `Expected <a>true</a> to be <e>false</e>.`,
+  'Expected <a>true</a> to be <e>false</e>.',
 
-  { stack: `\ncheck@/path/to/file.js:42:0` }
+  { stack: '\ncheck@/path/to/file.js:42:0' }
 );
