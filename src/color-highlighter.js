@@ -84,7 +84,8 @@ function createColorHighlighter(options) {
 
   function warningText(string) {
     var styles = [
-      getOwnProperty(options, 'warningBg', 'bgYellow')
+      getOwnProperty(options, 'warningBg', 'bgYellow'),
+      getOwnProperty(options, 'warningFg', 'white')
     ];
     return addStyles(string, styles);
   }
