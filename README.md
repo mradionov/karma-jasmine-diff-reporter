@@ -22,10 +22,17 @@ module.exports = function(config) {
 };
 ```
 
-You can use it together with another reporters, which tweak the output - just place them after: `['jasmine-diff', 'progress']`.
+You can use it together with another reporters, which tweak the output - just place them after:
 
-Some specific reporters might break because of how the output is changed, make sure to place them before: `['junit', 'jasmine-diff']`.
+```js
+reporters: ['jasmine-diff', 'progress']
+```
 
+Some specific reporters might break because of how the output is changed, make sure to place them before:
+
+```js
+reporters: ['junit', 'jasmine-diff']
+```
 
 ## Options
 
@@ -101,6 +108,23 @@ Disabled by default. To enable:
     indent: '  '  // 2 spaces
   }
   ```
+
+#### verbose
+
+If turned off, reduces the output by cutting of some Jasmine-specific syntax.
+
+Enabled by default, which means nothing is cut off. To disable:
+
+- `verbose: false` - remove all extra Jasmine syntax
+- Detailed configuration:
+
+  ```js
+  verbose: {
+    object: false
+  }
+  ```
+
+  - `object` - Jasmine wraps objects - `Object({ foo: 42 })`, if set to `false` objects will be displayed without this wrapper - `{ foo: 42 }`.
 
 #### matchers
 
