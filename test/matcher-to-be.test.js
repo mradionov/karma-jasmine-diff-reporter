@@ -110,9 +110,6 @@ test('functions by ref',
   'Expected <w>Function</w> to be <w>Function</w>.'
 );
 
-// NOTE: this behavior is a bit weird comparing to toBeUndefined and others -
-// that equal parts are highlighted with default colors. Not critical
-// TODO: ??
 test('no diff for equal booleans',
 
   'Expected true not to be true.',
