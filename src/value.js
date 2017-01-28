@@ -60,7 +60,7 @@ Value.prototype.byPath = function (path) {
   }
 
   if (!this.isComplex()) {
-    return;
+    return null;
   }
 
   var parts = path.split('.');
@@ -70,7 +70,7 @@ Value.prototype.byPath = function (path) {
     var key = parts[i];
     var found = collectionUtils.findBy(result.children, 'key', key);
     if (!found) {
-      return;
+      return null;
     }
 
     result = found;
@@ -90,24 +90,17 @@ Value.prototype.indent = function (options) {
   var indent = '';
 
   if (options.pretty) {
-
     if (options.multiline) {
       indent += options.multiline.indent;
     }
-
     indent += stringUtils.times(options.pretty, this.level);
-
-  } else {
-
+  } else if (options.multiline && this.level === 0) {
     // When not pretty, only add multiline offset to parent
-    if (options.multiline && this.level === 0) {
-      indent += options.multiline.indent;
-    }
-
+    indent += options.multiline.indent;
   }
 
   return indent;
-}
+};
 
 Value.prototype.includes = function (value) {
   for (var i = 0; i < this.children.length; i++) {
@@ -150,7 +143,7 @@ Value.prototype.canNest = function () {
   var nestTypes = [
     Value.ARRAY,
     Value.OBJECT,
-    Value.INSTANCE,
+    Value.INSTANCE
   ];
   return nestTypes.indexOf(this.type) !== -1;
 };

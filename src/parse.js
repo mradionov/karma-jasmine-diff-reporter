@@ -42,7 +42,7 @@ function getAny(anyValueStr, options) {
     type = map[valueStr];
   }
 
-  return new Value(type, valueStr, Object.assign({ any: true }, options))
+  return new Value(type, valueStr, Object.assign({ any: true }, options));
 }
 
 function isObjectContaining(valueStr) {
@@ -52,6 +52,7 @@ function isObjectContaining(valueStr) {
 function getObjectContaining(containingValueStr, options) {
   var match = containingValueStr.match(OBJECT_CONTAINING_PATTERN);
   var valueStr = match && match[1];
+  // eslint-disable-next-line no-use-before-define
   var value = parse(valueStr, Object.assign({ containing: true }, options));
   return value;
 }
@@ -63,6 +64,7 @@ function isArrayContaining(valueStr) {
 function getArrayContaining(containingValueStr, options) {
   var match = containingValueStr.match(ARRAY_CONTAINING_PATTERN);
   var valueStr = match && match[1];
+  // eslint-disable-next-line no-use-before-define
   var value = parse(valueStr, Object.assign({ containing: true }, options));
   return value;
 }
@@ -126,11 +128,8 @@ function extractValues(valueStr) {
     // For Jasmine output strings are wrapped in single quotes and markers:
     // <marker><single quote><marker><string></marker></single quote></marker>
     if (ch === MARKER && endsWith(value, MARKER + "'")) {
-
       inString = !inString;
-
     } else if (!inString) {
-
       if (ch === '[' || ch === '{') {
         nestLevel++;
         value += ch;
@@ -148,7 +147,6 @@ function extractValues(valueStr) {
         value = '';
         continue;
       }
-
     }
 
     value += ch;
@@ -202,6 +200,55 @@ function extractInstanceValues(instanceStr) {
   return instanceKeyValues;
 }
 
+function createArray(valueStr, options) {
+  var arrayValues = extractArrayValues(valueStr, options);
+  var children = [];
+  for (var i = 0; i < arrayValues.length; i++) {
+    var arrayKey = i;
+    var arrayValue = arrayValues[i];
+    // eslint-disable-next-line no-use-before-define
+    children.push(parse(arrayValue, {
+      key: arrayKey
+    }));
+  }
+  return new Value(Value.ARRAY, valueStr, Object.assign({
+    children: children
+  }, options));
+}
+
+function createObject(valueStr, options) {
+  var objectValues = extractObjectValues(valueStr);
+  var children = [];
+  for (var i = 0; i < objectValues.length; i++) {
+    var objectKey = objectValues[i].key;
+    var objectValue = objectValues[i].value;
+    // eslint-disable-next-line no-use-before-define
+    children.push(parse(objectValue, {
+      key: objectKey
+    }));
+  }
+  return new Value(Value.OBJECT, valueStr, Object.assign({
+    children: children
+  }, options));
+}
+
+function createInstance(valueStr, options) {
+  var instanceValues = extractInstanceValues(valueStr);
+  var children = [];
+  for (var i = 0; i < instanceValues.length; i++) {
+    var instanceKey = instanceValues[i].key;
+    var instanceValue = instanceValues[i].value;
+    // eslint-disable-next-line no-use-before-define
+    children.push(parse(instanceValue, {
+      key: instanceKey
+    }));
+  }
+  return new Value(Value.INSTANCE, valueStr, Object.assign({
+    children: children,
+    instance: getInstance(valueStr)
+  }, options));
+}
+
 function isFunction(valueStr) {
   return valueStr === 'Function';
 }
@@ -225,10 +272,6 @@ function isEllipsis(valueStr) {
 
 function isDeepArray(valueStr) {
   return valueStr === 'Array';
-}
-
-function isSpy(valueStr) {
-  return !!valueStr.match(/^spy on/);
 }
 
 
@@ -278,49 +321,15 @@ function parse(valueStr, options) {
   // Check complex types, can nest
 
   if (isArray(valueStr)) {
-    var arrayValues = extractArrayValues(valueStr, options);
-    var children = [];
-    for (var i = 0; i < arrayValues.length; i++) {
-      var arrayKey = i;
-      var arrayValue = arrayValues[i];
-      children.push(parse(arrayValue, {
-        key: arrayKey
-      }));
-    }
-    return new Value(Value.ARRAY, valueStr, Object.assign({
-      children: children
-    }, options));
+    return createArray(valueStr, options);
   }
 
   if (isObject(valueStr)) {
-    var objectValues = extractObjectValues(valueStr);
-    var children = [];
-    for (var i = 0; i < objectValues.length; i++) {
-      var objectKey = objectValues[i].key;
-      var objectValue = objectValues[i].value;
-      children.push(parse(objectValue, {
-        key: objectKey
-      }));
-    }
-    return new Value(Value.OBJECT, valueStr, Object.assign({
-      children: children
-    }, options));
+    return createObject(valueStr, options);
   }
 
   if (isInstance(valueStr)) {
-    var instanceValues = extractInstanceValues(valueStr);
-    var children = [];
-    for (var i = 0; i < instanceValues.length; i++) {
-      var instanceKey = instanceValues[i].key;
-      var instanceValue = instanceValues[i].value;
-      children.push(parse(instanceValue, {
-        key: instanceKey
-      }));
-    }
-    return new Value(Value.INSTANCE, valueStr, Object.assign({
-      children: children,
-      instance: getInstance(valueStr)
-    }, options));
+    return createInstance(valueStr, options);
   }
 
   // Check complex types, can NOT nest

@@ -1,4 +1,8 @@
-module.exports = function(config) {
+'use strict';
+
+var reporter = require('../../');
+
+module.exports = function (config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -21,7 +25,7 @@ module.exports = function(config) {
     plugins: [
       'karma-jasmine',
       'karma-chrome-launcher',
-      require('../..')
+      reporter
     ],
 
     // web server port

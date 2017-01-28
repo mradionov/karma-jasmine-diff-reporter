@@ -40,7 +40,7 @@ describe('Matcher', function () {
     });
 
     it('should diff undefined with string with newlines', function () {
-      expect(undefined).toBe('yo ban\nana apple');
+      expect(void 0).toBe('yo ban\nana apple');
     });
 
     it('should NOT diff', function () {
@@ -52,7 +52,7 @@ describe('Matcher', function () {
   describe('toBeDefined', function () {
 
     it('should NOT diff', function () {
-      expect(undefined).toBeDefined();
+      expect(void 0).toBeDefined();
     });
 
   });

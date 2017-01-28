@@ -15,7 +15,6 @@ var diff = require('./diff');
 module.exports = function formatToBe(
   expectedValue, actualValue, highlighter, options
 ) {
-
   // Different types
   if (expectedValue.type !== actualValue.type) {
     return diff.full(expectedValue, actualValue, highlighter, options);

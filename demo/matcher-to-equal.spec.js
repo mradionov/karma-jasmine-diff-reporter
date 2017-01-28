@@ -3,8 +3,8 @@ describe('Matcher', function () {
   describe('toEqual', function () {
 
     it('should diff objects', function () {
-      var a = { foo: 'bar' },
-          b = { baz: 'qux' };
+      var a = { foo: 'bar' };
+      var b = { baz: 'qux' };
       expect(a).toEqual(b);
     });
 
@@ -24,7 +24,7 @@ describe('Matcher', function () {
         foo: {
           c: 2,
           a: 0,
-          b: 1,
+          b: 1
         }
       };
       var b = {
@@ -35,7 +35,7 @@ describe('Matcher', function () {
         foo: {
           b: 1,
           c: 2,
-          a: 0,
+          a: 0
         }
       };
       expect(a).toEqual(b);
@@ -58,8 +58,6 @@ describe('Matcher', function () {
         foo: function () {},
         bar: jasmine.any(Function)
       };
-      var a = function(){};
-      var b = function() {};
       expect(a).toEqual(b);
     });
   });

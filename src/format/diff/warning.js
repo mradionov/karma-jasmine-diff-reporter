@@ -1,7 +1,5 @@
 'use strict';
 
-var jsDiff = require('diff');
-
 
 module.exports = function diffWarning(
   expectedValue, actualValue, highlighter, options
@@ -12,4 +10,4 @@ module.exports = function diffWarning(
     actual: actualValue.indent(options) +
             highlighter.warning(actualValue.out())
   };
-}
+};

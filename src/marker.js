@@ -7,7 +7,7 @@ var MARKER = '\u200C';
 
 exports.MARKER = MARKER;
 
-exports.wrapString = function(string) {
+exports.wrapString = function (string) {
   return MARKER + "'" + MARKER + string + MARKER + "'" + MARKER;
 };
 

@@ -9,23 +9,6 @@ var stringUtils = require('./utils/string');
 var times = stringUtils.times;
 
 
-function processOptions(options) {
-  options = options || {};
-
-  // Becomes a string, which should be used as indentation level
-  // Or "false", if turned off
-  options.pretty = processPretty(options);
-
-  // Becomes an object with "before", "after" and "indent" props
-  // Or "false", if turned off
-  options.multiline = processMultiline(options);
-
-  // Always becomes an object with "object" prop
-  options.verbose = processVerbose(options);
-
-  return options;
-};
-
 function processPretty(options) {
   if (!options.pretty) return false;
 
@@ -48,7 +31,7 @@ function processMultiline(options) {
   var multiline = {
     before: 2,
     after: 2,
-    indent: 2,
+    indent: 2
   };
 
   if (isObject(options.multiline)) {
@@ -73,13 +56,13 @@ function processMultiline(options) {
 function processVerbose(options) {
   if (options.verbose === false) {
     return {
-      object: false,
+      object: false
     };
   }
 
   // By default - equal to Jasmine output
   var verbose = {
-    object: true,
+    object: true
   };
 
   if (isObject(options.verbose)) {
@@ -87,6 +70,23 @@ function processVerbose(options) {
   }
 
   return verbose;
+}
+
+function processOptions(options) {
+  options = options || {};
+
+  // Becomes a string, which should be used as indentation level
+  // Or "false", if turned off
+  options.pretty = processPretty(options);
+
+  // Becomes an object with "before", "after" and "indent" props
+  // Or "false", if turned off
+  options.multiline = processMultiline(options);
+
+  // Always becomes an object with "object" prop
+  options.verbose = processVerbose(options);
+
+  return options;
 }
 
 module.exports = processOptions;

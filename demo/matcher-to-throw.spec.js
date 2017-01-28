@@ -4,6 +4,7 @@ describe('Matcher', function () {
 
     it('should diff', function () {
       var foo = function () {
+        // eslint-disable-next-line no-undef
         return a + 1;
       };
       expect(foo).toThrow(new TypeError('boo'));

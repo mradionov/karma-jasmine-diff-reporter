@@ -4,8 +4,8 @@ describe('Matcher', function () {
 
     it('should diff objects', function () {
       var spy = jasmine.createSpy('spy');
-      var a = { foo: 'bar' },
-          b = { baz: 'qux' };
+      var a = { foo: 'bar' };
+      var b = { baz: 'qux' };
 
       spy(a);
 

@@ -3,8 +3,9 @@
 
 module.exports = {
 
-  enter: function (value, oppositeValue, highlightValue, highlighter, skipPath, options) {
-
+  enter: function (
+    value, oppositeValue, highlightValue, highlighter, skipPath, options
+  ) {
     var diff = '';
 
     if (value.containing) {
@@ -40,6 +41,6 @@ module.exports = {
     }
 
     return diff;
-  },
+  }
 
 };

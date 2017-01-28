@@ -32,11 +32,6 @@ function createColorHighlighter(options) {
     return out;
   }
 
-  function actual(string) {
-    return string
-      .replace(/\S+/g, actualText)
-      .replace(/\s+/g, actualWhitespace);
-  }
 
   function actualText(string) {
     var styles = [
@@ -53,12 +48,12 @@ function createColorHighlighter(options) {
     return addStyles(string, styles);
   }
 
-
-  function expected(string) {
+  function actual(string) {
     return string
-      .replace(/\S+/g, expectedText)
-      .replace(/\s+/g, expectedWhitespace);
+      .replace(/\S+/g, actualText)
+      .replace(/\s+/g, actualWhitespace);
   }
+
 
   function expectedText(string) {
     var styles = [
@@ -75,12 +70,12 @@ function createColorHighlighter(options) {
     return addStyles(string, styles);
   }
 
-
-  function warning(string) {
+  function expected(string) {
     return string
-      .replace(/\S+/g, warningText)
-      .replace(/\s+/g, warningWhitespace);
+      .replace(/\S+/g, expectedText)
+      .replace(/\s+/g, expectedWhitespace);
   }
+
 
   function warningText(string) {
     var styles = [
@@ -92,9 +87,15 @@ function createColorHighlighter(options) {
 
   function warningWhitespace(string) {
     var styles = [
-      getOwnProperty(options, 'warningWhitespaceBg', 'bgYellow'),
+      getOwnProperty(options, 'warningWhitespaceBg', 'bgYellow')
     ];
     return addStyles(string, styles);
+  }
+
+  function warning(string) {
+    return string
+      .replace(/\S+/g, warningText)
+      .replace(/\s+/g, warningWhitespace);
   }
 
 
@@ -111,7 +112,7 @@ function createColorHighlighter(options) {
     actual: actual,
     expected: expected,
     defaults: defaults,
-    warning: warning,
+    warning: warning
   };
 }
 
