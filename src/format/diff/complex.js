@@ -56,4 +56,6 @@ function diffComplex(
   return result;
 }
 
+diffComplex.format = formatComplex;
+
 module.exports = diffComplex;

@@ -20,6 +20,22 @@ describe('Matcher', function () {
       expect(spy).toHaveBeenCalledWith(false);
     });
 
+    it('multiple calls', function () {
+
+      var foo = {
+        bar: function () {}
+      };
+
+      spyOn(foo, 'bar');
+
+      foo.bar(5);
+      foo.bar(6);
+      foo.bar(10);
+
+      expect(foo.bar).toHaveBeenCalledWith(8);
+
+    });
+
   });
 
 });

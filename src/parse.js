@@ -25,7 +25,7 @@ function isAny(valueStr) {
   return !!valueStr.match(ANY_PATTERN);
 }
 
-function getAny(anyValueStr, options) {
+function getAny(anyValueStr, valueOptions) {
   var map = {
     'String': Value.STRING,
     'Number': Value.NUMBER,
@@ -42,18 +42,18 @@ function getAny(anyValueStr, options) {
     type = map[valueStr];
   }
 
-  return new Value(type, valueStr, Object.assign({ any: true }, options));
+  return new Value(type, valueStr, Object.assign({ any: true }, valueOptions));
 }
 
 function isObjectContaining(valueStr) {
   return !!valueStr.match(OBJECT_CONTAINING_PATTERN);
 }
 
-function getObjectContaining(containingValueStr, options) {
+function getObjectContaining(containingValueStr, valueOptions) {
   var match = containingValueStr.match(OBJECT_CONTAINING_PATTERN);
   var valueStr = match && match[1];
   // eslint-disable-next-line no-use-before-define
-  var value = parse(valueStr, Object.assign({ containing: true }, options));
+  var value = parse(valueStr, Object.assign({ containing: true }, valueOptions));
   return value;
 }
 
@@ -61,11 +61,11 @@ function isArrayContaining(valueStr) {
   return !!valueStr.match(ARRAY_CONTAINING_PATTERN);
 }
 
-function getArrayContaining(containingValueStr, options) {
+function getArrayContaining(containingValueStr, valueOptions) {
   var match = containingValueStr.match(ARRAY_CONTAINING_PATTERN);
   var valueStr = match && match[1];
   // eslint-disable-next-line no-use-before-define
-  var value = parse(valueStr, Object.assign({ containing: true }, options));
+  var value = parse(valueStr, Object.assign({ containing: true }, valueOptions));
   return value;
 }
 
@@ -200,8 +200,8 @@ function extractInstanceValues(instanceStr) {
   return instanceKeyValues;
 }
 
-function createArray(valueStr, options) {
-  var arrayValues = extractArrayValues(valueStr, options);
+function createArray(valueStr, valueOptions, parseOptions) {
+  var arrayValues = extractArrayValues(valueStr, valueOptions);
   var children = [];
   for (var i = 0; i < arrayValues.length; i++) {
     var arrayKey = i;
@@ -209,14 +209,14 @@ function createArray(valueStr, options) {
     // eslint-disable-next-line no-use-before-define
     children.push(parse(arrayValue, {
       key: arrayKey
-    }));
+    }, parseOptions));
   }
   return new Value(Value.ARRAY, valueStr, Object.assign({
     children: children
-  }, options));
+  }, valueOptions));
 }
 
-function createObject(valueStr, options) {
+function createObject(valueStr, valueOptions) {
   var objectValues = extractObjectValues(valueStr);
   var children = [];
   for (var i = 0; i < objectValues.length; i++) {
@@ -229,10 +229,10 @@ function createObject(valueStr, options) {
   }
   return new Value(Value.OBJECT, valueStr, Object.assign({
     children: children
-  }, options));
+  }, valueOptions));
 }
 
-function createInstance(valueStr, options) {
+function createInstance(valueStr, valueOptions) {
   var instanceValues = extractInstanceValues(valueStr);
   var children = [];
   for (var i = 0; i < instanceValues.length; i++) {
@@ -246,7 +246,29 @@ function createInstance(valueStr, options) {
   return new Value(Value.INSTANCE, valueStr, Object.assign({
     children: children,
     instance: getInstance(valueStr)
-  }, options));
+  }, valueOptions));
+}
+
+// Wrap value in extra array, an it will have multiple children -
+// then it's a multiple array.
+// Make sure not to go recursive.
+function isMultipleArray(valueStr) {
+  var wrappedValueStr = '[ ' + valueStr + ' ]';
+  var wrappedArray = createArray(wrappedValueStr, {}, {
+    checkMultipleArray: false
+  });
+  return wrappedArray.children.length > 1;
+}
+
+function createMultipleArray(valueStr, options) {
+  var wrappedValueStr = '[ ' + valueStr + ' ]';
+  var wrappedArray = createArray(
+    wrappedValueStr,
+    Object.assign({ multiple: true }, options),
+    { checkMultipleArray: false }
+  );
+
+  return wrappedArray;
 }
 
 function isFunction(valueStr) {
@@ -275,91 +297,101 @@ function isDeepArray(valueStr) {
 }
 
 
-function parse(valueStr, options) {
+function parse(valueStr, valueOptions, parseOptions) {
+  parseOptions = parseOptions || {};
+  if (typeof parseOptions.checkMultipleArray === 'undefined') {
+    parseOptions.checkMultipleArray = true;
+  }
+
   valueStr = valueStr.trim();
 
   // Check Jasmine wrappers
 
   if (isAnything(valueStr)) {
-    return new Value(Value.ANYTHING, valueStr, options);
+    return new Value(Value.ANYTHING, valueStr, valueOptions);
   }
 
   if (isAny(valueStr)) {
-    return getAny(valueStr, options);
+    return getAny(valueStr, valueOptions);
   }
 
   if (isObjectContaining(valueStr)) {
-    return getObjectContaining(valueStr, options);
+    return getObjectContaining(valueStr, valueOptions);
   }
 
   if (isArrayContaining(valueStr)) {
-    return getArrayContaining(valueStr, options);
+    return getArrayContaining(valueStr, valueOptions);
   }
 
   // Check basic types
 
   if (isUndefined(valueStr)) {
-    return new Value(Value.UNDEFINED, valueStr, options);
+    return new Value(Value.UNDEFINED, valueStr, valueOptions);
   }
 
   if (isNull(valueStr)) {
-    return new Value(Value.NULL, valueStr, options);
+    return new Value(Value.NULL, valueStr, valueOptions);
   }
 
   if (isBoolean(valueStr)) {
-    return new Value(Value.BOOLEAN, valueStr, options);
+    return new Value(Value.BOOLEAN, valueStr, valueOptions);
   }
 
   if (isString(valueStr)) {
-    return new Value(Value.STRING, valueStr, options);
+    return new Value(Value.STRING, valueStr, valueOptions);
   }
 
   if (isNumber(valueStr)) {
-    return new Value(Value.NUMBER, valueStr, options);
+    return new Value(Value.NUMBER, valueStr, valueOptions);
   }
 
   // Check complex types, can nest
 
+  // Make sure it is before isArray check
+  if (parseOptions.checkMultipleArray && isMultipleArray(valueStr)) {
+    return createMultipleArray(valueStr, valueOptions);
+  }
+
   if (isArray(valueStr)) {
-    return createArray(valueStr, options);
+    return createArray(valueStr, valueOptions);
   }
 
   if (isObject(valueStr)) {
-    return createObject(valueStr, options);
+    return createObject(valueStr, valueOptions);
   }
 
   if (isInstance(valueStr)) {
-    return createInstance(valueStr, options);
+    return createInstance(valueStr, valueOptions);
   }
 
   // Check complex types, can NOT nest
 
   if (isFunction(valueStr)) {
-    return new Value(Value.FUNCTION, valueStr, options);
+    return new Value(Value.FUNCTION, valueStr, valueOptions);
   }
 
   if (isGlobal(valueStr)) {
-    return new Value(Value.GLOBAL, valueStr, options);
+    return new Value(Value.GLOBAL, valueStr, valueOptions);
   }
 
   if (isNode(valueStr)) {
-    return new Value(Value.NODE, valueStr, options);
+    return new Value(Value.NODE, valueStr, valueOptions);
   }
 
   if (isCircularReference(valueStr)) {
-    var a =  new Value(Value.CIRCULAR_REFERENCE, valueStr, options);
+    var a =  new Value(Value.CIRCULAR_REFERENCE, valueStr, valueOptions);
     return a;
   }
 
   if (isEllipsis(valueStr)) {
-    return new Value(Value.ELLIPSIS, valueStr, options);
+    return new Value(Value.ELLIPSIS, valueStr, valueOptions);
   }
 
   if (isDeepArray(valueStr)) {
-    return new Value(Value.DEEP_ARRAY, valueStr, options);
+    return new Value(Value.DEEP_ARRAY, valueStr, valueOptions);
   }
 
-  return new Value(Value.PRIMITIVE, valueStr, options);
+  return new Value(Value.PRIMITIVE, valueStr, valueOptions);
 }
 
 module.exports = parse;
