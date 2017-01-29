@@ -48,10 +48,10 @@ Value.prototype.removeParent = function () {
 };
 
 Value.prototype.getPath = function () {
-  var path = this.key;
+  var path = [this.key];
   var parent = this.parent;
   while (parent && parent.key) {
-    path = parent.key + '.' + path;
+    path.unshift(parent.key);
     parent = parent.parent;
   }
   return path;
@@ -59,13 +59,13 @@ Value.prototype.getPath = function () {
 
 Value.prototype.getParentPath = function () {
   var path = this.getPath();
-  var parts = path.split('.');
-  var parentPath = parts.slice(0, parts.length - 1).join('.');
+  var parentPath = path.slice(0, path.length - 1);
   return parentPath;
 };
 
 Value.prototype.byPath = function (path) {
-  if (path === '') {
+  // Root has empty key
+  if (!path.length || path[0] === '') {
     return this;
   }
 
@@ -73,11 +73,10 @@ Value.prototype.byPath = function (path) {
     return null;
   }
 
-  var parts = path.split('.');
   var result = this;
 
-  for (var i = 0; i < parts.length; i++) {
-    var key = parts[i];
+  for (var i = 0; i < path.length; i++) {
+    var key = path[i];
     var found = collectionUtils.findBy(result.children, 'key', key);
     if (!found) {
       return null;
