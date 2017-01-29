@@ -60,3 +60,21 @@ test('nested object vs different type',
   'Expected Object({ foo: <a>Object({ bar: 42 })</a> }) ' +
   'to equal Object({ foo: <e>true</e> }).'
 );
+
+test('keys with dots same',
+
+  'Expected Object({ foo.bar: 42, qux: 43 }) ' +
+  'to equal Object({ foo.bar: 42, qux: 44 }).',
+
+  'Expected Object({ foo.bar: 42, qux: <a>43</a> }) ' +
+  'to equal Object({ foo.bar: 42, qux: <e>44</e> }).'
+);
+
+test('keys with dots different',
+
+  'Expected Object({ foo.bar: 42, foo: 43 }) ' +
+  'to equal Object({ foo.baz: 42, foo: 44 }).',
+
+  'Expected Object({ <a>foo.bar: 42</a>, foo: <a>43</a> }) ' +
+  'to equal Object({ <e>foo.baz: 42</e>, foo: <e>44</e> }).'
+);

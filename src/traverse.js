@@ -4,9 +4,15 @@ function noop() {
   return function () {};
 }
 
+function pathStartsWith(path, subpath) {
+  return subpath.every(function (key, index) {
+    return path[index] === key;
+  });
+}
+
 function isSkipped(path, skippedPaths) {
   return skippedPaths.some(function (skippedPath) {
-    return path.indexOf(skippedPath) === 0;
+    return pathStartsWith(path, skippedPath);
   });
 }
 
