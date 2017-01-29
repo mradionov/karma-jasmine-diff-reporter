@@ -28,3 +28,23 @@ test('whole turned off',
 
   { format: { verbose: false } }
 );
+
+test('object props facing different type prop',
+
+  'Expected [ 1, 2, 3 ] to equal [ 1, Object({ foo: 42 }), 3 ].',
+
+  'Expected [ 1, <a>2</a>, 3 ] ' +
+  'to equal [ 1, <e>{ foo: 42 }</e>, 3 ].',
+
+  { format: { verbose: false } }
+);
+
+test('instance props facing different type prop',
+
+  'Expected [ 1, 2, 3 ] to equal [ 1, Foo({ foo: 42 }), 3 ].',
+
+  'Expected [ 1, <a>2</a>, 3 ] ' +
+  'to equal [ 1, <e>Foo({ foo: 42 })</e>, 3 ].',
+
+  { format: { verbose: false } }
+);

@@ -13,21 +13,21 @@ module.exports = {
     if (value.parent.containing) {
       if (oppositeParent.includes(value)) {
         skipPath(value.getPath());
-        return indent + value.out();
+        return indent + value.out(options);
       }
 
       skipPath(value.getPath());
-      return indent + highlightValue(value.out());
+      return indent + highlightValue(value.out(options));
     }
 
     if (oppositeParent && oppositeParent.containing) {
       skipPath(value.getPath());
-      return indent + value.out();
+      return indent + value.out(options);
     }
 
     if (!oppositeValue) {
       skipPath(value.getPath());
-      return indent + highlightValue(value.out());
+      return indent + highlightValue(value.out(options));
     }
 
     return indent;

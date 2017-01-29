@@ -218,6 +218,10 @@ function createArray(valueStr, valueOptions, parseOptions) {
 
 function createObject(valueStr, valueOptions) {
   var objectValues = extractObjectValues(valueStr);
+
+  var objectContentStr = valueStr.substr(8, valueStr.length - 3 - 8);
+  var objectWrappedStr = '{ ' + objectContentStr.trim() + ' }';
+
   var children = [];
   for (var i = 0; i < objectValues.length; i++) {
     var objectKey = objectValues[i].key;
@@ -227,7 +231,8 @@ function createObject(valueStr, valueOptions) {
       key: objectKey
     }));
   }
-  return new Value(Value.OBJECT, valueStr, Object.assign({
+
+  return new Value(Value.OBJECT, objectWrappedStr, Object.assign({
     children: children
   }, valueOptions));
 }

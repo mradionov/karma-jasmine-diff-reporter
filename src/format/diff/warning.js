@@ -6,8 +6,8 @@ module.exports = function diffWarning(
 ) {
   return {
     expected: expectedValue.indent(options) +
-              highlighter.warning(expectedValue.out()),
+              highlighter.warning(expectedValue.out(options)),
     actual: actualValue.indent(options) +
-            highlighter.warning(actualValue.out())
+            highlighter.warning(actualValue.out(options))
   };
 };

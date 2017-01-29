@@ -37,6 +37,9 @@ function traverse(value, options, skippedPaths) {
   enter(value, skipPath);
 
   if (isSkipped(value.getPath(), skippedPaths)) {
+    if (value.parent) {
+      leaveProp(value);
+    }
     return;
   }
 

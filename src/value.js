@@ -89,11 +89,27 @@ Value.prototype.byPath = function (path) {
   return result;
 };
 
-Value.prototype.out = function () {
+Value.prototype.out = function (options) {
+  options = options || {};
+  options.verbose = options.verbose || {};
+
   if (this.any) {
     return '<jasmine.any(' + this.text + ')>';
   }
-  return this.text;
+
+  var out = '';
+
+  if (this.type === Value.OBJECT && options.verbose.object) {
+    out += 'Object(';
+  }
+
+  out += this.text;
+
+  if (this.type === Value.OBJECT && options.verbose.object) {
+    out += ')';
+  }
+
+  return out;
 };
 
 Value.prototype.indent = function (options) {
