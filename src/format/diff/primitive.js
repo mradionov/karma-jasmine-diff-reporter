@@ -11,7 +11,10 @@ module.exports = function diffPrimitives(
     actual: actualValue.indent(options)
   };
 
-  var diff = jsDiff.diffWordsWithSpace(expectedValue.out(), actualValue.out());
+  var diff = jsDiff.diffWordsWithSpace(
+    expectedValue.out(options),
+    actualValue.out(options)
+  );
 
   diff.forEach(function (part) {
     var value = part.value;

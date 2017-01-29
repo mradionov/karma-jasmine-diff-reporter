@@ -15,11 +15,11 @@ module.exports = {
     if (!oppositeValue) {
       if (oppositeParent && oppositeParent.containing) {
         skipPath(value.getPath());
-        return indent + key + value.out();
+        return indent + key + value.out(options);
       }
 
       skipPath(value.getPath());
-      return indent + highlightValue(key + value.out());
+      return indent + highlightValue(key + value.out(options));
     }
 
     return indent + key;

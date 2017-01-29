@@ -12,12 +12,12 @@ module.exports = {
     // Different types are not comparable
     if (value.type !== oppositeValue.type) {
       skipPath(value.getPath());
-      return highlightValue(value.out());
+      return highlightValue(value.out(options));
     }
 
     if (value.any || oppositeValue.any) {
       skipPath(value.getPath());
-      return value.out();
+      return value.out(options);
     }
 
     if (value.instance !== oppositeValue.instance) {

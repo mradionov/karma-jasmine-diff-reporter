@@ -6,8 +6,8 @@ module.exports = function diffFull(
 ) {
   return {
     expected: expectedValue.indent(options) +
-              highlighter.expected(expectedValue.out()),
+              highlighter.expected(expectedValue.out(options)),
     actual: actualValue.indent(options) +
-            highlighter.actual(actualValue.out())
+            highlighter.actual(actualValue.out(options))
   };
 };
