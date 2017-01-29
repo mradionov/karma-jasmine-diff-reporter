@@ -4,7 +4,7 @@
 module.exports = {
 
   enter: function (
-    value, oppositeValue, highlightValue, highlighter, skipPath, options
+    value, oppositeRootValue, highlightValue, highlighter, skipPath, options
   ) {
     var diff = '';
 

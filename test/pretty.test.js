@@ -311,3 +311,23 @@ test('array containing wrong value',
 
   { format: { pretty: true } }
 );
+
+test('multiple calls, matcher toHaveBeenCalledWith',
+
+  'Expected spy foo to have been called with [ 1, 2 ] ' +
+  'but actual calls were [ 4, 2 ], [ 1, 3 ].',
+
+  'Expected spy foo to have been called with [\n' +
+  '  1,\n' +
+  '  2\n' +
+  '] but actual calls were [\n' +
+  '  <a>4</a>,\n' +
+  '  2\n' +
+  '],\n' +
+  '[\n' +
+  '  1,\n' +
+  '  <a>3</a>\n' +
+  '].',
+
+  { format: { pretty: true } }
+);

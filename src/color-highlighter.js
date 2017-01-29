@@ -108,11 +108,17 @@ function createColorHighlighter(options) {
   }
 
 
+  function silent(string) {
+    return string;
+  }
+
+
   return {
     actual: actual,
     expected: expected,
     defaults: defaults,
-    warning: warning
+    warning: warning,
+    silent: silent
   };
 }
 

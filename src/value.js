@@ -12,6 +12,7 @@ function Value(type, text, options) {
   this.key = typeof options.key !== 'undefined' ? options.key + '' : '';
   this.any = options.any || false;
   this.containing = options.containing || false;
+  this.multiple = options.multiple || false;
   this.instance = options.instance || 'Object';
 
   this.children = options.children || [];
@@ -35,6 +36,15 @@ Value.prototype.updateReferences = function (level) {
 
     child.updateReferences(level + 1);
   }
+  return this;
+};
+
+Value.prototype.removeParent = function () {
+  this.parent = null;
+  this.key = '';
+  this.level = 0;
+  this.updateReferences();
+  return this;
 };
 
 Value.prototype.getPath = function () {

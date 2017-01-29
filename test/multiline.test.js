@@ -175,3 +175,27 @@ test('pretty',
 
   { format: { multiline: true, pretty: true } }
 );
+
+test('pretty multiple calls, matcher toHaveBeenCalledWith',
+
+  'Expected spy foo to have been called with [ 1, 2 ] ' +
+  'but actual calls were [ 4, 2 ], [ 1, 3 ].',
+
+  'Expected spy foo to have been called with\n\n' +
+  '  [\n' +
+  '    1,\n' +
+  '    2\n' +
+  '  ]\n\n' +
+  'but actual calls were\n\n' +
+  '  [\n' +
+  '    <a>4</a>,\n' +
+  '    2\n' +
+  '  ],\n' +
+  '  [\n' +
+  '    1,\n' +
+  '    <a>3</a>\n' +
+  '  ]\n\n' +
+  '.',
+
+  { format: { multiline: true, pretty: true } }
+);

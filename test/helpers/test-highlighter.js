@@ -70,11 +70,17 @@ function createTestFormatter(options) {
   }
 
 
+  function silent(string) {
+    return string;
+  }
+
+
   return {
     actual: actual,
     expected: expected,
     warning: warning,
-    defaults: defaults
+    defaults: defaults,
+    silent: silent
   };
 }
 

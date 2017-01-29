@@ -10,7 +10,6 @@ module.exports = {
   ) {
     var oppositeValue = oppositeRootValue.byPath(value.getPath());
 
-
     if (value.type === Value.ANYTHING || oppositeValue.type === Value.ANYTHING) {
       return value.out();
     }
