@@ -36,14 +36,34 @@ function jasmineDiffFramework(config, logger) {
     return;
   }
 
-  var patchPath = path.join(__dirname, 'src', 'karma-jasmine', 'pp-patch.js');
+  // Inject patch file for pretty print
+
+  var ppPatchPath = path.join(__dirname, 'src', 'karma-jasmine', 'pp-patch.js');
 
   config.files.splice(index + 2, 0, {
-    pattern: patchPath,
+    pattern: ppPatchPath,
     included: true,
     served: true,
     watched: false
   });
+
+  // Inject patch to bring back legacy diffs for objects,
+  // if respective option is turned on in settings.
+
+  var utilPatchPath = path.join(__dirname, 'src', 'karma-jasmine', 'util-patch.js');
+
+  var reporterConfig = defaults(config.jasmineDiffReporter || {}, {
+    legacy: false
+  });
+
+  if (reporterConfig.legacy) {
+    config.files.splice(index + 3, 0, {
+      pattern: utilPatchPath,
+      included: true,
+      served: true,
+      watched: false
+    });
+  }
 }
 
 function jasmineDiffReporter(baseReporterDecorator, config, logger) {

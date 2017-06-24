@@ -62,6 +62,7 @@ module.exports = function(config) {
       pretty: false,
       multiline: false,
       verbose: true,
+      legacy: false,
       matchers: {}
     }
   });
@@ -125,6 +126,19 @@ Enabled by default, which means nothing is cut off. To disable:
   ```
 
   - `object` - Jasmine wraps objects - `Object({ foo: 42 })`, if set to `false` objects will be displayed without this wrapper - `{ foo: 42 }`.
+
+### legacy
+
+Jasmine 2.6 introduced built-in diffs for objects. Reporter can't work with those diffs at the moment, so they are simply displayed without any highlights.
+
+Disabled by default, which means Jasmine built-in diffs are respected.
+
+If you want to bring back old diffs and reporter highlighting as well, turn this option on.
+
+```js
+legacy: true
+```
+
 
 #### matchers
 
