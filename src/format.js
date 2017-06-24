@@ -135,7 +135,7 @@ function format(message, highlighter, options) {
   expectedDiff = expectedDiff.replace(/\S[\S\s]*/, highlighter.defaults);
   actualDiff = actualDiff.replace(/\S[\S\s]*/, highlighter.defaults);
 
-  if (options.multiline) {
+  if (options.multiline && !diff.passthru) {
     expectedDiff = options.multiline.before + expectedDiff + options.multiline.after;
     actualDiff = options.multiline.before + actualDiff + options.multiline.after;
   }
@@ -146,7 +146,7 @@ function format(message, highlighter, options) {
   }
 
   var formattedMatcherMessage = strictReplace(
-    matcherMessage, replacePairs, !!options.multiline
+    matcherMessage, replacePairs, !!options.multiline && !diff.passthru
   );
 
   // Compose final message

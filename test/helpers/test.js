@@ -11,6 +11,7 @@ function wrapTape(tapeFn, namespace) {
     options = options || {};
     options.stack = options.stack || stack;
     options.format = options.format || {};
+    options.format.legacy = typeof options.format.legacy === 'undefined' ? true : false;
     options.highlighter = options.highlighter || {};
 
     var highlighter = createHighlighter(options.highlighter);
