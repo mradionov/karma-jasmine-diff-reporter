@@ -5,6 +5,10 @@ karma-jasmine-diff-reporter [![Build status](https://travis-ci.org/mradionov/kar
 
 ![Example](http://i.imgur.com/5fkAvw2.jpg "Example")
 
+## Important
+
+The goal of the reporter is to add user-friendly diff highlighting for complex nested structures. Jasmine 2.6 introduced it's own solution for such a case and now has it out-of-the-box. Reporter is relying on the actual console output and since it has changed, reporter can't work correctly any more. If you are fine with Jasmine 2.6+ output, then the reporter won't be very useful. If you want to use the reporter instead of built-in Jasmine solution, make sure to set an option `legacy: true` in reporter options ([docs](#legacy)), which will enforce the console output to Jasmine prior 2.6, so the reporter could work with it and highlight the results.
+
 ## Install
 
 ```bash
@@ -32,6 +36,20 @@ Some specific reporters might break because of how the output is changed, make s
 
 ```js
 reporters: ['junit', 'jasmine-diff']
+```
+
+If you have `plugins` option overriden, make sure to add the reporter in there too ([Karma/Loading Plugins](http://karma-runner.github.io/1.0/config/plugins.html))
+
+```js
+// karma.conf.js
+module.exports = function(config) {
+  config.set({
+    reporters: ['jasmine-diff'],
+    plugins: [
+      'karma-jasmine-diff-reporter'
+    ]
+  });
+};
 ```
 
 ## Options
@@ -127,7 +145,7 @@ Enabled by default, which means nothing is cut off. To disable:
 
   - `object` - Jasmine wraps objects - `Object({ foo: 42 })`, if set to `false` objects will be displayed without this wrapper - `{ foo: 42 }`.
 
-### legacy
+#### legacy
 
 Jasmine 2.6 introduced built-in diffs for objects. Reporter can't work with those diffs at the moment, so they are simply displayed without any highlights.
 
