@@ -1,8 +1,5 @@
 'use strict';
 
-var diff = require('./diff');
-
-
 // Matcher - toEqual
 //
 // 1. If values have different types - completely highlight them both
@@ -13,7 +10,7 @@ var diff = require('./diff');
 // 4. If values have complex types, which can nest - provide deep comparison
 //    of all their nested values by applying the same steps.
 module.exports = function formatToEqual(
-  expectedValue, actualValue, highlighter, options
+  diff, expectedValue, actualValue, highlighter, options
 ) {
   // Do not highlight Jasmine 2.6 diff unless legacy option is on
   if (!options.legacy) {

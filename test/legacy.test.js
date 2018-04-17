@@ -19,7 +19,7 @@ test('passthru objects',
   { format: { legacy: false } }
 );
 
-test.only('dont multiline',
+test('dont multiline',
   "Expected $.foo = 'bar' to equal 'baz'.\n" +
   'Expected object to have properties\n' +
   '    bar: 10\n' +

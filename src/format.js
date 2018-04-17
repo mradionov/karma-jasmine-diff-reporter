@@ -6,18 +6,11 @@ var marker = require('./marker');
 
 var processOptions = require('./options');
 
-var formatToBe = require('./format/to-be');
-var formatToEqual = require('./format/to-equal');
-var formatToHaveBeenCalledWith = require('./format/to-have-been-called-with');
-var formatToThrow = require('./format/to-throw');
+var diff = require('./diff');
 var formatCustomMatcher = require('./format/custom');
 
-var matcherFormatters = {
-  toBe: formatToBe,
-  toEqual: formatToEqual,
-  toHaveBeenCalledWith: formatToHaveBeenCalledWith,
-  toThrow: formatToThrow
-};
+var isFunction = require('./utils/lang').isFunction;
+
 
 // Remove space, dots and commas from both sides of the string
 function trimSpaceAndPunctuation(str) {
@@ -78,7 +71,6 @@ function format(message, highlighter, options) {
 
   // Detect what matcher is used in message
   var matcher;
-  var matcherName;
   var match;
   var matchers = defaultMatchers.extend(options.matchers);
 
@@ -87,7 +79,6 @@ function format(message, highlighter, options) {
 
     if (match && match.length === 3) {
       matcher = matchers[name];
-      matcherName = name;
       return true;
     }
 
@@ -98,6 +89,10 @@ function format(message, highlighter, options) {
   if (!match) {
     return marker.removeFromString(message);
   }
+
+
+  // Append current matcher configuration to options
+  options.matcher = matcher;
 
 
   // Extract expected and actual values
@@ -121,21 +116,29 @@ function format(message, highlighter, options) {
   var expectedValue = parse(expected);
   var actualValue = parse(actual);
 
-  var formatMatcher = matcherFormatters[matcherName];
-  if (!formatMatcher) {
+
+  // Each built-in matcher has a "format" function attached to it.
+  // In order to support custom matchers, this function can be redefined in
+  // user config. It is also possible to pass a string instead of a function,
+  // this string will be a name of diff algorithm which will be used to compare
+  // the values.
+  var formatMatcher = matcher.format;
+  if (!isFunction(formatMatcher)) {
     formatMatcher = formatCustomMatcher;
   }
 
-  var diff = formatMatcher(expectedValue, actualValue, highlighter, options);
+  var diffResult = formatMatcher(
+    diff, expectedValue, actualValue, highlighter, options
+  );
 
-  var expectedDiff = diff.expected;
-  var actualDiff = diff.actual;
+  var expectedDiff = diffResult.expected;
+  var actualDiff = diffResult.actual;
 
   // Do not include leading spaces in default highlight
   expectedDiff = expectedDiff.replace(/\S[\S\s]*/, highlighter.defaults);
   actualDiff = actualDiff.replace(/\S[\S\s]*/, highlighter.defaults);
 
-  if (options.multiline && !diff.passthru) {
+  if (options.multiline && !diffResult.passthru) {
     expectedDiff = options.multiline.before + expectedDiff + options.multiline.after;
     actualDiff = options.multiline.before + actualDiff + options.multiline.after;
   }
@@ -146,7 +149,7 @@ function format(message, highlighter, options) {
   }
 
   var formattedMatcherMessage = strictReplace(
-    matcherMessage, replacePairs, !!options.multiline && !diff.passthru
+    matcherMessage, replacePairs, !!options.multiline && !diffResult.passthru
   );
 
   // Compose final message

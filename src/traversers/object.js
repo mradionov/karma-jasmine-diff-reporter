@@ -1,6 +1,6 @@
 'use strict';
 
-var Value = require('../../../value');
+var Value = require('../Value');
 
 module.exports = {
 

@@ -54,6 +54,11 @@ module.exports = function (config) {
         toLookTheSameAs: {
           pattern: /Expected ([\S\s]*?) to look the same as ([\S\s]*?)\./,
           reverse: true
+        },
+        toContain: {
+          format: 'primitive',
+          pattern: /Expected ([\S\s]*?) to contain ([\S\s]*?)\./,
+          reverse: true
         }
       },
       pretty: true,
