@@ -1,7 +1,7 @@
 'use strict';
 
-var traverse = require('../../traverse');
-var traversers = require('./traversers');
+var traverse = require('../traverse');
+var traversers = require('../traversers');
 
 
 function formatComplex(

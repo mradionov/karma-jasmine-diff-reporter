@@ -166,13 +166,22 @@ By default only Jasmine core matchers are supported. Use this option to add any 
 matchers: {
   toLookTheSameAs: {
     pattern: /Expected ([\S\s]*) to look the same as ([\S\s]*)\./,
-    reverse: true
+    reverse: true,
+    format: 'complex'
   }
 }
 ```
 
 - `pattern` (required) - pattern to parse a failure message. It must have **two** capturing groups, which will capture actual and expected values. Suggested regular expression for capturing group is `[\S\s]*`, which will capture all characters including whitespaces.
 - `reverse` (optional) - if set to `true`, then the colors, which are used to highlight actual and expected values will be swapped. By default, first capturing group stands for expected value and second - for actual value.
+- `format` (optional) - accepts either a string or a function. String specifies which diff algorithm to use. Available algorithms are:
+  - `complex` (default) - values are deeply parsed and analyzed, diffed parts get highlighted
+  - `full` - highlights the entire values in their appropriate colors
+  - `multiple` - internal option for values which hold multiple arrays
+  - `passthru` - nothing is diffed and highlighted
+  - `primitive` - values are diffed and highlighted as raw strings
+  - `warning` - highlights the entire values in warning colors
+
 
 Take a look at the [definitions of in-built matchers](src/matchers.js) to have a better understaning.
 

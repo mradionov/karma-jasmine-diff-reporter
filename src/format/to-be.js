@@ -1,8 +1,5 @@
 'use strict';
 
-var diff = require('./diff');
-
-
 // Matcher - toBe
 //
 // 1. If values have different types - completely highlight them both
@@ -13,7 +10,7 @@ var diff = require('./diff');
 // 3. If values have the same type and this type is primitive - apply string
 //    diff to their string representations
 module.exports = function formatToBe(
-  expectedValue, actualValue, highlighter, options
+  diff, expectedValue, actualValue, highlighter, options
 ) {
   // Different types
   if (expectedValue.type !== actualValue.type) {

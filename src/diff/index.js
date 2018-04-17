@@ -1,17 +1,17 @@
 'use strict';
 
-var full = require('./full');
-var warning = require('./warning');
 var complex = require('./complex');
+var full = require('./full');
 var multiple = require('./multiple');
 var passthru = require('./passthru');
 var primitive = require('./primitive');
+var warning = require('./warning');
 
 module.exports = {
-  full: full,
-  warning: warning,
   complex: complex,
+  full: full,
   multiple: multiple,
   passthru: passthru,
-  primitive: primitive
+  primitive: primitive,
+  warning: warning
 };

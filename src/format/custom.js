@@ -1,11 +1,26 @@
 'use strict';
 
-var diff = require('./diff');
+var isFunction = require('../utils/lang').isFunction;
+var isString = require('../utils/lang').isString;
 
 
 // Behave like toEqual, deep compare the values
 module.exports = function formatCustom(
-  expectedValue, actualValue, highlighter, options
+  diff, expectedValue, actualValue, highlighter, options
 ) {
-  return diff.complex(expectedValue, actualValue, highlighter, options);
+  var format = options.matcher.format;
+
+  if (isFunction(format)) {
+    return format(diff, expectedValue, actualValue, highlighter, options);
+  }
+
+  var diffFn;
+  if (isString(format)) {
+    diffFn = diff[format];
+  }
+  if (!isFunction(diffFn)) {
+    diffFn = diff.complex;
+  }
+
+  return diffFn(expectedValue, actualValue, highlighter, options);
 };

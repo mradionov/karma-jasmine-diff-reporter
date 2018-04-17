@@ -41,6 +41,18 @@ describe('Option', function () {
       expect(a).toEqual(b);
     });
 
+    describe('toContain', function () {
+
+      it('should diff string', function () {
+        expect('foo bar baz.').toContain('qux');
+      });
+
+      it('should diff array', function () {
+        expect(['foo', 'bar']).toContain('qux');
+      });
+
+    });
+
   });
 
 });

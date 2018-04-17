@@ -1,6 +1,6 @@
 'use strict';
 
-var Value = require('./value');
+var Value = require('./Value');
 var MARKER = require('./marker').MARKER;
 
 var stringUtils = require('./utils/string');
