@@ -79,7 +79,9 @@ function ppPatched(j$) {
       } else if (typeof value === 'string') {
         this.emitString(value);
       } else if (j$.isSpy(value)) {
-        this.emitScalar('spy on ' + value.and.identity());
+        var identity = value.and.identity;
+
+        this.emitScalar('spy on ' + (typeof identity === 'string' ? identity : value.and.identity() /* keep context of function same */));
       } else if (value instanceof RegExp) {
         this.emitScalar(value.toString());
       } else if (typeof value === 'function') {
