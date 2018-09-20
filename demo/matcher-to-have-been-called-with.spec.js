@@ -36,6 +36,28 @@ describe('Matcher', function () {
 
     });
 
+    it('Should correctly show spyOn value', function () {
+      function createUIEvent(reference) {
+        return {
+          tag: reference
+        };
+      }
+
+      var foo = {
+        bar: function () {},
+        foo: this
+      };
+
+      spyOn(foo, 'bar');
+
+      foo.bar({}, createUIEvent(foo));
+
+      expect(foo.bar).toHaveBeenCalledWith({}, {
+        bar: function () {},
+        foo: 'asd'
+      });
+    });
+
   });
 
 });
