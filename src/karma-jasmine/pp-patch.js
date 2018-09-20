@@ -79,6 +79,8 @@ function ppPatched(j$) {
       } else if (typeof value === 'string') {
         this.emitString(value);
       } else if (j$.isSpy(value)) {
+        // From Jasmine 3.0 "identity" is a string, not a function.
+        // https://github.com/mradionov/karma-jasmine-diff-reporter/pull/35
         var identity = value.and.identity;
 
         this.emitScalar('spy on ' + (typeof identity === 'string' ? identity : value.and.identity() /* keep context of function same */));
