@@ -2,6 +2,7 @@
 
 var path = require('path');
 
+var jasminePackage = require('jasmine/package.json');
 var karma = require('karma');
 
 var createColorHighlighter = require('./src/color-highlighter');
@@ -9,7 +10,8 @@ var format = require('./src/format');
 var defaults = require('./src/utils/object').defaults;
 
 var karmaMajorVersion = Number(karma.VERSION.split('.')[0]);
-
+var jasmineMajorVersion = Number(jasminePackage.version.split('.')[0]);
+var jasmineMinorVersion = Number(jasminePackage.version.split('.')[1]);
 
 function jasmineDiffFramework(config, logger) {
   var log = logger.create('jasmine-diff');
@@ -47,16 +49,26 @@ function jasmineDiffFramework(config, logger) {
     watched: false
   });
 
-  // Inject patch to bring back legacy diffs for objects,
-  // if respective option is turned on in settings.
 
-  var utilPatchPath = path.join(__dirname, 'src', 'karma-jasmine', 'util-patch.js');
+  // Jasmine 2.6 introduced custom diffs. In response to that,  reporter got
+  // new option "legacy" which transforms output to output similar prior
+  // Jasmine 2.6.
+  var hasJasmineCustomDiff = jasmineMajorVersion >= 2 && jasmineMinorVersion >= 6;
+  // For Jasmine < 2.6 flag is true by default.
+  // For Jasmine >= 2.6 flag is controlled by user, is false by default, to respect
+  // built in Jasmine diffs.
+  var legacyDefault = !hasJasmineCustomDiff;
 
   var reporterConfig = defaults(config.jasmineDiffReporter || {}, {
-    legacy: false
+    legacy: legacyDefault
   });
 
-  if (reporterConfig.legacy) {
+  // Inject patch to bring back legacy diffs for objects only if legacy flag is on
+  // and if Jasmine actualy has custom diffs.
+  if (reporterConfig.legacy && hasJasmineCustomDiff) {
+    var utilPatchPath = path.join(
+      __dirname, 'src', 'karma-jasmine', 'util-patch.js'
+    );
     config.files.splice(index + 3, 0, {
       pattern: utilPatchPath,
       included: true,
