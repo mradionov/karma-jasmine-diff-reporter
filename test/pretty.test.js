@@ -331,3 +331,29 @@ test('multiple calls, matcher toHaveBeenCalledWith',
 
   { format: { pretty: true } }
 );
+
+test('empty object',
+
+  'Expected Object({  }) to equal Object({ foo: 42 }).',
+
+  'Expected Object({\n' +
+  '\n' +
+  '}) to equal Object({\n' +
+  '  <e>foo: 42</e>\n' +
+  '}).',
+
+  { format: { pretty: true } }
+);
+
+test('empty array',
+
+  'Expected [  ] to equal [ 1 ].',
+
+  'Expected [\n' +
+  '\n' +
+  '] to equal [\n' +
+  '  <e>1</e>\n' +
+  '].',
+
+  { format: { pretty: true } }
+);

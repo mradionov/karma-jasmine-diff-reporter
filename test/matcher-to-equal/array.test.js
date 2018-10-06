@@ -63,3 +63,8 @@ test('different first value',
 
   'Expected [ <a>1</a>, 2, 3 ] to equal [ <e>4</e>, 2, 3 ].'
 );
+
+test('empty array',
+  'Expected [  ] to equal [ 1 ].',
+  'Expected [  ] to equal [ <e>1</e> ].'
+);
