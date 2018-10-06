@@ -12,11 +12,6 @@
 module.exports = function formatToEqual(
   diff, expectedValue, actualValue, highlighter, options
 ) {
-  // Do not highlight Jasmine 2.6 diff unless legacy option is on
-  if (!options.legacy) {
-    return diff.passthru(expectedValue, actualValue, highlighter, options);
-  }
-
   // Different types
   if (expectedValue.type !== actualValue.type) {
     return diff.full(expectedValue, actualValue, highlighter, options);
