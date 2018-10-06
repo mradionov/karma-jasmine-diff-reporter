@@ -17,8 +17,8 @@
     "url": "https://github.com/mradionov/karma-jasmine-diff-reporter"
   },
   "dependencies": {
-    "diff": "^1.4.0",
-    "chalk": "^1.1.0",
+    "chalk": "^2.4.1",
+    "diff": "^3.5.0",
     "karma": ">=0.9"
   },
   "devDependencies": {
