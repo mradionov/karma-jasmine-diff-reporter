@@ -174,9 +174,10 @@ Take a look at the [definitions of in-built matchers](src/matchers.js) to have a
 
 ## Support
 
-- jasmine 2.x
-- karma 0.9+
-- karma-jasmine 0.3+
+- node.js >= 6
+- jasmine >= 2
+- karma >= 0.9
+- karma-jasmine >= 0.3
 
 ## Pitfalls
 
