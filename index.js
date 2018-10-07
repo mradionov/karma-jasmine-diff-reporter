@@ -47,23 +47,16 @@ function jasmineDiffFramework(config, logger) {
     watched: false
   });
 
-  // Inject patch to bring back legacy diffs for objects,
-  // if respective option is turned on in settings.
+  // Inject patch to bring back legacy diffs for objects after Jasmine 2.6
 
   var utilPatchPath = path.join(__dirname, 'src', 'karma-jasmine', 'util-patch.js');
 
-  var reporterConfig = defaults(config.jasmineDiffReporter || {}, {
-    legacy: false
+  config.files.splice(index + 3, 0, {
+    pattern: utilPatchPath,
+    included: true,
+    served: true,
+    watched: false
   });
-
-  if (reporterConfig.legacy) {
-    config.files.splice(index + 3, 0, {
-      pattern: utilPatchPath,
-      included: true,
-      served: true,
-      watched: false
-    });
-  }
 }
 
 function jasmineDiffReporter(baseReporterDecorator, config, logger) {

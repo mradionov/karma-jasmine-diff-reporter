@@ -78,3 +78,8 @@ test('keys with dots different',
   'Expected Object({ <a>foo.bar: 42</a>, foo: <a>43</a> }) ' +
   'to equal Object({ <e>foo.baz: 42</e>, foo: <e>44</e> }).'
 );
+
+test('empty object',
+  'Expected Object({  }) to equal Object({ foo: 42 }).',
+  'Expected Object({  }) to equal Object({ <e>foo: 42</e> }).'
+);

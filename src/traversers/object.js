@@ -45,6 +45,12 @@ module.exports = {
       diff += ' ';
     }
 
+    if (value.children.length === 0) {
+      if (options.pretty) {
+        diff += '\n';
+      }
+    }
+
     return diff;
   },
 

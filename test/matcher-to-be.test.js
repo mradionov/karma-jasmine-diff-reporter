@@ -101,7 +101,7 @@ test('arrays by ref',
 
   'Expected <w>[ 1, 2, 3 ]</w> to be <w>[ 1, 2, 3 ]</w>.'
 
-  );
+);
 
 test('functions by ref',
 

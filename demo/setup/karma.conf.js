@@ -62,8 +62,7 @@ module.exports = function (config) {
         }
       },
       pretty: true,
-      multiline: true,
-      legacy: true
+      multiline: true
     }
 
   });

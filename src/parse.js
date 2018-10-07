@@ -152,7 +152,10 @@ function extractValues(valueStr) {
     value += ch;
   }
 
-  values.push(value.trim());
+  var trimmedLastValue = value.trim();
+  if (trimmedLastValue.length > 0) {
+    values.push(trimmedLastValue);
+  }
 
   return values;
 }

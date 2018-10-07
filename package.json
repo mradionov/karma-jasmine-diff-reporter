@@ -17,20 +17,20 @@
     "url": "https://github.com/mradionov/karma-jasmine-diff-reporter"
   },
   "dependencies": {
-    "diff": "^1.4.0",
-    "chalk": "^1.1.0",
+    "chalk": "^2.4.1",
+    "diff": "^3.5.0",
     "karma": ">=0.9"
   },
   "devDependencies": {
-    "eslint": "^3.14.1",
-    "eslint-config-airbnb-es5": "^1.1.0",
+    "eslint": "^5.6.1",
+    "eslint-config-airbnb-es5": "^1.2.0",
     "eslint-config-es5": "^0.5.0",
     "jasmine-core": "*",
     "karma": "*",
     "karma-chrome-launcher": "*",
     "karma-jasmine": "*",
-    "tap-min": "^1.1.0",
-    "tape": "^4.5.1"
+    "tap-min": "^1.2.2",
+    "tape": "^4.9.1"
   },
   "scripts": {
     "start": "karma start demo/setup/karma.conf.js",

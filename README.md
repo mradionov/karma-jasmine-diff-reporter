@@ -7,7 +7,7 @@ karma-jasmine-diff-reporter [![Build status](https://travis-ci.org/mradionov/kar
 
 ## Important
 
-The goal of the reporter is to add user-friendly diff highlighting for complex nested structures. Jasmine 2.6 introduced it's own solution for such a case and now has it out-of-the-box. Reporter is relying on the actual console output and since it has changed, reporter can't work correctly any more. If you are fine with Jasmine 2.6+ output, then the reporter won't be very useful. If you want to use the reporter instead of built-in Jasmine solution, make sure to set an option `legacy: true` in reporter options ([docs](#legacy)), which will enforce the console output to Jasmine prior 2.6, so the reporter could work with it and highlight the results.
+The goal of the reporter is to add user-friendly diff highlighting for complex nested structures. Jasmine 2.6 introduced it's own solution, which conflicts with the reporter original intent. When used, reporter will override Jasmine output in order to enchance it.
 
 ## Install
 
@@ -80,7 +80,6 @@ module.exports = function(config) {
       pretty: false,
       multiline: false,
       verbose: true,
-      legacy: false,
       matchers: {}
     }
   });
@@ -145,18 +144,6 @@ Enabled by default, which means nothing is cut off. To disable:
 
   - `object` - Jasmine wraps objects - `Object({ foo: 42 })`, if set to `false` objects will be displayed without this wrapper - `{ foo: 42 }`.
 
-#### legacy
-
-Jasmine 2.6 introduced built-in diffs for objects. Reporter can't work with those diffs at the moment, so they are simply displayed without any highlights.
-
-Disabled by default, which means Jasmine built-in diffs are respected.
-
-If you want to bring back old diffs and reporter highlighting as well, turn this option on.
-
-```js
-legacy: true
-```
-
 
 #### matchers
 
@@ -187,9 +174,10 @@ Take a look at the [definitions of in-built matchers](src/matchers.js) to have a
 
 ## Support
 
-- jasmine 2.x
-- karma 0.9+
-- karma-jasmine 0.3+
+- node.js >= 6
+- jasmine >= 2
+- karma >= 0.9
+- karma-jasmine >= 0.3
 
 ## Pitfalls
 
