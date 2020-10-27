@@ -9,7 +9,7 @@ window.jasmine.matchersUtil = matchersUtilPatched(window.jasmine);
 
 function matchersUtilPatched(j$) {
   var util = j$.matchersUtil;
-  var oldEquals = util.equals;
+  var oldEquals = util.equals.bind(util);
 
   // Below Jasmine 2.6 there is no NullDiffBuilder class
   if (typeof j$.NullDiffBuilder === 'undefined') {
