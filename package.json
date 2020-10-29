@@ -1,6 +1,6 @@
 {
   "name": "karma-jasmine-diff-reporter",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Diff and pretty print for failed tests",
   "main": "index.js",
   "keywords": [
