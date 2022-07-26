@@ -3,16 +3,30 @@
 var path = require('path');
 
 var karma = require('karma');
+var jasmine = require('jasmine-core');
 
 var createColorHighlighter = require('./src/color-highlighter');
 var format = require('./src/format');
 var defaults = require('./src/utils/object').defaults;
 
 var karmaMajorVersion = Number(karma.VERSION.split('.')[0]);
+var jasmineMajorVersion = Number(jasmine.version().split('.')[0]);
 
+// https://github.com/mradionov/karma-jasmine-diff-reporter/issues/63
+function maybeLogDeprecationWarning(log) {
+  if (jasmineMajorVersion >= 4) {
+    log.warn('Plugin "karma-jasmine-diff-reporter" does not support Jasmine 4+. Consider removing it from your configuration.');
+    return true;
+  }
+  return false;
+}
 
 function jasmineDiffFramework(config, logger) {
   var log = logger.create('jasmine-diff');
+
+  if (maybeLogDeprecationWarning(log)) {
+    return;
+  }
 
   // karma-jasmine uses adapter to work with Jasmine
   // Use it to include custom patch for Jasmine right before adapter starts
@@ -61,6 +75,12 @@ function jasmineDiffFramework(config, logger) {
 
 function jasmineDiffReporter(baseReporterDecorator, config, logger) {
   var self = this;
+
+  var log = logger.create('jasmine-diff');
+
+  if (maybeLogDeprecationWarning(log)) {
+    return;
+  }
 
   // Extend Karma Base reporter
   baseReporterDecorator(self);
