@@ -1,13 +1,22 @@
 karma-jasmine-diff-reporter [![Build status](https://travis-ci.org/mradionov/karma-jasmine-diff-reporter.svg?branch=master)](https://travis-ci.org/mradionov/karma-jasmine-diff-reporter)
 ===
 
-> Diff and pretty print for failed tests.
+## Compatibility
+
+### Jasmine 4+ (deprecated)
+
+The plugin does not support Jasmine 4+ because of the breaking changes and will be deprecated. It will be automatically disabled and a warning will be shown if you are trying to use the plugin with Jasmine 4+. ([more info](https://github.com/mradionov/karma-jasmine-diff-reporter/issues/63))
+
+### Jasmine 2.6 - Jasmine 3.x
+
+Jasmine 2.6 introduced it's own solution, which conflicts with the reporter original intent. When used, reporter will override Jasmine output in order to enchance it.
+
+## Description
+
+Diff and pretty print for failed tests.
 
 ![Example](http://i.imgur.com/5fkAvw2.jpg "Example")
 
-## Important
-
-The goal of the reporter is to add user-friendly diff highlighting for complex nested structures. Jasmine 2.6 introduced it's own solution, which conflicts with the reporter original intent. When used, reporter will override Jasmine output in order to enchance it.
 
 ## Install
 
@@ -175,7 +184,7 @@ Take a look at the [definitions of in-built matchers](src/matchers.js) to have a
 ## Support
 
 - node.js >= 6
-- jasmine >= 2
+- jasmine >= 2 && jasmine < 4
 - karma >= 0.9
 - karma-jasmine >= 0.3
 
